@@ -7,13 +7,16 @@ import { FileTypeBadge, StatusBadge } from "@/components/ui/Badge";
 
 export function RecentDocuments({ documents }: { documents: ResearchDocument[] }) {
   return (
-    <section aria-labelledby="recent-docs-heading" className="rounded-xl border border-[#E2E8F0] bg-white">
-      <div className="flex items-center justify-between border-b border-[#F1F5F9] px-5 py-4">
-        <h2 id="recent-docs-heading" className="text-[15px] font-semibold text-[#0F172A]">
+    <section
+      aria-labelledby="recent-docs-heading"
+      style={{ borderRadius: "var(--radius-panel)", border: "1px solid var(--color-hairline)", background: "var(--color-deep-black)" }}
+    >
+      <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid var(--color-hairline)" }}>
+        <h2 id="recent-docs-heading" className="text-[15px] font-semibold" style={{ color: "var(--color-primary-text)" }}>
           Recent Documents
         </h2>
-        <Link href="/documents" className="text-[13px] font-medium text-[#4F46E5] hover:text-[#4338CA]">
-          View all
+        <Link href="/documents" className="font-tech" style={{ color: "var(--color-research-accent)", fontSize: 10 }}>
+          VIEW ALL →
         </Link>
       </div>
 
@@ -21,7 +24,7 @@ export function RecentDocuments({ documents }: { documents: ResearchDocument[] }
       <div className="hidden overflow-x-auto md:block">
         <table className="w-full text-left text-sm">
           <thead>
-            <tr className="border-b border-[#F1F5F9] text-[12px] uppercase tracking-wide text-[#64748B]">
+            <tr className="font-tech" style={{ borderBottom: "1px solid var(--color-hairline)", color: "var(--color-tertiary-text)", fontSize: 9 }}>
               <th scope="col" className="px-5 py-3 font-medium">Document</th>
               <th scope="col" className="px-5 py-3 font-medium">Type</th>
               <th scope="col" className="px-5 py-3 font-medium">Pages</th>
@@ -32,23 +35,24 @@ export function RecentDocuments({ documents }: { documents: ResearchDocument[] }
           </thead>
           <tbody>
             {documents.map((d) => (
-              <tr key={d.id} className="border-b border-[#F8FAFC] last:border-0 hover:bg-[#F8FAFC]/70">
+              <tr key={d.id} className="doc-row" style={{ borderBottom: "1px solid var(--color-hairline)" }}>
                 <td className="max-w-[260px] px-5 py-3.5">
-                  <Link href={`/documents/${d.id}`} className="block truncate font-medium text-[#0F172A] hover:text-[#4F46E5]">
+                  <Link href={`/documents/${d.id}`} className="block truncate font-medium" style={{ color: "var(--color-primary-text)" }}>
                     {d.title}
                   </Link>
-                  <span className="block truncate text-xs text-[#64748B]">{formatBytes(d.file_size)}</span>
+                  <span className="block truncate text-xs" style={{ color: "var(--color-tertiary-text)" }}>{formatBytes(d.file_size)}</span>
                 </td>
-                <td className="px-5 py-3.5 text-[#475569]">{d.file_type}</td>
-                <td className="px-5 py-3.5 text-[#475569]">{d.page_count} pages</td>
-                <td className="px-5 py-3.5 text-[#475569]">{formatDate(d.created_at)}</td>
+                <td className="px-5 py-3.5" style={{ color: "var(--color-secondary-text)" }}>{d.file_type}</td>
+                <td className="px-5 py-3.5" style={{ color: "var(--color-secondary-text)" }}>{d.page_count} pages</td>
+                <td className="px-5 py-3.5" style={{ color: "var(--color-secondary-text)" }}>{formatDate(d.created_at)}</td>
                 <td className="px-5 py-3.5">
                   <StatusBadge status={d.status} />
                 </td>
                 <td className="px-5 py-3.5 text-right">
                   <Link
                     href={`/documents/${d.id}`}
-                    className="rounded-lg border border-[#E2E8F0] px-3 py-1.5 text-[13px] font-medium text-[#334155] hover:border-[#CBD5E1] hover:bg-[#F8FAFC]"
+                    className="font-tech rounded-full px-3 py-1.5"
+                    style={{ border: "1px solid var(--color-hairline)", background: "var(--color-control)", color: "var(--color-secondary-text)", fontSize: 10 }}
                   >
                     Open
                   </Link>
@@ -60,15 +64,15 @@ export function RecentDocuments({ documents }: { documents: ResearchDocument[] }
       </div>
 
       {/* Mobile cards */}
-      <ul className="divide-y divide-[#F1F5F9] md:hidden">
+      <ul className="md:hidden">
         {documents.map((d) => (
-          <li key={d.id} className="flex items-center gap-3 px-4 py-3.5">
+          <li key={d.id} className="flex items-center gap-3 px-4 py-3.5" style={{ borderBottom: "1px solid var(--color-hairline)" }}>
             <FileTypeBadge type={d.file_type} />
             <div className="min-w-0 flex-1">
-              <Link href={`/documents/${d.id}`} className="block truncate text-sm font-medium">
+              <Link href={`/documents/${d.id}`} className="block truncate text-sm font-medium" style={{ color: "var(--color-primary-text)" }}>
                 {d.title}
               </Link>
-              <p className="mt-0.5 text-xs text-[#64748B]">
+              <p className="mt-0.5 text-xs" style={{ color: "var(--color-tertiary-text)" }}>
                 {d.page_count} pages · {formatDate(d.created_at)}
               </p>
             </div>

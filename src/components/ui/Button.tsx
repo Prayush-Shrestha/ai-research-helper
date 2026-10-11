@@ -13,11 +13,11 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-[#4F46E5] text-white hover:bg-[#4338CA] focus-visible:outline-[#4F46E5] disabled:bg-[#C7D2FE] disabled:text-white",
+    "bg-[#E7E7E2] text-[#050505] hover:bg-white focus-visible:outline-[#B7FFDF] disabled:bg-[#2A2D2F] disabled:text-[#62686A]",
   secondary:
-    "bg-white text-[#0F172A] border border-[#E2E8F0] hover:border-[#CBD5E1] hover:bg-[#F8FAFC] disabled:text-[#94A3B8]",
-  ghost: "bg-transparent text-[#475569] hover:bg-[#F1F5F9] hover:text-[#0F172A] disabled:text-[#CBD5E1]",
-  destructive: "bg-[#DC2626] text-white hover:bg-[#B91C1C] disabled:bg-[#FECACA]",
+    "bg-[#202124] text-[#E7E7E2] border border-[#292B2D] hover:border-[#34383B] hover:bg-[#26282B] disabled:text-[#62686A]",
+  ghost: "bg-transparent text-[#92989A] hover:bg-[#17191B] hover:text-[#E7E7E2] disabled:text-[#62686A]",
+  destructive: "bg-transparent text-[#ff9d9d] border border-[#3A2A2A] hover:bg-[#2A1A1A] hover:border-[#5A3535] disabled:text-[#62686A]",
 };
 
 const sizes: Record<Size, string> = {
@@ -35,7 +35,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       ref={ref}
       disabled={disabled || loading}
       className={cx(
-        "inline-flex select-none items-center justify-center gap-2 rounded-lg font-medium transition-colors duration-150",
+        "inline-flex select-none items-center justify-center gap-2 rounded-full font-medium transition-all duration-200",
         "disabled:cursor-not-allowed",
         variants[variant],
         sizes[size],

@@ -198,3 +198,94 @@ body {
     scroll-behavior: auto;
   }
 }
+
+/* ---------- polish: missing primitives + quiet depth ---------- */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fade-in 0.25s ease both;
+}
+.animate-slide-up {
+  animation: slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* global scrollbar — thin, dark */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2b2e31 transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #2b2e31;
+  border-radius: 99px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* links + buttons ease */
+a, button {
+  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* pill buttons lift a touch */
+a[class*="rounded-full"], button[class*="rounded-full"] {
+  will-change: transform;
+}
+a[class*="rounded-full"]:hover, button[class*="rounded-full"]:hover {
+  transform: translateY(-1px);
+}
+a[class*="rounded-full"]:active, button[class*="rounded-full"]:active {
+  transform: translateY(0);
+}
+
+/* inputs: soft accent glow on focus */
+input:focus, textarea:focus {
+  border-color: var(--color-research-accent);
+}
+
+/* card lift for panels */
+.lift {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, background 0.3s ease;
+}
+.lift:hover {
+  transform: translateY(-2px);
+  border-color: #34383b;
+}
+
+/* skeleton shimmer on dark */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-control);
+}
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(231, 231, 226, 0.07), transparent);
+  animation: sheen 1.8s linear infinite;
+}
+
+/* reader type: a touch more air */
+article p {
+  text-wrap: pretty;
+}
+
+/* ask box glow */
+.ask-box {
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.ask-box:focus-within {
+  border-color: rgba(183, 255, 223, 0.4);
+  box-shadow: 0 0 0 3px rgba(183, 255, 223, 0.07);
+}

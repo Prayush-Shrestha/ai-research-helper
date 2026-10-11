@@ -71,16 +71,18 @@ export function UploadDocument({ open, onClose, onUpload }: UploadDocumentProps)
           setDragging(false);
           pick(e.dataTransfer.files?.[0]);
         }}
-        className={`flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed px-6 py-8 text-center transition-colors ${
-          dragging ? "border-[#4F46E5] bg-[#EEF2FF]" : "border-[#E2E8F0] bg-[#F8FAFC] hover:border-[#CBD5E1]"
-        }`}
+        className="flex cursor-pointer flex-col items-center rounded-2xl border border-dashed px-6 py-8 text-center transition-all"
+        style={{
+          borderColor: dragging ? "var(--color-research-accent)" : "var(--color-hairline)",
+          background: dragging ? "rgba(183,255,223,0.05)" : "var(--color-graphite)",
+        }}
       >
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden className="text-[#64748B]">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden style={{ color: "var(--color-secondary-text)" }}>
           <path d="M12 16V4m0 0 4 4m-4-4L8 8M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
-        <p className="mt-2 text-sm font-medium text-[#0F172A]">Drag and drop your file here</p>
-        <p className="mt-0.5 text-[13px] text-[#64748B]">
-          or <span className="font-medium text-[#4F46E5]">browse files</span>
+        <p className="mt-2 text-sm font-medium" style={{ color: "var(--color-primary-text)" }}>Drag and drop your file here</p>
+        <p className="mt-0.5 text-[13px]" style={{ color: "var(--color-secondary-text)" }}>
+          or <span className="font-medium" style={{ color: "var(--color-research-accent)" }}>browse files</span>
         </p>
         <input
           ref={inputRef}
@@ -93,22 +95,22 @@ export function UploadDocument({ open, onClose, onUpload }: UploadDocumentProps)
       </div>
 
       {file && (
-        <div className="mt-3 rounded-lg border border-[#E2E8F0] bg-white px-3.5 py-3">
-          <p className="truncate text-sm font-medium">{file.name}</p>
-          <p className="mt-0.5 text-xs text-[#64748B]">{formatBytes(file.size)}</p>
+        <div className="mt-3 rounded-xl px-3.5 py-3" style={{ border: "1px solid var(--color-hairline)", background: "var(--color-graphite)" }}>
+          <p className="truncate text-sm font-medium" style={{ color: "var(--color-primary-text)" }}>{file.name}</p>
+          <p className="mt-0.5 text-xs" style={{ color: "var(--color-tertiary-text)" }}>{formatBytes(file.size)}</p>
           {progress !== null && (
             <div className="mt-2" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100} aria-label="Upload progress">
-              <div className="h-1.5 overflow-hidden rounded-full bg-[#E2E8F0]">
-                <div className="h-full rounded-full bg-[#4F46E5] transition-all" style={{ width: `${progress}%` }} />
+              <div className="h-1.5 overflow-hidden rounded-full" style={{ background: "var(--color-control)" }}>
+                <div className="h-full rounded-full transition-all" style={{ width: `${progress}%`, background: "var(--color-research-accent)" }} />
               </div>
-              <p className="mt-1 text-xs text-[#64748B]">{progress}% uploaded</p>
+              <p className="mt-1 text-xs" style={{ color: "var(--color-secondary-text)" }}>{progress}% uploaded</p>
             </div>
           )}
         </div>
       )}
 
       {validationError && (
-        <p role="alert" className="mt-3 rounded-lg bg-[#FEF2F2] px-3 py-2.5 text-[13px] text-[#B91C1C]">
+        <p role="alert" className="mt-3 rounded-xl px-3 py-2.5 text-[13px]" style={{ background: "rgba(255,157,157,0.06)", border: "1px solid #4A2E2E", color: "#ff9d9d" }}>
           {validationError}
         </p>
       )}

@@ -20,33 +20,36 @@ export function QuickActions({ onUpload }: { onUpload: () => void }) {
 
   return (
     <section aria-labelledby="quick-actions-heading">
-      <h2 id="quick-actions-heading" className="text-[15px] font-semibold text-[#0F172A]">
-        Quick actions
+      <h2 id="quick-actions-heading" className="font-tech" style={{ color: "var(--color-tertiary-text)" }}>
+        QUICK ACTIONS
       </h2>
       <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {actions.map((a) => {
           const inner = (
             <>
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#EEF2FF] text-[#4F46E5]">
+              <span
+                className="flex h-9 w-9 items-center justify-center"
+                style={{ borderRadius: 10, background: "rgba(183,255,223,0.07)", color: "var(--color-research-accent)", border: "1px solid var(--color-hairline)" }}
+              >
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden>
                   <path d={a.icon} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </span>
-              <span className="block text-sm font-medium text-[#0F172A]">{a.label}</span>
-              <span className="block text-[13px] text-[#64748B]">{a.description}</span>
+              <span className="block text-sm font-medium" style={{ color: "var(--color-primary-text)" }}>{a.label}</span>
+              <span className="block text-[13px]" style={{ color: "var(--color-secondary-text)" }}>{a.description}</span>
             </>
           );
-          const cls =
-            "rounded-xl border border-[#E2E8F0] bg-white p-4 text-left transition-colors hover:border-[#C7D2FE] hover:bg-[#EEF2FF]/30";
+          const cls = "lift p-4 text-left";
+          const style = { borderRadius: "var(--radius-panel)", border: "1px solid var(--color-hairline)", background: "var(--color-deep-black)" } as const;
           if (a.href) {
             return (
-              <Link key={a.label} href={a.href} className={cls}>
+              <Link key={a.label} href={a.href} className={cls} style={style}>
                 {inner}
               </Link>
             );
           }
           return (
-            <button key={a.label} type="button" onClick={a.onClick} className={cls}>
+            <button key={a.label} type="button" onClick={a.onClick} className={cls} style={style}>
               {inner}
             </button>
           );

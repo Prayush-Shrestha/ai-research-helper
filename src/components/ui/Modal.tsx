@@ -30,8 +30,9 @@ export function Modal({ open, onClose, title, description, children }: ModalProp
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-[#0F172A]/40 p-4 animate-fade-in sm:items-center"
+      className="fixed inset-0 z-50 flex items-end justify-center p-4 animate-fade-in sm:items-center"
       role="presentation"
+      style={{ background: "rgba(5,5,5,0.7)", backdropFilter: "blur(8px)" }}
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -40,10 +41,11 @@ export function Modal({ open, onClose, title, description, children }: ModalProp
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="w-full max-w-md rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-xl animate-slide-up"
+        className="w-full max-w-md p-6 animate-slide-up"
+        style={{ border: "1px solid var(--color-hairline)", borderRadius: "var(--radius-panel)", background: "var(--color-deep-black)", boxShadow: "0 24px 80px rgba(0,0,0,0.6)" }}
       >
-        <h2 className="text-[17px] font-semibold tracking-tight text-[#0F172A]">{title}</h2>
-        {description && <p className="mt-1 text-sm leading-6 text-[#64748B]">{description}</p>}
+        <h2 className="text-[17px] font-semibold tracking-tight" style={{ color: "var(--color-primary-text)" }}>{title}</h2>
+        {description && <p className="mt-1 text-sm leading-6" style={{ color: "var(--color-secondary-text)" }}>{description}</p>}
         <div className={cx("mt-4")}>{children}</div>
       </div>
     </div>

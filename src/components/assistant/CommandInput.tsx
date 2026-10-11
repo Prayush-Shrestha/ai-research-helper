@@ -28,7 +28,7 @@ export function CommandInput({ onAsk }: { onAsk?: (q: string) => void }) {
           e.preventDefault();
           submit(value);
         }}
-        className="flex items-center gap-3 px-2 py-2 sm:px-3"
+        className="ask-box flex items-center gap-3 px-2 py-2 sm:px-3"
         style={{
           border: "1px solid var(--color-hairline)",
           borderRadius: "var(--radius-panel)",

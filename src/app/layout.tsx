@@ -19,11 +19,11 @@ const plexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "AI Research & Knowledge Assistant",
-    template: "%s · Research Intelligence",
+    default: "Lemma — Research Workspace",
+    template: "%s · Lemma",
   },
   description:
-    "A quiet, cinematic research laboratory where documents become structured knowledge.",
+    "Lemma is a quiet research laboratory where papers become stepping stones to your thesis.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Wordmark } from "@/components/layout/Logo";
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
 import { KnowledgeVisual } from "@/components/editorial/KnowledgeVisual";
 
 const PILLS = ["01 LIBRARY", "02 DOCUMENTS", "03 KNOWLEDGE", "04 AI ASSISTANT"];
@@ -7,41 +8,13 @@ const PILLS = ["01 LIBRARY", "02 DOCUMENTS", "03 KNOWLEDGE", "04 AI ASSISTANT"];
 export default function LandingPage() {
   return (
     <div className="page-enter min-h-screen" style={{ background: "var(--color-void)" }}>
-      {/* 72px header */}
-      <header
-        className="flex items-center"
-        style={{ height: 72, borderBottom: "1px solid #292B2D", background: "#050505" }}
-      >
-        <div className="mx-auto flex w-full items-center justify-between px-5 sm:px-8" style={{ maxWidth: "var(--page-width)" }}>
-          <Wordmark />
-          <nav aria-label="Primary" className="hidden items-center gap-2 md:flex">
-            {["LIBRARY", "RESEARCH", "ASSISTANT", "INSIGHTS"].map((l) => (
-              <Link
-                key={l}
-                href="/dashboard"
-                className="font-tech rounded-full px-4 py-2"
-                style={{ fontSize: 10, border: "1px solid #292B2D", background: "#202124", color: "#92989A" }}
-              >
-                {l}
-              </Link>
-            ))}
-          </nav>
-          <div className="flex items-center gap-2">
-            <Link href="/login" className="font-tech rounded-full px-4 py-2" style={{ fontSize: 10, background: "#202124", border: "1px solid #292B2D", color: "#92989A", borderRadius: 100 }}>
-              SEARCH
-            </Link>
-            <Link href="/register" className="font-tech rounded-full px-4 py-2" style={{ fontSize: 10, background: "#E7E7E2", color: "#050505", borderRadius: 100 }}>
-              ENTER
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       <main className="mx-auto px-5 sm:px-8" style={{ maxWidth: "var(--page-width)" }}>
         {/* hero */}
         <section className="pt-16 text-center sm:pt-24" aria-labelledby="hero-title">
           <p className="font-tech" style={{ color: "var(--color-tertiary-text)" }}>
-            AI RESEARCH SYSTEM / 01
+            LEMMA SYSTEM / 01
           </p>
           <h1
             id="hero-title"
@@ -125,12 +98,7 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer style={{ borderTop: "1px solid #292B2D" }}>
-        <div className="mx-auto flex flex-col gap-2 px-5 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-8" style={{ maxWidth: "var(--page-width)" }}>
-          <p className="font-tech" style={{ color: "var(--color-tertiary-text)", fontSize: 10 }}>[AI] RESEARCH — KNOWLEDGE LABORATORY</p>
-          <p className="font-tech" style={{ color: "var(--color-tertiary-text)", fontSize: 10 }}>VOiD / 050505 — EDITION 01</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

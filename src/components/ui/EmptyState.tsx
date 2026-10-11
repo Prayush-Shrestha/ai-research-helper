@@ -9,7 +9,7 @@ interface EmptyStateProps {
 
 function LibraryIcon() {
   return (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden className="text-[#94A3B8]">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden style={{ color: "var(--color-tertiary-text)" }}>
       <path
         d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5V5.5Z"
         stroke="currentColor"
@@ -23,12 +23,18 @@ function LibraryIcon() {
 
 export function EmptyState({ title, description, actionLabel, onAction }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center rounded-xl border border-dashed border-[#CBD5E1] bg-white px-6 py-14 text-center">
-      <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#F1F5F9]">
+    <div
+      className="flex flex-col items-center px-6 py-14 text-center"
+      style={{ borderRadius: "var(--radius-panel)", border: "1px dashed var(--color-hairline)", background: "var(--color-deep-black)" }}
+    >
+      <span
+        className="flex h-14 w-14 items-center justify-center"
+        style={{ borderRadius: 14, background: "var(--color-graphite)", border: "1px solid var(--color-hairline)" }}
+      >
         <LibraryIcon />
       </span>
-      <h3 className="mt-4 text-[15px] font-semibold text-[#0F172A]">{title}</h3>
-      <p className="mt-1 max-w-sm text-sm leading-6 text-[#64748B]">{description}</p>
+      <h3 className="mt-4 text-[15px] font-semibold" style={{ color: "var(--color-primary-text)" }}>{title}</h3>
+      <p className="mt-1 max-w-sm text-sm leading-6" style={{ color: "var(--color-secondary-text)" }}>{description}</p>
       {actionLabel && onAction && (
         <Button className="mt-5" onClick={onAction}>
           {actionLabel}
@@ -52,10 +58,11 @@ export function ErrorState({
   return (
     <div
       role="alert"
-      className="flex flex-col items-center rounded-xl border border-[#FECACA] bg-[#FEF2F2] px-6 py-10 text-center"
+      className="flex flex-col items-center px-6 py-10 text-center"
+      style={{ borderRadius: "var(--radius-panel)", border: "1px solid #4A2E2E", background: "rgba(255,157,157,0.04)" }}
     >
-      <h3 className="text-[15px] font-semibold text-[#991B1B]">{title}</h3>
-      <p className="mt-1 max-w-md text-sm leading-6 text-[#B91C1C]">{message}</p>
+      <h3 className="text-[15px] font-semibold" style={{ color: "#ff9d9d" }}>{title}</h3>
+      <p className="mt-1 max-w-md text-sm leading-6" style={{ color: "var(--color-secondary-text)" }}>{message}</p>
       {onRetry && (
         <Button variant="secondary" size="sm" className="mt-4" onClick={onRetry}>
           Try again

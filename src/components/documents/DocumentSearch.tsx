@@ -30,7 +30,8 @@ export function DocumentSearch({ filters, onChange }: DocumentSearchProps) {
           viewBox="0 0 24 24"
           fill="none"
           aria-hidden
-          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]"
+          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2"
+          style={{ color: "var(--color-tertiary-text)" }}
         >
           <path
             d="M11 5a6 6 0 1 0 0 12 6 6 0 0 0 0-12Zm6.5 11.5L21 20"
@@ -44,12 +45,13 @@ export function DocumentSearch({ filters, onChange }: DocumentSearchProps) {
           value={filters.search ?? ""}
           onChange={(e) => onChange({ ...filters, search: e.target.value })}
           placeholder="Search documents..."
-          className="h-10 w-full rounded-lg border border-[#E2E8F0] bg-white pl-9 pr-3 text-sm placeholder:text-[#94A3B8] hover:border-[#CBD5E1] focus:border-[#4F46E5]"
+          className="h-10 w-full rounded-full pl-9 pr-3 text-sm outline-none transition-all placeholder:text-[#62686A]"
+          style={{ border: "1px solid var(--color-hairline)", background: "var(--color-graphite)", color: "var(--color-primary-text)" }}
         />
       </label>
 
       <div className="flex items-center gap-2">
-        <div role="group" aria-label="Filter by type" className="flex rounded-lg border border-[#E2E8F0] bg-white p-1">
+        <div role="group" aria-label="Filter by type" className="flex rounded-full p-1" style={{ border: "1px solid var(--color-hairline)", background: "var(--color-deep-black)" }}>
           {(["ALL", "PDF", "DOCX"] as TypeFilter[]).map((t) => (
             <button
               key={t}
@@ -57,20 +59,24 @@ export function DocumentSearch({ filters, onChange }: DocumentSearchProps) {
               aria-pressed={type === t}
               onClick={() => onChange({ ...filters, type: t })}
               className={cx(
-                "rounded-md px-3 py-1.5 text-[13px] font-medium transition-colors",
-                type === t ? "bg-[#EEF2FF] text-[#4338CA]" : "text-[#64748B] hover:text-[#0F172A]"
+                "rounded-full px-3 py-1.5 text-[13px] font-medium transition-all",
+                type === t ? "text-[#050505]" : ""
               )}
+              style={type === t
+                ? { background: "var(--color-primary-text)" }
+                : { color: "var(--color-secondary-text)" }}
             >
               {t === "ALL" ? "All" : t}
             </button>
           ))}
         </div>
-        <label className="flex items-center gap-1.5 text-[13px] text-[#64748B]">
+        <label className="flex items-center gap-1.5 text-[13px]" style={{ color: "var(--color-secondary-text)" }}>
           <span className="sr-only">Sort documents</span>
           <select
             value={sort}
             onChange={(e) => onChange({ ...filters, sort: e.target.value as SortKey })}
-            className="h-10 rounded-lg border border-[#E2E8F0] bg-white px-2.5 text-[13px] font-medium text-[#334155]"
+            className="h-10 rounded-full px-2.5 text-[13px] font-medium outline-none"
+            style={{ border: "1px solid var(--color-hairline)", background: "var(--color-deep-black)", color: "var(--color-primary-text)" }}
           >
             <option value="newest">Newest</option>
             <option value="oldest">Oldest</option>

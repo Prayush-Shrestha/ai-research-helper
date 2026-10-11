@@ -19,10 +19,13 @@ export function DocumentTable({ documents, onRename, onDelete }: DocumentTablePr
   return (
     <>
       {/* Desktop */}
-      <div className="hidden overflow-x-auto rounded-xl border border-[#E2E8F0] bg-white md:block">
+      <div
+        className="hidden overflow-x-auto md:block"
+        style={{ borderRadius: "var(--radius-panel)", border: "1px solid var(--color-hairline)", background: "var(--color-deep-black)" }}
+      >
         <table className="w-full min-w-[720px] text-left text-sm">
           <thead>
-            <tr className="border-b border-[#F1F5F9] text-[12px] uppercase tracking-wide text-[#64748B]">
+            <tr className="font-tech" style={{ borderBottom: "1px solid var(--color-hairline)", color: "var(--color-tertiary-text)", fontSize: 9 }}>
               <th scope="col" className="px-5 py-3 font-medium">Name</th>
               <th scope="col" className="px-5 py-3 font-medium">Type</th>
               <th scope="col" className="px-5 py-3 font-medium">Size</th>
@@ -33,16 +36,16 @@ export function DocumentTable({ documents, onRename, onDelete }: DocumentTablePr
           </thead>
           <tbody>
             {documents.map((d) => (
-              <tr key={d.id} className="border-b border-[#F8FAFC] last:border-0 hover:bg-[#F8FAFC]/70">
+              <tr key={d.id} className="doc-row" style={{ borderBottom: "1px solid var(--color-hairline)" }}>
                 <td className="max-w-[280px] px-5 py-3.5">
-                  <Link href={`/documents/${d.id}`} className="block truncate font-medium hover:text-[#4F46E5]">
+                  <Link href={`/documents/${d.id}`} className="block truncate font-medium" style={{ color: "var(--color-primary-text)" }}>
                     {d.title}
                   </Link>
-                  <span className="block truncate text-xs text-[#64748B]">{d.original_filename}</span>
+                  <span className="block truncate text-xs" style={{ color: "var(--color-tertiary-text)" }}>{d.original_filename}</span>
                 </td>
-                <td className="px-5 py-3.5 text-[#475569]">{d.file_type}</td>
-                <td className="px-5 py-3.5 text-[#475569]">{formatBytes(d.file_size)}</td>
-                <td className="px-5 py-3.5 text-[#475569]">{formatDate(d.created_at)}</td>
+                <td className="px-5 py-3.5" style={{ color: "var(--color-secondary-text)" }}>{d.file_type}</td>
+                <td className="px-5 py-3.5" style={{ color: "var(--color-secondary-text)" }}>{formatBytes(d.file_size)}</td>
+                <td className="px-5 py-3.5" style={{ color: "var(--color-secondary-text)" }}>{formatDate(d.created_at)}</td>
                 <td className="px-5 py-3.5">
                   <StatusBadge status={d.status} />
                 </td>
@@ -50,7 +53,8 @@ export function DocumentTable({ documents, onRename, onDelete }: DocumentTablePr
                   <div className="relative flex justify-end gap-2">
                     <Link
                       href={`/documents/${d.id}`}
-                      className="rounded-lg border border-[#E2E8F0] px-3 py-1.5 text-[13px] font-medium text-[#334155] hover:bg-[#F8FAFC]"
+                      className="font-tech rounded-full px-3 py-1.5"
+                      style={{ border: "1px solid var(--color-hairline)", background: "var(--color-control)", color: "var(--color-secondary-text)", fontSize: 10 }}
                     >
                       Open
                     </Link>
@@ -60,7 +64,8 @@ export function DocumentTable({ documents, onRename, onDelete }: DocumentTablePr
                       aria-expanded={openMenu === d.id}
                       aria-label={`More actions for ${d.title}`}
                       onClick={() => setOpenMenu(openMenu === d.id ? null : d.id)}
-                      className="rounded-lg border border-[#E2E8F0] px-2.5 py-1.5 text-[#475569] hover:bg-[#F8FAFC]"
+                      className="rounded-full px-2.5 py-1.5"
+                      style={{ border: "1px solid var(--color-hairline)", color: "var(--color-secondary-text)" }}
                     >
                       •••
                     </button>
@@ -71,7 +76,11 @@ export function DocumentTable({ documents, onRename, onDelete }: DocumentTablePr
                           onClick={() => setOpenMenu(null)}
                           aria-hidden
                         />
-                        <div role="menu" className="absolute right-0 top-full z-20 mt-1 w-36 rounded-lg border border-[#E2E8F0] bg-white py-1 shadow-lg">
+                        <div
+                          role="menu"
+                          className="absolute right-0 top-full z-20 mt-1 w-36 py-1 animate-slide-up"
+                          style={{ borderRadius: 12, border: "1px solid var(--color-hairline)", background: "#111214", boxShadow: "0 16px 48px rgba(0,0,0,0.5)" }}
+                        >
                           <button
                             type="button"
                             role="menuitem"
@@ -79,7 +88,8 @@ export function DocumentTable({ documents, onRename, onDelete }: DocumentTablePr
                               setOpenMenu(null);
                               onRename(d);
                             }}
-                            className="block w-full px-3 py-2 text-left text-[13px] hover:bg-[#F8FAFC]"
+                            className="block w-full px-3 py-2 text-left text-[13px]"
+                            style={{ color: "var(--color-primary-text)" }}
                           >
                             Rename
                           </button>
@@ -90,7 +100,8 @@ export function DocumentTable({ documents, onRename, onDelete }: DocumentTablePr
                               setOpenMenu(null);
                               onDelete(d);
                             }}
-                            className="block w-full px-3 py-2 text-left text-[13px] text-[#DC2626] hover:bg-[#FEF2F2]"
+                            className="block w-full px-3 py-2 text-left text-[13px]"
+                            style={{ color: "#ff9d9d" }}
                           >
                             Delete
                           </button>

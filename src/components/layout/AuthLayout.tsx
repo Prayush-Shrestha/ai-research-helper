@@ -13,7 +13,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
       <div className="hidden flex-col justify-between bg-[#0F172A] p-10 text-white lg:flex">
         <Link href="/" className="flex items-center gap-2.5" aria-label="Home">
           <LogoMark />
-          <span className="text-[15px] font-semibold">AI Research & Knowledge Assistant</span>
+          <span className="text-[15px] font-semibold">Lemma — Research Workspace</span>
         </Link>
         <div>
           <h2 className="max-w-md text-[30px] font-semibold leading-[1.2] tracking-tight">

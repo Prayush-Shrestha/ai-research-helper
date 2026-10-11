@@ -26,7 +26,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   if (!user) return null;
 
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC]">
+    <div className="flex min-h-screen" style={{ background: "var(--color-void)" }}>
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <MobileNav />

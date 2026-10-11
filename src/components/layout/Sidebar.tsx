@@ -34,12 +34,12 @@ export function Sidebar() {
   const { user, logout } = useAuth();
 
   return (
-    <aside className="hidden w-[248px] shrink-0 flex-col border-r border-[#E2E8F0] bg-white lg:flex">
-      <div className="flex h-16 items-center gap-2.5 border-b border-[#F1F5F9] px-5">
+    <aside className="hidden w-[248px] shrink-0 flex-col lg:flex" style={{ borderRight: "1px solid var(--color-hairline)", background: "#050505" }}>
+      <div className="flex h-16 items-center gap-2.5 px-5" style={{ borderBottom: "1px solid var(--color-hairline)" }}>
         <LogoMark />
         <div className="leading-tight">
-          <p className="text-[14px] font-semibold tracking-tight">AI Research Assistant</p>
-          <p className="text-[11px] text-[#64748B]">Knowledge workspace</p>
+          <p className="text-[14px] font-semibold tracking-tight" style={{ color: "var(--color-primary-text)" }}>Lemma</p>
+          <p className="text-[11px]" style={{ color: "var(--color-tertiary-text)" }}>Knowledge workspace</p>
         </div>
       </div>
 
@@ -52,13 +52,14 @@ export function Sidebar() {
                 ? pathname.startsWith("/documents")
                 : pathname === item.href;
           const cls = cx(
-            "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+            "flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all",
             active
-              ? "bg-[#EEF2FF] text-[#4338CA]"
+              ? "text-[#E7E7E2]"
               : item.soon
-                ? "cursor-not-allowed text-[#94A3B8]"
-                : "text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A]"
+                ? "cursor-not-allowed text-[#62686A]"
+                : "text-[#92989A] hover:bg-[#17191B] hover:text-[#E7E7E2]"
           );
+          const style = active ? { background: "var(--color-control)", border: "1px solid var(--color-hairline)" } : { border: "1px solid transparent" };
           if (item.soon) {
             return (
               <span key={item.href} className={cls} aria-disabled="true" title="Coming soon">
@@ -71,7 +72,7 @@ export function Sidebar() {
             );
           }
           return (
-            <Link key={item.href} href={item.href} aria-current={active ? "page" : undefined} className={cls}>
+            <Link key={item.href} href={item.href} aria-current={active ? "page" : undefined} className={cls} style={style}>
               {item.icon}
               {item.label}
             </Link>
@@ -79,8 +80,8 @@ export function Sidebar() {
         })}
 
         <div className="px-3 pt-5">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-[#94A3B8]">Coming soon</p>
-          <ul className="mt-2 space-y-1 text-[13px] text-[#94A3B8]">
+          <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--color-tertiary-text)" }}>Coming soon</p>
+          <ul className="mt-2 space-y-1 text-[13px]" style={{ color: "var(--color-tertiary-text)" }}>
             <li className="flex items-center justify-between rounded-lg px-1 py-1.5">
               AI Assistant <ComingSoonBadge />
             </li>
@@ -91,23 +92,25 @@ export function Sidebar() {
         </div>
       </nav>
 
-      <div className="border-t border-[#F1F5F9] p-3">
-        <div className="flex items-center gap-3 rounded-lg px-2 py-2">
+      <div className="p-3" style={{ borderTop: "1px solid var(--color-hairline)" }}>
+        <div className="flex items-center gap-3 rounded-xl px-2 py-2">
           <span
             aria-hidden
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#4F46E5] text-[13px] font-semibold text-white"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[13px] font-semibold"
+            style={{ background: "var(--color-research-accent)", color: "#050505" }}
           >
             {(user?.name ?? "U").charAt(0).toUpperCase()}
           </span>
           <div className="min-w-0 flex-1 leading-tight">
-            <p className="truncate text-[13px] font-medium text-[#0F172A]">{user?.name ?? "Researcher"}</p>
-            <p className="truncate text-xs text-[#64748B]">{user?.email ?? ""}</p>
+            <p className="truncate text-[13px] font-medium" style={{ color: "var(--color-primary-text)" }}>{user?.name ?? "Researcher"}</p>
+            <p className="truncate text-xs" style={{ color: "var(--color-tertiary-text)" }}>{user?.email ?? ""}</p>
           </div>
           <button
             type="button"
             onClick={logout}
             title="Log out"
-            className="rounded-md p-1.5 text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#0F172A]"
+            className="rounded-lg p-1.5"
+            style={{ color: "var(--color-secondary-text)" }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
               <path

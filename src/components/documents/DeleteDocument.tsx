@@ -37,12 +37,12 @@ export function DeleteDocument({ document, onClose, onConfirm }: DeleteDocumentP
       description="This document and its extracted content will be permanently removed."
     >
       {document && (
-        <p className="rounded-lg bg-[#F8FAFC] px-3 py-2.5 text-sm font-medium text-[#334155]">
+        <p className="rounded-xl px-3 py-2.5 text-sm font-medium" style={{ background: "var(--color-graphite)", border: "1px solid var(--color-hairline)", color: "var(--color-primary-text)" }}>
           {document.title}
         </p>
       )}
       {error && (
-        <p role="alert" className="mt-3 text-[13px] text-[#DC2626]">
+        <p role="alert" className="mt-3 text-[13px]" style={{ color: "#ff9d9d" }}>
           {error}
         </p>
       )}

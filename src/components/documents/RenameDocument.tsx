@@ -66,7 +66,7 @@ export function RenameDocument({ document, onClose, onSave }: RenameDocumentProp
           Save changes
         </Button>
       </div>
-      <p className="mt-3 text-xs text-[#64748B]">Sends PATCH /documents/{document?.id ?? "{id}"}.</p>
+      <p className="mt-3 text-xs" style={{ color: "var(--color-tertiary-text)" }}>Sends PATCH /documents/{document?.id ?? "{id}"}.</p>
     </Modal>
   );
 }

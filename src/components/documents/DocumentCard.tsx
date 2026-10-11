@@ -14,14 +14,17 @@ interface DocumentCardProps {
 /** Mobile-first card used by DocumentTable on small screens. */
 export function DocumentCard({ document: d, onRename, onDelete }: DocumentCardProps) {
   return (
-    <li className="rounded-xl border border-[#E2E8F0] bg-white p-4">
+    <li
+      className="lift p-4"
+      style={{ borderRadius: "var(--radius-panel)", border: "1px solid var(--color-hairline)", background: "var(--color-deep-black)" }}
+    >
       <div className="flex items-start gap-3">
         <FileTypeBadge type={d.file_type} />
         <div className="min-w-0 flex-1">
-          <Link href={`/documents/${d.id}`} className="block truncate text-sm font-medium hover:text-[#4F46E5]">
+          <Link href={`/documents/${d.id}`} className="block truncate text-sm font-medium" style={{ color: "var(--color-primary-text)" }}>
             {d.title}
           </Link>
-          <p className="mt-0.5 text-xs text-[#64748B]">
+          <p className="mt-0.5 text-xs" style={{ color: "var(--color-tertiary-text)" }}>
             {formatBytes(d.file_size)} · {formatDate(d.created_at)}
           </p>
           <div className="mt-2">
@@ -29,24 +32,27 @@ export function DocumentCard({ document: d, onRename, onDelete }: DocumentCardPr
           </div>
         </div>
       </div>
-      <div className="mt-3 flex gap-2 border-t border-[#F1F5F9] pt-3">
+      <div className="mt-3 flex gap-2 pt-3" style={{ borderTop: "1px solid var(--color-hairline)" }}>
         <Link
           href={`/documents/${d.id}`}
-          className="flex-1 rounded-lg border border-[#E2E8F0] px-3 py-2 text-center text-[13px] font-medium hover:bg-[#F8FAFC]"
+          className="flex-1 rounded-full px-3 py-2 text-center text-[13px] font-medium"
+          style={{ border: "1px solid var(--color-hairline)", background: "var(--color-control)", color: "var(--color-primary-text)" }}
         >
           Open
         </Link>
         <button
           type="button"
           onClick={() => onRename(d)}
-          className="flex-1 rounded-lg border border-[#E2E8F0] px-3 py-2 text-[13px] font-medium text-[#475569] hover:bg-[#F8FAFC]"
+          className="flex-1 rounded-full px-3 py-2 text-[13px] font-medium"
+          style={{ border: "1px solid var(--color-hairline)", background: "transparent", color: "var(--color-secondary-text)" }}
         >
           Rename
         </button>
         <button
           type="button"
           onClick={() => onDelete(d)}
-          className="flex-1 rounded-lg border border-[#FECACA] bg-[#FEF2F2] px-3 py-2 text-[13px] font-medium text-[#DC2626] hover:bg-[#FEE2E2]"
+          className="flex-1 rounded-full px-3 py-2 text-[13px] font-medium"
+          style={{ border: "1px solid #4A2E2E", background: "transparent", color: "#ff9d9d" }}
         >
           Delete
         </button>
