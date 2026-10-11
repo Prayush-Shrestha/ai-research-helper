@@ -10,15 +10,18 @@ import { cx } from "@/lib/utils";
 const APP_LINKS = [
   { href: "/dashboard", label: "Library" },
   { href: "/documents", label: "Research" },
+  { href: "/publish", label: "Publish" },
+  { href: "/toolkit", label: "Toolkit" },
+  { href: "/roadmap", label: "Roadmap" },
   { href: "/assistant", label: "Assistant" },
-  { href: "/insights", label: "Insights" },
   { href: "/guide", label: "Guide" },
 ];
 
 const PUBLIC_LINKS = [
   { href: "/dashboard", label: "Library" },
-  { href: "/documents", label: "Research" },
-  { href: "/assistant", label: "Assistant" },
+  { href: "/publish", label: "Publish" },
+  { href: "/toolkit", label: "Toolkit" },
+  { href: "/roadmap", label: "Roadmap" },
   { href: "/guide", label: "Guide" },
 ];
 
@@ -110,7 +113,7 @@ export function Navbar() {
                 className={cx("font-tech rounded-full")}
                 style={{
                   fontSize: 10,
-                  padding: "9px 20px",
+                  padding: "9px 15px",
                   background: active ? "var(--color-control)" : "transparent",
                   border: active ? "1px solid var(--color-hairline)" : "1px solid transparent",
                   color: active ? "var(--color-primary-text)" : "var(--color-secondary-text)",

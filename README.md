@@ -45,6 +45,9 @@ Pages:
 - `/documents` — the library (search, filter, upload)
 - `/documents/[id]` — reader + rename/delete
 - `/assistant`, `/knowledge`, `/insights` — previews, not functional yet
+- `/publish` — venues + deadlines for student authors (frontend-only data)
+- `/toolkit` — citation builder + paper structure checklist (fully working, no backend)
+- `/roadmap` — idea-to-admit tracker with abroad timeline (progress saved in browser)
 - `/guide` — the in-app manual, worth a look if you're new
 - `/settings` — profile bits, sign out, reset demo data
 
