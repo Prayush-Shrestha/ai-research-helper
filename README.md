@@ -1,4 +1,4 @@
-# Lemma
+# ResearchOS
 
 A Next.js frontend for keeping research papers in one place. Upload stuff, read it properly, find it again later. That's the whole idea for now.
 

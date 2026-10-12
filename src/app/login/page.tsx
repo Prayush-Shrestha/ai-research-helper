@@ -1,34 +1,40 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Wordmark } from "@/components/layout/Logo";
 import { useAuth } from "@/hooks/useAuth";
+import { loginSchema, type LoginInput } from "@/lib/schemas";
+
+const field = {
+  borderBottom: "1px solid #292B2D",
+  color: "var(--color-primary-text)",
+  borderRadius: 0,
+} as const;
 
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: "", password: "" },
+  });
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!email.trim() || !password) {
-      setError("Email and password are required.");
-      return;
-    }
-    setSubmitting(true);
-    setError(null);
+  async function onSubmit(values: LoginInput) {
     try {
-      await login({ email: email.trim(), password });
+      await login(values);
       router.push("/dashboard");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Sign in failed.");
-    } finally {
-      setSubmitting(false);
+      setError("root", {
+        message: err instanceof Error ? err.message : "Sign in failed.",
+      });
     }
   }
 
@@ -46,34 +52,50 @@ export default function LoginPage() {
           <h1 className="font-display mt-3" style={{ fontSize: 56, lineHeight: 1 }}>Return to your research.</h1>
           <p className="mt-3 text-[15px]" style={{ color: "var(--color-secondary-text)" }}>Your laboratory is preserved exactly as you left it.</p>
 
-          <form onSubmit={onSubmit} className="mt-10 space-y-5" noValidate>
+          <form onSubmit={handleSubmit(onSubmit)} className="mt-10 space-y-5" noValidate>
             <div>
               <label htmlFor="email" className="micro-label block" style={{ color: "var(--color-tertiary-text)" }}>EMAIL</label>
               <input
-                id="email" type="email" autoComplete="email" required value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="email" type="email" autoComplete="email"
                 placeholder="you@university.edu"
+                aria-invalid={Boolean(errors.email)}
                 className="mt-2 w-full bg-transparent px-0 py-3 text-[16px] outline-none"
-                style={{ borderBottom: "1px solid #292B2D", color: "var(--color-primary-text)", borderRadius: 0 }}
+                style={field}
+                {...register("email")}
               />
+              {errors.email && (
+                <p role="alert" className="font-tech mt-2" style={{ color: "#ff9d9d", fontSize: 11 }}>
+                  {errors.email.message?.toUpperCase()}
+                </p>
+              )}
             </div>
             <div>
               <label htmlFor="password" className="micro-label block" style={{ color: "var(--color-tertiary-text)" }}>PASSWORD</label>
               <input
-                id="password" type="password" autoComplete="current-password" required value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                id="password" type="password" autoComplete="current-password"
                 placeholder="••••••••"
+                aria-invalid={Boolean(errors.password)}
                 className="mt-2 w-full bg-transparent px-0 py-3 text-[16px] outline-none"
-                style={{ borderBottom: "1px solid #292B2D", color: "var(--color-primary-text)", borderRadius: 0 }}
+                style={field}
+                {...register("password")}
               />
+              {errors.password && (
+                <p role="alert" className="font-tech mt-2" style={{ color: "#ff9d9d", fontSize: 11 }}>
+                  {errors.password.message?.toUpperCase()}
+                </p>
+              )}
             </div>
-            {error && <p role="alert" className="font-tech" style={{ color: "#ff9d9d", fontSize: 11 }}>{error.toUpperCase()}</p>}
+            {errors.root && (
+              <p role="alert" className="font-tech" style={{ color: "#ff9d9d", fontSize: 11 }}>
+                {errors.root.message?.toUpperCase()}
+              </p>
+            )}
             <button
-              type="submit" disabled={submitting}
+              type="submit" disabled={isSubmitting}
               className="font-tech w-full rounded-full py-4"
-              style={{ background: "var(--color-primary-text)", color: "#050505", fontSize: 12, opacity: submitting ? 0.6 : 1 }}
+              style={{ background: "var(--color-primary-text)", color: "#050505", fontSize: 12, opacity: isSubmitting ? 0.6 : 1 }}
             >
-              {submitting ? "VERIFYING…" : "ENTER WORKSPACE →"}
+              {isSubmitting ? "VERIFYING…" : "ENTER WORKSPACE →"}
             </button>
           </form>
 

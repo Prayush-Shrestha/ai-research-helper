@@ -1,6 +1,7 @@
 "use client";
 
 import type { DocumentFilters } from "@/types/document";
+import { Search } from "lucide-react";
 import { cx } from "@/lib/utils";
 
 type TypeFilter = "ALL" | "PDF" | "DOCX";
@@ -24,22 +25,12 @@ export function DocumentSearch({ filters, onChange }: DocumentSearchProps) {
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
       <label className="relative flex-1">
         <span className="sr-only">Search documents</span>
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
+        <Search
+          size={16}
           aria-hidden
           className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2"
           style={{ color: "var(--color-tertiary-text)" }}
-        >
-          <path
-            d="M11 5a6 6 0 1 0 0 12 6 6 0 0 0 0-12Zm6.5 11.5L21 20"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-          />
-        </svg>
+        />
         <input
           type="search"
           value={filters.search ?? ""}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { Upload } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { formatBytes, validateResearchFile } from "@/lib/utils";
@@ -77,9 +78,7 @@ export function UploadDocument({ open, onClose, onUpload }: UploadDocumentProps)
           background: dragging ? "rgba(183,255,223,0.05)" : "var(--color-graphite)",
         }}
       >
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden style={{ color: "var(--color-secondary-text)" }}>
-          <path d="M12 16V4m0 0 4 4m-4-4L8 8M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
+        <Upload size={26} aria-hidden style={{ color: "var(--color-secondary-text)" }} />
         <p className="mt-2 text-sm font-medium" style={{ color: "var(--color-primary-text)" }}>Drag and drop your file here</p>
         <p className="mt-0.5 text-[13px]" style={{ color: "var(--color-secondary-text)" }}>
           or <span className="font-medium" style={{ color: "var(--color-research-accent)" }}>browse files</span>

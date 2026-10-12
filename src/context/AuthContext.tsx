@@ -35,6 +35,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [router]);
 
   const refresh = useCallback(async () => {
+    // Yield first: this is called from a mount effect, and state updates
+    // must only happen in async continuations, never synchronously.
+    await Promise.resolve();
     const token = getToken();
     if (!token) {
       setUser(null);
@@ -62,6 +65,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    // Bootstrap fetch on mount (session restore). Intentional: the session
+    // must load once when the provider mounts; updates land in async
+    // continuations, guarded by the yields inside refresh().
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void refresh();
   }, [refresh]);
 

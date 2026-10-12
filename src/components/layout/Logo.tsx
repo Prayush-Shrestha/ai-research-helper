@@ -1,11 +1,11 @@
 /**
- * Brand mark for [LM] LEMMA.
+ * Brand mark for ResearchOS.
  *
- * Concept — "the lemma path":
- *   - The letter L drawn as a single confident stem.
- *   - Its foot extends as a mint-green connection line ending in a
- *     node hub — lemmas are stepping stones, each one leading
- *     somewhere: papers → lemmas → theorem.
+ * Concept — "the connected R":
+ *   - The letter R drawn as stem, bowl and leg.
+ *   - A mint node hub sits on the bowl's edge — every piece of
+ *     research connects to something larger, the operating idea
+ *     of the whole platform.
  *   - A faint orbit arc (observatory / research instrument) sweeps the
  *     top-right, ending in a small satellite dot.
  *
@@ -32,22 +32,30 @@ export function LogoMark({ size = 28, className }: { size?: number; className?: 
         fill="none"
         aria-hidden
       >
-        {/* L — stem */}
+        {/* R — stem */}
         <path
-          d="M13 8.5V23.5"
+          d="M12 8.5V23.5"
           stroke="#E7E7E2"
           strokeWidth="2.4"
           strokeLinecap="round"
         />
-        {/* foot — connection line toward the hub */}
+        {/* R — bowl */}
         <path
-          d="M13 23.5H21.5"
-          stroke="#B7FFDF"
-          strokeWidth="2.2"
+          d="M12 9.5h4.5a3.75 3.75 0 0 1 0 7.5H12"
+          stroke="#E7E7E2"
+          strokeWidth="2.4"
           strokeLinecap="round"
         />
-        {/* hub node — where the lemma leads */}
-        <circle cx="21.5" cy="23.5" r="2.6" fill="#B7FFDF" />
+        {/* R — leg */}
+        <path
+          d="M14.5 17 20.5 23.5"
+          stroke="#E7E7E2"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        {/* hub node on the bowl's edge */}
+        <circle cx="20.25" cy="13.25" r="2.2" fill="#B7FFDF" />
         {/* orbit arc + satellite */}
         <path
           d="M24.5 9.5A10.5 10.5 0 0 1 26 17"
@@ -69,8 +77,8 @@ export function Wordmark() {
         className="font-tech"
         style={{ fontSize: 12, letterSpacing: "1.6px" }}
       >
-        <span style={{ color: "var(--color-research-accent)" }}>[LM]</span>
-        <span style={{ color: "var(--color-primary-text)" }}> LEMMA</span>
+        <span style={{ color: "var(--color-primary-text)" }}>Research</span>
+        <span style={{ color: "var(--color-research-accent)" }}>OS</span>
       </span>
     </span>
   );

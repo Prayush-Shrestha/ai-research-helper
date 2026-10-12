@@ -42,7 +42,7 @@ export function Modal({ open, onClose, title, description, children }: ModalProp
         aria-modal="true"
         aria-label={title}
         className="w-full max-w-md p-6 animate-slide-up"
-        style={{ border: "1px solid var(--color-hairline)", borderRadius: "var(--radius-panel)", background: "var(--color-deep-black)", boxShadow: "0 24px 80px rgba(0,0,0,0.6)" }}
+        style={{ border: "1px solid var(--color-hairline)", borderRadius: "var(--radius-panel)", background: "var(--color-deep-black)" }}
       >
         <h2 className="text-[17px] font-semibold tracking-tight" style={{ color: "var(--color-primary-text)" }}>{title}</h2>
         {description && <p className="mt-1 text-sm leading-6" style={{ color: "var(--color-secondary-text)" }}>{description}</p>}

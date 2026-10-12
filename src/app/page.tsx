@@ -14,7 +14,7 @@ export default function LandingPage() {
         {/* hero */}
         <section className="pt-16 text-center sm:pt-24" aria-labelledby="hero-title">
           <p className="font-tech" style={{ color: "var(--color-tertiary-text)" }}>
-            LEMMA SYSTEM / 01
+            RESEARCHOS SYSTEM / 01
           </p>
           <h1
             id="hero-title"

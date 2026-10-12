@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { FileText, LayoutDashboard, LogOut, Search, Settings } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { cx } from "@/lib/utils";
 import { ComingSoonBadge } from "@/components/ui/Badge";
@@ -14,19 +15,11 @@ interface NavItem {
   icon: React.ReactNode;
 }
 
-function icon(path: string) {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden className="shrink-0">
-      <path d={path} stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
 const NAV: NavItem[] = [
-  { href: "/dashboard", label: "Dashboard", icon: icon("M4 5h16M4 12h16M4 19h10") },
-  { href: "/documents", label: "Documents", icon: icon("M7 3h8l4 4v14H7V3ZM15 3v4h4") },
-  { href: "/search", label: "Search", soon: true, icon: icon("M11 5a6 6 0 1 0 0 12 6 6 0 0 0 0-12Zm6.5 11.5L21 20") },
-  { href: "/settings", label: "Settings", icon: icon("M4 8h16M4 16h16M8 4v4M16 12v4") },
+  { href: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={18} aria-hidden className="shrink-0" /> },
+  { href: "/documents", label: "Documents", icon: <FileText size={18} aria-hidden className="shrink-0" /> },
+  { href: "/search", label: "Search", soon: true, icon: <Search size={18} aria-hidden className="shrink-0" /> },
+  { href: "/settings", label: "Settings", icon: <Settings size={18} aria-hidden className="shrink-0" /> },
 ];
 
 export function Sidebar() {
@@ -38,7 +31,7 @@ export function Sidebar() {
       <div className="flex h-16 items-center gap-2.5 px-5" style={{ borderBottom: "1px solid var(--color-hairline)" }}>
         <LogoMark />
         <div className="leading-tight">
-          <p className="text-[14px] font-semibold tracking-tight" style={{ color: "var(--color-primary-text)" }}>Lemma</p>
+          <p className="text-[14px] font-semibold tracking-tight" style={{ color: "var(--color-primary-text)" }}>ResearchOS</p>
           <p className="text-[11px]" style={{ color: "var(--color-tertiary-text)" }}>Knowledge workspace</p>
         </div>
       </div>
@@ -112,15 +105,7 @@ export function Sidebar() {
             className="rounded-lg p-1.5"
             style={{ color: "var(--color-secondary-text)" }}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-              <path
-                d="M15 5h4v14h-4M10 8l-4 4 4 4M6 12h9"
-                stroke="currentColor"
-                strokeWidth="1.7"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <LogOut size={16} aria-hidden />
             <span className="sr-only">Log out</span>
           </button>
         </div>

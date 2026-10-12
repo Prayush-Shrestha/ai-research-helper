@@ -28,6 +28,9 @@ export function useDocuments(initialFilters?: DocumentFilters) {
   );
 
   const fetchDocuments = useCallback(async () => {
+    // Yield first: this is called from a mount effect, and state updates
+    // must only happen in async continuations, never synchronously.
+    await Promise.resolve();
     setLoading(true);
     setError(null);
     try {
@@ -46,6 +49,10 @@ export function useDocuments(initialFilters?: DocumentFilters) {
   }, []);
 
   useEffect(() => {
+    // Bootstrap fetch on mount (initial library load). Intentional: the
+    // library must load once when the hook mounts; updates land in async
+    // continuations, guarded by the yield inside fetchDocuments().
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void fetchDocuments();
   }, [fetchDocuments]);
 

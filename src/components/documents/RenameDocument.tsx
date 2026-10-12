@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Modal } from "@/components/ui/Modal";
@@ -13,14 +13,18 @@ interface RenameDocumentProps {
 }
 
 export function RenameDocument({ document, onClose, onSave }: RenameDocumentProps) {
-  const [name, setName] = useState("");
+  const [name, setName] = useState(document?.title ?? "");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [prevDocument, setPrevDocument] = useState(document);
 
-  useEffect(() => {
+  // Reset the form when a different document is selected. Done during
+  // render (React's recommended alternative to syncing props in effects).
+  if (prevDocument !== document) {
+    setPrevDocument(document);
     setName(document?.title ?? "");
     setError(null);
-  }, [document]);
+  }
 
   async function handleSave() {
     if (!document) return;

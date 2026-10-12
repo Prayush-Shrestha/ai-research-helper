@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { LogOut, Menu, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { cx } from "@/lib/utils";
 import { LogoMark } from "./Logo";
@@ -33,15 +34,7 @@ export function MobileNav() {
           className="rounded-xl p-2"
           style={{ border: "1px solid var(--color-hairline)", color: "var(--color-secondary-text)", background: "var(--color-control)" }}
         >
-          {open ? (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-              <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-            </svg>
-          ) : (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-              <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-            </svg>
-          )}
+          {open ? <X size={18} aria-hidden /> : <Menu size={18} aria-hidden />}
         </button>
       </header>
 
@@ -79,7 +72,10 @@ export function MobileNav() {
                 className="rounded-full px-3 py-1.5 text-[13px] font-medium"
                 style={{ border: "1px solid var(--color-hairline)", color: "var(--color-secondary-text)", background: "var(--color-control)" }}
               >
-                Log out
+                <span className="flex items-center gap-1.5">
+                  <LogOut size={14} aria-hidden />
+                  Log out
+                </span>
               </button>
             </div>
           </nav>

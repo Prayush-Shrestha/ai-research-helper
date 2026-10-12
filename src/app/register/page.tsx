@@ -1,43 +1,51 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Wordmark } from "@/components/layout/Logo";
 import { useAuth } from "@/hooks/useAuth";
+import { registerSchema, type RegisterInput } from "@/lib/schemas";
+
+const field = {
+  borderBottom: "1px solid #292B2D",
+  color: "var(--color-primary-text)",
+  borderRadius: 0,
+} as const;
+
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return (
+    <p role="alert" className="font-tech mt-2" style={{ color: "#ff9d9d", fontSize: 11 }}>
+      {message.toUpperCase()}
+    </p>
+  );
+}
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { register } = useAuth();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
+  const { register: signUp } = useAuth();
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<RegisterInput>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: { name: "", email: "", password: "" },
+  });
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!name.trim() || !email.trim() || password.length < 6) {
-      setError("Name, valid email, and 6+ character password required.");
-      return;
-    }
-    setSubmitting(true);
-    setError(null);
+  async function onSubmit(values: RegisterInput) {
     try {
-      await register({ name: name.trim(), email: email.trim(), password });
+      await signUp(values);
       router.push("/dashboard");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Registration failed.");
-    } finally {
-      setSubmitting(false);
+      setError("root", {
+        message: err instanceof Error ? err.message : "Registration failed.",
+      });
     }
   }
-
-  const field = {
-    borderBottom: "1px solid #292B2D",
-    color: "var(--color-primary-text)",
-    borderRadius: 0,
-  } as const;
 
   return (
     <div className="page-enter min-h-screen" style={{ background: "var(--color-void)" }}>
@@ -52,26 +60,48 @@ export default function RegisterPage() {
           <p className="font-tech" style={{ color: "var(--color-tertiary-text)" }}>AUTH / 02</p>
           <h1 className="font-display mt-3" style={{ fontSize: 56, lineHeight: 1 }}>Open your laboratory.</h1>
           <p className="mt-3 text-[15px]" style={{ color: "var(--color-secondary-text)" }}>One archive. Every paper. Ready for intelligence.</p>
-          <form onSubmit={onSubmit} className="mt-10 space-y-5" noValidate>
+          <form onSubmit={handleSubmit(onSubmit)} className="mt-10 space-y-5" noValidate>
             <div>
               <label htmlFor="name" className="micro-label block" style={{ color: "var(--color-tertiary-text)" }}>FULL NAME</label>
-              <input id="name" autoComplete="name" required value={name} onChange={(e) => setName(e.target.value)} placeholder="Ada Lovelace"
-                className="mt-2 w-full bg-transparent px-0 py-3 text-[16px] outline-none" style={field} />
+              <input
+                id="name" autoComplete="name"
+                placeholder="Ada Lovelace"
+                aria-invalid={Boolean(errors.name)}
+                className="mt-2 w-full bg-transparent px-0 py-3 text-[16px] outline-none" style={field}
+                {...register("name")}
+              />
+              <FieldError message={errors.name?.message} />
             </div>
             <div>
               <label htmlFor="email" className="micro-label block" style={{ color: "var(--color-tertiary-text)" }}>EMAIL</label>
-              <input id="email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@university.edu"
-                className="mt-2 w-full bg-transparent px-0 py-3 text-[16px] outline-none" style={field} />
+              <input
+                id="email" type="email" autoComplete="email"
+                placeholder="you@university.edu"
+                aria-invalid={Boolean(errors.email)}
+                className="mt-2 w-full bg-transparent px-0 py-3 text-[16px] outline-none" style={field}
+                {...register("email")}
+              />
+              <FieldError message={errors.email?.message} />
             </div>
             <div>
               <label htmlFor="password" className="micro-label block" style={{ color: "var(--color-tertiary-text)" }}>PASSWORD</label>
-              <input id="password" type="password" autoComplete="new-password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Minimum 6 characters"
-                className="mt-2 w-full bg-transparent px-0 py-3 text-[16px] outline-none" style={field} />
+              <input
+                id="password" type="password" autoComplete="new-password"
+                placeholder="Minimum 6 characters"
+                aria-invalid={Boolean(errors.password)}
+                className="mt-2 w-full bg-transparent px-0 py-3 text-[16px] outline-none" style={field}
+                {...register("password")}
+              />
+              <FieldError message={errors.password?.message} />
             </div>
-            {error && <p role="alert" className="font-tech" style={{ color: "#ff9d9d", fontSize: 11 }}>{error.toUpperCase()}</p>}
-            <button type="submit" disabled={submitting} className="font-tech w-full rounded-full py-4"
-              style={{ background: "var(--color-primary-text)", color: "#050505", fontSize: 12, opacity: submitting ? 0.6 : 1 }}>
-              {submitting ? "PROVISIONING…" : "CREATE WORKSPACE →"}
+            {errors.root && (
+              <p role="alert" className="font-tech" style={{ color: "#ff9d9d", fontSize: 11 }}>
+                {errors.root.message?.toUpperCase()}
+              </p>
+            )}
+            <button type="submit" disabled={isSubmitting} className="font-tech w-full rounded-full py-4"
+              style={{ background: "var(--color-primary-text)", color: "#050505", fontSize: 12, opacity: isSubmitting ? 0.6 : 1 }}>
+              {isSubmitting ? "PROVISIONING…" : "CREATE WORKSPACE →"}
             </button>
           </form>
           <div className="mt-8 flex items-center justify-between" style={{ borderTop: "1px solid #292B2D", paddingTop: 20 }}>

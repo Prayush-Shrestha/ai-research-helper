@@ -47,10 +47,6 @@ export function Navbar() {
   const links = user ? APP_LINKS : PUBLIC_LINKS;
 
   useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
-
-  useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
@@ -72,7 +68,6 @@ export function Navbar() {
           background: "rgba(8,8,8,0.82)",
           backdropFilter: "blur(14px)",
           WebkitBackdropFilter: "blur(14px)",
-          boxShadow: "0 14px 44px rgba(0,0,0,0.5)",
           padding: 8,
           paddingLeft: 18,
         }}
@@ -86,9 +81,10 @@ export function Navbar() {
           <LogoMark />
           <span
             className="font-tech hidden sm:block"
-            style={{ color: "var(--color-primary-text)", fontSize: 12, letterSpacing: "1.6px" }}
+            style={{ fontSize: 12, letterSpacing: "1.6px" }}
           >
-            [LM] LEMMA
+            <span style={{ color: "var(--color-primary-text)" }}>Research</span>
+            <span style={{ color: "var(--color-research-accent)" }}>OS</span>
           </span>
         </Link>
 
@@ -206,7 +202,6 @@ export function Navbar() {
             borderRadius: 22,
             background: "rgba(10,10,10,0.96)",
             backdropFilter: "blur(14px)",
-            boxShadow: "0 18px 50px rgba(0,0,0,0.55)",
           }}
         >
           {links.map((item) => {
@@ -215,6 +210,7 @@ export function Navbar() {
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={() => setOpen(false)}
                 aria-current={active ? "page" : undefined}
                 className="font-tech block rounded-full px-5 py-3"
                 style={{
@@ -237,7 +233,10 @@ export function Navbar() {
                   {user.email?.toUpperCase()}
                 </p>
                 <button
-                  onClick={logout}
+                  onClick={() => {
+                    setOpen(false);
+                    logout();
+                  }}
                   className="font-tech shrink-0 rounded-full px-5 py-2.5"
                   style={{ fontSize: 10, background: "var(--color-primary-text)", color: "#050505" }}
                 >
@@ -248,6 +247,7 @@ export function Navbar() {
               <>
                 <Link
                   href="/login"
+                  onClick={() => setOpen(false)}
                   className="font-tech rounded-full px-5 py-2.5"
                   style={{ fontSize: 10, color: "var(--color-secondary-text)" }}
                 >
@@ -255,6 +255,7 @@ export function Navbar() {
                 </Link>
                 <Link
                   href="/register"
+                  onClick={() => setOpen(false)}
                   className="font-tech rounded-full px-5 py-2.5"
                   style={{ fontSize: 10, background: "var(--color-primary-text)", color: "#050505" }}
                 >

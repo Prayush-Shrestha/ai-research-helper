@@ -79,7 +79,7 @@ export function DocumentTable({ documents, onRename, onDelete }: DocumentTablePr
                         <div
                           role="menu"
                           className="absolute right-0 top-full z-20 mt-1 w-36 py-1 animate-slide-up"
-                          style={{ borderRadius: 12, border: "1px solid var(--color-hairline)", background: "#111214", boxShadow: "0 16px 48px rgba(0,0,0,0.5)" }}
+                          style={{ borderRadius: 12, border: "1px solid var(--color-hairline)", background: "#111214" }}
                         >
                           <button
                             type="button"

@@ -51,7 +51,7 @@ export function Footer() {
 
         <p className="font-tech" style={{ color: "var(--color-tertiary-text)", fontSize: 10 }}>
           {user ? (
-            <>LEMMA — {user.name?.toUpperCase() ?? "WORKSPACE"} / SESSION ACTIVE</>
+            <>RESEARCHOS — {user.name?.toUpperCase() ?? "WORKSPACE"} / SESSION ACTIVE</>
           ) : (
             <>VOID / 050505 — EDITION 01</>
           )}

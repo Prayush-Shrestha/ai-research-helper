@@ -37,7 +37,6 @@ export function UploadPanel({
 
   return (
     <section
-      aria-modal
       aria-label="Upload document"
       className="page-enter"
       style={{
