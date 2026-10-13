@@ -1,96 +1,201 @@
-# ResearchOS
+# Lumina — AI Research & Knowledge Assistant (Phase 1: Core Research Assistant)
 
-A Next.js frontend for keeping research papers in one place. Upload stuff, read it properly, find it again later. That's the whole idea for now.
+Lumina (built from the "ResearchOS" Phase 1 specification) is a personal research
+workspace for students: manage academic documents, extract their text, organize
+materials, keep research notes, and prepare everything for future AI-powered
+question answering (Phase 2: RAG).
 
-This is the month-1 build, so it's the boring-but-important parts: login, dashboard, document library, upload, reader, settings. The AI Q&A side isn't real yet — those pages are just placeholders showing where it'll go.
+> Brand note: the product UI is branded **Lumina**. API titles, docs, and this
+> README use the Lumina name; the underlying Phase 1 plan was authored as
+> "ResearchOS".
 
-There's also a guide inside the app at `/guide` if you'd rather read there than here.
+## Main features
 
-## How this thing actually works
+- Real authentication (register / login / logout / me) with Argon2 password
+  hashes and HttpOnly cookie sessions — no tokens in localStorage.
+- PDF (pypdf) and DOCX (python-docx) upload with validation (extension,
+  15 MB cap, magic-byte signatures), safe UUID storage, and real text
+  extraction with honest statuses (`completed`, `requires_ocr`, `failed`, …).
+- Document library: server-side search, file-type filter, sorting,
+  pagination, rename, download, delete, retry-extraction. Ownership enforced
+  on every endpoint.
+- Personal research notes in PostgreSQL (per-document and standalone),
+  with explicit save states.
+- Dashboard with live database counts and recent items.
+- Frontend: Next.js 16 App Router + TypeScript + Tailwind 4, typed API
+  client, loading/error/empty/success states everywhere. No mock fallbacks.
 
-Stack is pretty standard: Next.js 16 with the App Router, React 19, TypeScript, Tailwind 4. Dev server runs on port 3002.
+## Technology stack
 
-```
-npm run dev  ->  next dev -p 3002
-```
+| Layer    | Choice                                              |
+| -------- | --------------------------------------------------- |
+| Frontend | Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4 |
+| Backend  | Python 3.13, FastAPI, Pydantic v2, SQLAlchemy 2.x, Alembic, Uvicorn |
+| Database | PostgreSQL 16 (primary); throwaway SQLite file for tests only |
+| Auth     | Argon2id hashes, JWT in HttpOnly `SameSite=Lax` cookie, slowapi rate limits |
+| Files    | pypdf, python-docx, python-multipart, local disk storage service |
+| Tests    | pytest (33 tests) + `backend/e2e_check.py` live end-to-end script |
 
-Rough layout of the code:
-
-- `src/app/` — one folder per page. The `(app)` group shares the header + login check.
-- `src/context/AuthContext.tsx` — keeps track of who's logged in, login/register/logout functions.
-- `src/hooks/useDocuments.ts` — loads the doc list, handles search/filter/sort, upload, rename, delete.
-- `src/lib/api.ts` — the only file that talks to the backend. If endpoints change, this is the one place to fix.
-- `src/lib/auth.ts` — just stores the JWT in localStorage (`ara_token`). Planning to move to cookies later.
-- `src/lib/mock.ts` — fake backend for dev. Clearly separated so we can rip it out later.
-- `src/components/` — header, dashboard bits, document rows/cards, assistant UI, small shared pieces.
-
-Auth in plain words: you register or log in, the server hands back a token, we stash it in localStorage and stick it on every request as `Authorization: Bearer ...`. If the token's bad (401) you get bounced to `/login`. The `(app)/layout.tsx` file does that redirect check for all the protected pages.
-
-Documents in plain words: list comes from `GET /documents`. Search/filter/sort happens in the browser for now — easy to switch to server search later without changing the UI. Upload goes to `POST /documents/upload` as form data (uses XHR so we can show a progress bar). Clicking a doc hits `GET /documents/:id` and shows the extracted text. Rename is PATCH, delete is DELETE. Nothing fancy.
-
-About the mock mode: if there's no backend running (which is most of the time right now), and `NEXT_PUBLIC_USE_MOCK=true` in `.env.local`, the app just uses fake data stored in your browser. 8 sample papers, a demo user. Enough to click through everything. Set it to `"false"` if you want to force real API calls and see actual errors.
-
-`.env.local` looks like this:
-
-```
-NEXT_PUBLIC_API_URL=http://localhost:8000
-NEXT_PUBLIC_USE_MOCK=true
-```
-
-Pages:
-
-- `/` — landing page
-- `/login`, `/register` — auth
-- `/dashboard` — overview, recent docs
-- `/documents` — the library (search, filter, upload)
-- `/documents/[id]` — reader + rename/delete
-- `/assistant`, `/knowledge`, `/insights` — previews, not functional yet
-- `/publish` — venues + deadlines for student authors (frontend-only data)
-- `/toolkit` — citation builder + paper structure checklist (fully working, no backend)
-- `/roadmap` — idea-to-admit tracker with abroad timeline (progress saved in browser)
-- `/guide` — the in-app manual, worth a look if you're new
-- `/settings` — profile bits, sign out, reset demo data
-
-## If you're opening this for the first time
-
-You don't need anything except node + npm. No backend, no database.
-
-1. Get it running.
+## Project architecture
 
 ```
+researchos/
+  frontend/                 # Next.js App Router (port 3002)
+    src/app/                # routes: /, /login, /register, /dashboard,
+                            #   /documents, /documents/[id], /assistant,
+                            #   /collections, /notes, /history, /insights,
+                            #   /knowledge, /publish, /toolkit, /roadmap,
+                            #   /guide, /settings
+    src/components/         # layout, documents, dashboard, assistant, ui, …
+    src/context/            # AuthContext (cookie session), ThemeContext
+    src/hooks/              # useDocuments, useNotes, useCollections,
+                            #   useHistory, useAuth, useTheme
+    src/lib/                # api.ts — the ONLY backend client; research.ts
+                            #   (local extractive helpers); student.ts; utils.ts
+    src/types/              # User, ResearchDocument, ResearchNote, …
+  backend/                  # FastAPI service (port 8000)
+    app/main.py             # app factory, CORS, cookie auth, rate-limit wiring
+    app/core/               # config (env), security (argon2 + JWT)
+    app/db/                 # engine/session, Base
+    app/models/             # User, Document, ResearchNote
+    app/schemas/            # Pydantic request/response models
+    app/api/                # dependencies (session user, origin check)
+    app/api/v1/             # auth, documents, notes, dashboard routers
+    app/services/           # auth/document/notes/dashboard logic, storage,
+                            #   extraction, upload validation
+    app/tests/              # pytest suite (isolated SQLite file, no creds)
+    alembic/                # migrations (0001_initial)
+    e2e_check.py            # live end-to-end script (needs dev server + PG)
+    storage/                # uploaded files (gitignored, created on demand)
+  docker-compose.yml        # PostgreSQL 16 for local development
+```
+
+Route handlers stay thin; business logic lives in `services/`. The storage
+layer is a small `StorageService` protocol so object storage can replace
+local disk in a later phase without touching routes.
+
+## Prerequisites
+
+- Node.js 20+ and npm
+- Python 3.11+
+- Docker Desktop (for PostgreSQL), or a local PostgreSQL 16 server
+
+## Environment setup
+
+```powershell
+# 1. Database (from the repo root)
+docker compose up -d
+
+# 2. Backend env
+Copy-Item backend\.env.example backend\.env
+# Edit backend\.env: set a long random SECRET_KEY (required).
+# DATABASE_URL default: postgresql+psycopg://researchos:researchos@localhost:5432/researchos
+
+# 3. Frontend env (already correct by default)
+# frontend/.env.local -> NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1
+```
+
+Backend env vars (`backend/.env`): `DATABASE_URL`, `SECRET_KEY`,
+`FRONTEND_ORIGIN`, `ENV` (development/production), `BACKEND_HOST`,
+`BACKEND_PORT`, `UPLOAD_DIRECTORY`, `MAX_UPLOAD_SIZE_MB`,
+`SESSION_COOKIE_NAME`, `SESSION_EXPIRE_DAYS`, `COOKIE_SECURE`
+(auto-true in production), `AUTH_RATE_LIMIT` (default `10/minute`).
+
+## Backend installation
+
+```powershell
+cd backend
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
+
+## Frontend installation
+
+```powershell
+cd frontend
 npm install
+```
+
+## Database migrations
+
+```powershell
+cd backend
+.\.venv\Scripts\Activate.ps1
+# fresh database, documented path (no autocreate in production code):
+python -m alembic upgrade head
+# create a new migration after model changes:
+# python -m alembic revision --autogenerate -m "describe change"
+```
+
+## How to run the application locally
+
+Two terminals (PowerShell):
+
+```powershell
+# Terminal 1 — backend (from backend/)
+.\.venv\Scripts\Activate.ps1
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+```powershell
+# Terminal 2 — frontend (from frontend/)
 npm run dev
 ```
 
-Open http://localhost:3002. Leave the env file alone, mock mode is on by default.
+Open http://localhost:3002. Register an account, upload a PDF or DOCX,
+open it to read extracted text, add a note, watch the dashboard count it.
 
-2. Make an account. Click ENTER WORKSPACE, fill in name / email / password (6 chars min). In demo mode any email works. You'll end up on the dashboard.
+If port 5432 is taken (another Postgres), either stop the other container
+or map ours elsewhere, e.g. `docker run ... -p 5433:5432 ...`, and point
+`DATABASE_URL` at `:5433`.
 
-3. Have a look at the dashboard. Big number is your doc count, below that the 5 latest uploads. OPEN LIBRARY goes to your files, ASK RESEARCH goes to the assistant preview.
+## API documentation
 
-4. Upload something. Go to Research Library, press UPLOAD DOCUMENT +, pick a PDF or DOCX. You'll see it go Extracting → Indexing → Indexed. New doc pops to the top.
+With `ENV=development`, interactive docs live at:
 
-5. Try finding it. Search box matches titles/filenames, FILTER does ALL/PDF/DOCX, SORT does recent/oldest/A–Z.
+- Swagger UI: http://localhost:8000/docs
+- Health: http://localhost:8000/healthz
 
-6. Open a document. Click a row. You get the metadata on top (pages, size, status, date) and the text below. RENAME edits inline, DOWNLOAD prints, DELETE asks first and there's no undo.
+All data routes sit under `/api/v1` (auth, documents, notes, dashboard).
 
-7. Poke the rest. `/assistant` takes a question and shows a canned answer (real stuff comes month 2). `/settings` lets you change display name, sign out, or RESET the demo library. The full walkthrough with screenshots-equivalent lives at `/guide` in the app.
+## How to run tests
 
-To wipe the demo and start clean: devtools → Application → Local Storage → clear, or Settings → RESET. Mock stuff lives under `ara_mock_docs`, `ara_mock_user`, `ara_token`.
-
-## Checks I run
-
+```powershell
+cd backend
+.\.venv\Scripts\Activate.ps1
+python -m pytest app/tests -q          # 33 tests, isolated SQLite file
+python ..\..\backend\e2e_check.py      # needs: dev server on :8000 + PostgreSQL
 ```
+
+Frontend checks (from `frontend/`):
+
+```powershell
 npx tsc --noEmit
+npx eslint src/lib/api.ts src/context/AuthContext.tsx src/hooks/useDocuments.ts src/hooks/useNotes.ts
 npm run build
-npm run dev
 ```
 
-Both pass clean at the time of writing. All routes return 200 in dev.
+Tests never need production credentials. The pytest suite uses a throwaway
+SQLite file per test module because the models avoid Postgres-only column
+types; every query path is identical on PostgreSQL.
 
-## When something looks broken
+## Current Phase 1 limitations
 
-- "Unable to reach the server" — expected without a backend, mock mode should catch it. Double check `NEXT_PUBLIC_USE_MOCK=true`.
-- Kicked to `/login` out of nowhere — token expired or got cleared. Log in again.
-- Library empty — you either haven't uploaded yet or wiped storage. Upload one file.
-- Port already in use — dev uses 3002, kill the old process or change `-p` in package.json.
+- No OCR: image-only PDFs report `requires_ocr` honestly instead of text.
+- No vector DB / embeddings / AI answers (Phase 2). The assistant, knowledge,
+  and insights pages work only on local extractive helpers and are labelled
+  as previews.
+- Collections, history, and theme live in browser localStorage (single-user
+  device data); documents, notes, and accounts live in PostgreSQL.
+- No toast system; feedback is inline (alerts, save states, progress bars).
+- Upload library has no grid-view toggle (list-first layout by design).
+- Session "remember me" is fixed-length (7 days); no password reset flow yet.
+- `backend/e2e_check.py` targets `127.0.0.1:8000` and default PG credentials.
+
+## Planned future phases
+
+Phase 2 (RAG): text chunking service over stored `extracted_text`, embeddings
++ vector search, grounded Q&A with citations and page references,
+conversation history. The extraction interface and `extracted_text` column
+already exist for this — no upload rewrite needed.
