@@ -1,27 +1,28 @@
 @import "tailwindcss";
 
-/* ——— ResearchOS · gallery vitrine in morning fog ———
-   Apple-style light system: fog canvas, white surfaces,
-   carved display type, one blue action. Flat — no shadows. */
+/* ——— Lumina · aurora glass ———
+   Cosmic canvas, frosted glass surfaces, aurora glow accents.
+   Space Grotesk display + Inter body. Light "daybreak" alternate
+   lives under [data-theme="light"] below. */
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 
-  --color-apple-ink: #1d1d1f;
-  --color-fog-canvas: #f5f5f7;
-  --color-pure-white: #ffffff;
-  --color-graphite: #707070;
-  --color-slate: #86868b;
-  --color-charcoal: #333336;
-  --color-smoke: #474747;
-  --color-iron: #5b5b61;
-  --color-ash: #e8e8ed;
-  --color-line: #d6d6d6;
-  --color-electric-blue: #0071e3;
-  --color-electric-blue-hover: #0077ed;
-  --color-link-blue: #0066cc;
-  --color-alert: #d70015;
+  --color-apple-ink: #f2f2f8;
+  --color-fog-canvas: #050510;
+  --color-pure-white: #101020;
+  --color-graphite: #a7a7c0;
+  --color-slate: #8b8ba3;
+  --color-charcoal: #d5d5e8;
+  --color-smoke: #b3b3cc;
+  --color-iron: #c9c9de;
+  --color-ash: #1d1d2e;
+  --color-line: #2a2a40;
+  --color-electric-blue: #8b5cf6;
+  --color-electric-blue-hover: #a78bfa;
+  --color-link-blue: #67e8f9;
+  --color-alert: #fb7185;
 
-  --font-sf-pro-display: "Inter Tight", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-sf-pro-display: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-sf-pro-text: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-primary: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
@@ -50,26 +51,26 @@
   --radius-card: 28px;
   --radius-input: 18px;
 
-  --surface-fog-canvas: #f5f5f7;
-  --surface-pure-white: #ffffff;
-  --surface-ash: #e8e8ed;
+  --surface-fog-canvas: #050510;
+  --surface-pure-white: #101020;
+  --surface-ash: #1d1d2e;
 
-  /* legacy aliases — remapped onto the light gallery so older screens keep working */
-  --color-void: #f5f5f7;
-  --color-frost: #1d1d1f;
-  --color-graphite-old: #4c4c4c;
-  --color-crimson-signal: #0071e3;
-  --color-deep-black: #1d1d1f;
-  --color-graphite-bg: #ffffff;
-  --color-machine-surface: #ffffff;
-  --color-control: #e8e8ed;
-  --color-hairline: #d6d6d6;
-  --color-primary-text: #1d1d1f;
-  --color-secondary-text: #707070;
-  --color-tertiary-text: #86868b;
-  --color-research-accent: #0066cc;
-  --color-ai-accent: #707070;
-  --font-display: "Inter Tight", ui-sans-serif, system-ui, sans-serif;
+  /* legacy aliases — remapped onto aurora glass so older screens keep working */
+  --color-void: #050510;
+  --color-frost: #f2f2f8;
+  --color-graphite-old: #a7a7c0;
+  --color-crimson-signal: #8b5cf6;
+  --color-deep-black: #f2f2f8;
+  --color-graphite-bg: #101020;
+  --color-machine-surface: #101020;
+  --color-control: #1d1d2e;
+  --color-hairline: #2a2a40;
+  --color-primary-text: #f2f2f8;
+  --color-secondary-text: #a7a7c0;
+  --color-tertiary-text: #8b8ba3;
+  --color-research-accent: #67e8f9;
+  --color-ai-accent: #a7a7c0;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --font-interface: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Inter", ui-sans-serif, system-ui, sans-serif;
   --radius-panel: 28px;
@@ -81,7 +82,7 @@
 
 @theme inline {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Inter Tight", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
 }
 
 html {
@@ -92,7 +93,11 @@ html {
 }
 
 body {
-  background: var(--color-fog-canvas);
+  background:
+    radial-gradient(1000px 520px at 10% -8%, rgba(34, 211, 238, 0.13), transparent 65%),
+    radial-gradient(1100px 580px at 90% -10%, rgba(139, 92, 246, 0.17), transparent 65%),
+    radial-gradient(860px 620px at 50% 112%, rgba(217, 70, 239, 0.08), transparent 65%),
+    var(--color-fog-canvas);
   color: var(--color-apple-ink);
   font-family: var(--font-sf-pro-text);
   font-size: 17px;
@@ -102,10 +107,10 @@ body {
 }
 
 ::selection {
-  background: rgba(0, 113, 227, 0.18);
+  background: rgba(139, 92, 246, 0.42);
 }
 
-/* ——— typography: carved display, whisper body ——— */
+/* ——— typography: aurora display, whisper body ——— */
 .font-display,
 .display-type,
 .type-display,
@@ -263,17 +268,17 @@ body {
 
 /* ——— buttons: one blue conversion, ghost, link ——— */
 .primary-button {
-  background: var(--color-electric-blue);
-  color: #ffffff;
+  background: linear-gradient(135deg, #22d3ee 0%, #818cf8 55%, #c084fc 100%);
+  color: #08081a;
   border: none;
   border-radius: var(--radius-buttons);
   padding: 10px 24px;
   font-size: 17px;
-  font-weight: 400;
+  font-weight: 600;
   text-transform: none;
-  letter-spacing: -0.019em;
-  box-shadow: none;
-  transition: background 180ms ease;
+  letter-spacing: -0.01em;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.14), 0 10px 34px rgba(99, 102, 241, 0.45);
+  transition: box-shadow 180ms ease, transform 180ms ease, filter 180ms ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -282,8 +287,9 @@ body {
   cursor: pointer;
 }
 .primary-button:hover {
-  background: var(--color-electric-blue-hover);
   opacity: 1;
+  filter: brightness(1.08);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22), 0 12px 44px rgba(139, 92, 246, 0.6);
 }
 .primary-button:disabled {
   opacity: 0.45;
@@ -313,7 +319,7 @@ body {
 .ghost-pill {
   background: transparent;
   color: var(--color-apple-ink);
-  border: 1px solid var(--color-apple-ink);
+  border: 1px solid color-mix(in srgb, var(--color-apple-ink) 38%, transparent);
   border-radius: var(--radius-buttons);
   padding: 10px 22px;
   font-size: 17px;
@@ -321,22 +327,22 @@ body {
   text-transform: none;
   letter-spacing: -0.019em;
   font-family: var(--font-sf-pro-text);
-  transition: background 180ms ease, color 180ms ease;
+  transition: background 180ms ease, color 180ms ease, border-color 180ms ease;
   display: inline-flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
 }
 .ghost-pill:hover {
-  background: var(--color-apple-ink);
-  border-color: var(--color-apple-ink);
-  color: var(--color-fog-canvas);
+  background: color-mix(in srgb, var(--color-apple-ink) 9%, transparent);
+  border-color: color-mix(in srgb, var(--color-apple-ink) 60%, transparent);
+  color: var(--color-apple-ink);
 }
 .ghost-pill[aria-pressed="true"],
 .ghost-pill.active {
-  background: var(--color-apple-ink);
-  color: var(--color-fog-canvas);
-  border-color: var(--color-apple-ink);
+  background: color-mix(in srgb, var(--color-electric-blue) 18%, transparent);
+  color: var(--color-apple-ink);
+  border-color: color-mix(in srgb, var(--color-electric-blue) 55%, transparent);
 }
 
 /* ——— inputs: white, soft, 18px ——— */
@@ -357,6 +363,7 @@ body {
 }
 .field-input:focus {
   border-color: var(--color-electric-blue);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-electric-blue) 28%, transparent);
 }
 
 /* ——— surfaces: fog → white → ash ——— */
@@ -368,15 +375,21 @@ body {
   background: var(--color-line);
 }
 .gallery-card {
-  background: var(--color-pure-white);
-  border-radius: var(--radius-cards);
+  background:
+    linear-gradient(165deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.012) 45%),
+    color-mix(in srgb, var(--color-pure-white) 78%, transparent);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border: 1px solid color-mix(in srgb, #ffffff 9%, var(--color-line));
+  border-radius: 24px;
   padding: var(--card-padding);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
 }
 .doc-row {
   transition: background 180ms ease;
 }
 .doc-row:hover {
-  background: var(--color-fog-canvas);
+  background: color-mix(in srgb, var(--color-apple-ink) 6%, transparent);
 }
 .doc-row:hover .doc-title {
   text-decoration: none;
@@ -396,7 +409,7 @@ body {
   align-items: center;
   gap: 6px;
   border-radius: var(--radius-tags);
-  border: none;
+  border: 1px solid var(--color-line);
   background: var(--color-fog-canvas);
   color: var(--color-apple-ink);
   padding: 4px 12px;
@@ -405,8 +418,8 @@ body {
   font-family: var(--font-sf-pro-text);
 }
 .tag-pill.crimson {
-  border: none;
-  background: rgba(0, 113, 227, 0.12);
+  border: 1px solid transparent;
+  background: rgba(139, 92, 246, 0.18);
   color: var(--color-electric-blue);
 }
 .tag-pill.solid {
@@ -438,7 +451,7 @@ body {
   top: 0;
   bottom: 0;
   width: 28px;
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.28);
   animation: stamp-pass 1.6s ease-in-out infinite;
 }
 @keyframes stamp-pass {
@@ -456,10 +469,10 @@ body {
 /* scrollbars */
 .reader-scroll::-webkit-scrollbar { width: 8px; }
 .reader-scroll::-webkit-scrollbar-track { background: transparent; }
-.reader-scroll::-webkit-scrollbar-thumb { background: #c7c7cc; border-radius: 99px; }
-* { scrollbar-width: thin; scrollbar-color: #c7c7cc transparent; }
+.reader-scroll::-webkit-scrollbar-thumb { background: #48484a; border-radius: 99px; }
+* { scrollbar-width: thin; scrollbar-color: #48484a transparent; }
 *::-webkit-scrollbar { width: 8px; height: 8px; }
-*::-webkit-scrollbar-thumb { background: #c7c7cc; border-radius: 99px; }
+*::-webkit-scrollbar-thumb { background: #48484a; border-radius: 99px; }
 *::-webkit-scrollbar-track { background: transparent; }
 
 a, button { transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease, opacity 0.18s ease; }
@@ -471,7 +484,7 @@ a, button { transition: color 0.18s ease, background 0.18s ease, border-color 0.
   top: 0;
   bottom: 0;
   width: 48px;
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.08);
   animation: stamp-pass 1.8s ease-in-out infinite;
 }
 .ask-box { transition: border-color 0.2s ease; }
@@ -490,70 +503,77 @@ article p { text-wrap: pretty; }
   html { scroll-behavior: auto; }
 }
 
-/* ——— dark mode: midnight vitrine ———
-   Same tokens, inverted surfaces. The nav band stays dark in both modes.
+/* ——— light mode: daybreak ———
+   Aurora's daytime twin: lavender-white canvas, violet action.
    Follows the OS until the reader picks explicitly (stored as rl_theme). */
-[data-theme="dark"] {
-  color-scheme: dark;
+[data-theme="light"] {
+  color-scheme: light;
 
-  --color-apple-ink: #f5f5f7;
-  --color-fog-canvas: #000000;
-  --color-pure-white: #1c1c1e;
-  --color-graphite: #a1a1a6;
-  --color-slate: #8e8e93;
-  --color-charcoal: #d1d1d6;
-  --color-smoke: #aeaeb2;
-  --color-iron: #c7c7cc;
-  --color-ash: #2c2c2e;
-  --color-line: #38383a;
-  --color-electric-blue: #0a84ff;
-  --color-electric-blue-hover: #409cff;
-  --color-link-blue: #2997ff;
-  --color-alert: #ff453a;
+  --color-apple-ink: #1e1e32;
+  --color-fog-canvas: #f3f3fa;
+  --color-pure-white: #ffffff;
+  --color-graphite: #6b6b7d;
+  --color-slate: #8e8ea3;
+  --color-charcoal: #3a3a4d;
+  --color-smoke: #55556a;
+  --color-iron: #565668;
+  --color-ash: #e9e9f5;
+  --color-line: #d9d9e8;
+  --color-electric-blue: #7c3aed;
+  --color-electric-blue-hover: #8b5cf6;
+  --color-link-blue: #6d28d9;
+  --color-alert: #d70015;
 
-  --surface-fog-canvas: #000000;
-  --surface-pure-white: #1c1c1e;
-  --surface-ash: #2c2c2e;
+  --surface-fog-canvas: #f3f3fa;
+  --surface-pure-white: #ffffff;
+  --surface-ash: #e9e9f5;
 
-  --color-void: #000000;
-  --color-frost: #f5f5f7;
-  --color-graphite-old: #a1a1a6;
-  --color-crimson-signal: #0a84ff;
-  --color-deep-black: #f5f5f7;
-  --color-graphite-bg: #1c1c1e;
-  --color-machine-surface: #1c1c1e;
-  --color-control: #2c2c2e;
-  --color-hairline: #38383a;
-  --color-primary-text: #f5f5f7;
-  --color-secondary-text: #a1a1a6;
-  --color-tertiary-text: #8e8e93;
-  --color-research-accent: #2997ff;
-  --color-ai-accent: #a1a1a6;
+  --color-void: #f3f3fa;
+  --color-frost: #1e1e32;
+  --color-graphite-old: #55556a;
+  --color-crimson-signal: #7c3aed;
+  --color-deep-black: #1e1e32;
+  --color-graphite-bg: #ffffff;
+  --color-machine-surface: #ffffff;
+  --color-control: #e9e9f5;
+  --color-hairline: #d9d9e8;
+  --color-primary-text: #1e1e32;
+  --color-secondary-text: #55556a;
+  --color-tertiary-text: #8e8ea3;
+  --color-research-accent: #6d28d9;
+  --color-ai-accent: #55556a;
 }
 
-[data-theme="dark"] ::selection {
-  background: rgba(10, 132, 255, 0.35);
+[data-theme="light"] body {
+  background:
+    radial-gradient(1000px 520px at 10% -8%, rgba(124, 58, 237, 0.08), transparent 65%),
+    radial-gradient(1100px 580px at 90% -10%, rgba(34, 211, 238, 0.1), transparent 65%),
+    var(--color-fog-canvas);
 }
 
-[data-theme="dark"] .tag-pill.crimson {
-  background: rgba(10, 132, 255, 0.22);
+[data-theme="light"] ::selection {
+  background: rgba(124, 58, 237, 0.18);
 }
 
-[data-theme="dark"] .shimmer::after {
-  background: rgba(255, 255, 255, 0.08);
+[data-theme="light"] .tag-pill.crimson {
+  background: rgba(124, 58, 237, 0.1);
 }
 
-[data-theme="dark"] .progress-sheen::after {
-  background: rgba(255, 255, 255, 0.28);
+[data-theme="light"] .shimmer::after {
+  background: rgba(255, 255, 255, 0.7);
 }
 
-[data-theme="dark"] .reader-scroll::-webkit-scrollbar-thumb,
-[data-theme="dark"] *::-webkit-scrollbar-thumb {
-  background: #48484a;
+[data-theme="light"] .progress-sheen::after {
+  background: rgba(255, 255, 255, 0.5);
 }
 
-[data-theme="dark"] * {
-  scrollbar-color: #48484a transparent;
+[data-theme="light"] .reader-scroll::-webkit-scrollbar-thumb,
+[data-theme="light"] *::-webkit-scrollbar-thumb {
+  background: #c7c7cc;
+}
+
+[data-theme="light"] * {
+  scrollbar-color: #c7c7cc transparent;
 }
 
 @media (max-width: 640px) {

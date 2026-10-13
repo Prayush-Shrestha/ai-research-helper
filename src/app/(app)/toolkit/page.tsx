@@ -43,7 +43,7 @@ function CopyButton({ text }: { text: string }) {
         fontSize: 15,
         border: "1px solid var(--color-line)",
         background: done ? "var(--color-apple-ink)" : "transparent",
-        color: done ? "#fff" : "var(--color-link-blue)",
+        color: done ? "var(--color-fog-canvas)" : "var(--color-link-blue)",
       }}
     >
       {done ? "Copied ✓" : "Copy"}

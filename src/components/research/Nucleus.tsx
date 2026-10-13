@@ -1,10 +1,10 @@
 "use client";
 
 /**
- * Vitrine visual — the product floating in morning fog.
- * White document sheets centered on fog canvas with a faint
- * iridescent light-ring (imagery only, never UI chrome) and
- * hairline orbital threads. Flat — no shadows.
+ * Vitrine visual — Lumina's aurora field.
+ * Glass document sheets floating over a cosmic canvas with an
+ * aurora light-ring (imagery only, never UI chrome) and
+ * hairline orbital threads.
  * Fully legible with animations disabled.
  */
 export function ResearchNucleus({
@@ -31,10 +31,10 @@ export function ResearchNucleus({
       <svg viewBox="0 0 640 520" className="h-auto w-full" aria-hidden>
         <defs>
           <linearGradient id="vitrine-ring" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#0894ff" stopOpacity="0.35" />
-            <stop offset="40%" stopColor="#c959dd" stopOpacity="0.28" />
-            <stop offset="67%" stopColor="#ff2e54" stopOpacity="0.22" />
-            <stop offset="100%" stopColor="#ff9003" stopOpacity="0.28" />
+            <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.45" />
+            <stop offset="40%" stopColor="#818cf8" stopOpacity="0.38" />
+            <stop offset="67%" stopColor="#e879f9" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#a78bfa" stopOpacity="0.4" />
           </linearGradient>
         </defs>
         {/* iridescent light-ring — atmospheric imagery only */}

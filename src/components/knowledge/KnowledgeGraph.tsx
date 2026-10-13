@@ -64,12 +64,12 @@ export function KnowledgeGraph({ height = 480 }: { height?: number }) {
       </svg>
       {nodes.map((n) => (
         <div key={n.id} className="absolute" style={{ left: `${n.x}%`, top: `${n.y}%`, transform: "translate(-50%,-50%)" }}>
-          <div style={{ width: n.r * 3, height: n.r * 3, borderRadius: 99, background: n.id === 2 ? "rgba(0,113,227,0.12)" : "rgba(29,29,31,0.06)" }} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" />
+          <div style={{ width: n.r * 3, height: n.r * 3, borderRadius: 99, background: n.id === 2 ? "rgba(10,132,255,0.18)" : "color-mix(in srgb, var(--color-electric-blue) 8%, transparent)" }} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" />
           <div style={{ width: n.r * 1.5, height: n.r * 1.5, borderRadius: 99, background: n.id === 2 ? "var(--color-electric-blue)" : "var(--color-apple-ink)" }} className="relative" />
           <p className="mt-1.5 whitespace-nowrap text-center" style={{ fontSize: 12, color: "var(--color-iron)" }}>{n.label}</p>
         </div>
       ))}
-      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between px-6 py-3.5" style={{ background: "rgba(255,255,255,0.9)" }}>
+      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between px-6 py-3.5" style={{ background: "color-mix(in srgb, var(--color-pure-white) 88%, transparent)", backdropFilter: "blur(12px)", borderTop: "1px solid var(--color-line)" }}>
         <p style={{ fontSize: 12, color: "var(--color-graphite)" }}>Papers → ideas → topics</p>
         <p className="hidden sm:block" style={{ fontSize: 12, color: "var(--color-slate)" }}>Live preview</p>
       </div>

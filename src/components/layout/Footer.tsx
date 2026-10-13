@@ -63,7 +63,7 @@ export function Footer() {
           ))}
         </div>
         <div className="mt-8 flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between" style={{ borderTop: "1px solid var(--color-line)", paddingTop: 16 }}>
-          <p style={{ fontSize: 12, color: "var(--color-slate)" }}>© 2026 ResearchOS. Your files stay yours.</p>
+          <p style={{ fontSize: 12, color: "var(--color-slate)" }}>© 2026 Lumina. Your files stay yours.</p>
           <p style={{ fontSize: 12, color: "var(--color-slate)" }}>Set in Inter Tight and Inter.</p>
         </div>
       </div>

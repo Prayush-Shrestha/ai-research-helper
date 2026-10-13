@@ -33,7 +33,7 @@ export default function DashboardPage() {
   const [uploadOpen, setUploadOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [phase, setPhase] = useState("Extracting text");
+  const [phaseOverride, setPhaseOverride] = useState<string | null>(null);
   const timers = useRef<number[]>([]);
 
   useEffect(() => {
@@ -44,13 +44,17 @@ export default function DashboardPage() {
     };
   }, []);
 
-  // Derive the phase from progress — never call setState inside another setState updater.
-  useEffect(() => {
-    if (!uploading) return;
-    if (progress < 40) setPhase("Extracting text");
-    else if (progress < 80) setPhase("Indexing passages");
-    else if (progress < 100) setPhase("Linking concepts");
-  }, [progress, uploading]);
+  // Derived during render — never setState inside another updater/effect.
+  // Terminal messages (indexed / failed) win; otherwise phase follows progress.
+  const phase =
+    phaseOverride ??
+    (uploading
+      ? progress < 40
+        ? "Extracting text"
+        : progress < 80
+          ? "Indexing passages"
+          : "Linking concepts"
+      : "Extracting text");
 
   const firstName = user?.name?.trim().split(/\s+/)[0] || "there";
   const total = allDocuments.length;
@@ -70,7 +74,7 @@ export default function DashboardPage() {
   async function handleUpload(file: File) {
     setUploading(true);
     setProgress(4);
-    setPhase("Extracting text");
+    setPhaseOverride(null);
     const timer = window.setInterval(() => {
       setProgress((p) => {
         if (p < 40) return p + 4;
@@ -81,7 +85,7 @@ export default function DashboardPage() {
     try {
       const created = await upload(file, (p) => setProgress(Math.max(p, 20)));
       setProgress(100);
-      setPhase("Document indexed");
+      setPhaseOverride("Document indexed");
       recordHistory({ kind: "document_uploaded", label: `Uploaded ${created.title}`, detail: `${created.file_type} · ${created.page_count} pages`, href: `/documents/${created.id}` });
       timers.current.push(window.setTimeout(() => {
         setUploading(false);
@@ -89,7 +93,7 @@ export default function DashboardPage() {
         setProgress(0);
       }, 700));
     } catch (err) {
-      setPhase(err instanceof ApiError ? err.message : "Upload failed");
+      setPhaseOverride(err instanceof ApiError ? err.message : "Upload failed");
       timers.current.push(window.setTimeout(() => setUploading(false), 1200));
     } finally {
       window.clearInterval(timer);

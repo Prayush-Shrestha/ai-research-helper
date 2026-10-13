@@ -14,7 +14,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
       <div className="hidden flex-col justify-between p-10 lg:flex" style={{ background: "#000", borderRight: "1px solid rgba(204,204,204,0.12)" }}>
         <Link href="/" className="flex items-center gap-2.5" aria-label="Home">
           <LogoMark />
-          <span className="text-[13px] font-bold uppercase" style={{ color: "var(--color-frost)" }}>ResearchOS — Workspace</span>
+          <span className="text-[13px] font-bold uppercase" style={{ color: "var(--color-frost)" }}>Lumina — Workspace</span>
         </Link>
         <div>
           <h2 className="max-w-md text-[30px] font-bold uppercase leading-[1.05]" style={{ color: "var(--color-frost)" }}>

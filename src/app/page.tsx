@@ -21,7 +21,7 @@ export default function LandingPage() {
         {/* ——— HERO: product floating in fog, headline lower-left ——— */}
         <section className="pt-12 text-center sm:pt-20" aria-labelledby="hero-title" id="product">
           <p style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 21, fontWeight: 600, letterSpacing: "-0.012em", color: "var(--color-apple-ink)" }}>
-            ResearchOS
+            Lumina
           </p>
           <h1
             id="hero-title"

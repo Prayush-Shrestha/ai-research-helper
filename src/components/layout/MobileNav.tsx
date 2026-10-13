@@ -31,7 +31,10 @@ export function MobileNav() {
 
   // Close the drawer on navigation (e.g. browser back/forward).
   useEffect(() => {
-    setOpen(false);
+    void (async () => {
+      await Promise.resolve();
+      setOpen(false);
+    })();
   }, [pathname]);
 
   return (
@@ -39,7 +42,7 @@ export function MobileNav() {
       <header className="sticky top-[48px] z-30 flex h-14 items-center justify-between px-4 lg:hidden" style={{ borderBottom: "1px solid var(--color-line)", background: "color-mix(in srgb, var(--color-pure-white) 90%, transparent)", backdropFilter: "blur(12px)" }}>
         <span className="flex items-center gap-2">
           <LogoMark size={24} />
-          <span style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 17, fontWeight: 600, color: "var(--color-apple-ink)" }}>ResearchOS</span>
+          <span style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 17, fontWeight: 600, color: "var(--color-apple-ink)" }}>Lumina</span>
         </span>
         <span className="flex items-center">
           <ThemeToggle tone="light" />

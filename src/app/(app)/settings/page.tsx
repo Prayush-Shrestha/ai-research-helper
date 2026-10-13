@@ -52,8 +52,8 @@ export default function SettingsPage() {
   }, []);
 
   const modes: Array<{ value: ThemeChoice; label: string; hint: string }> = [
-    { value: "light", label: "Light", hint: "Morning fog" },
-    { value: "dark", label: "Dark", hint: "Midnight vitrine" },
+    { value: "light", label: "Light", hint: "Daybreak" },
+    { value: "dark", label: "Dark", hint: "Aurora glass" },
     { value: "system", label: "Auto", hint: `Follows device (${resolved})` },
   ];
 

@@ -53,7 +53,7 @@ export default function PublishPage() {
   const chip = (active: boolean): CSSProperties => ({
     border: "none",
     background: active ? "var(--color-apple-ink)" : "var(--color-ash)",
-    color: active ? "#fff" : "var(--color-apple-ink)",
+    color: active ? "var(--color-fog-canvas)" : "var(--color-apple-ink)",
     borderRadius: 999,
     fontSize: 15,
   });

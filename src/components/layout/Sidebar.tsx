@@ -117,7 +117,7 @@ export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle:
         {!collapsed && (
           <>
             <LogoMark size={26} />
-            <p style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 17, fontWeight: 600, letterSpacing: "-0.019em", color: "var(--color-apple-ink)" }}>ResearchOS</p>
+            <p style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 17, fontWeight: 600, letterSpacing: "-0.019em", color: "var(--color-apple-ink)" }}>Lumina</p>
           </>
         )}
         <button

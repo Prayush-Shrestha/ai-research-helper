@@ -27,19 +27,19 @@ function resolve(choice: ThemeChoice): ResolvedTheme {
 }
 
 function readStored(): ThemeChoice {
-  if (typeof window === "undefined") return "system";
+  if (typeof window === "undefined") return "dark";
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (raw === "light" || raw === "dark" || raw === "system") return raw;
   } catch {
-    /* private mode — fall through to system */
+    /* private mode — fall through to the signature midnight theme */
   }
-  return "system";
+  return "dark";
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<ThemeChoice>("system");
-  const [resolved, setResolved] = useState<ResolvedTheme>("light");
+  const [theme, setThemeState] = useState<ThemeChoice>("dark");
+  const [resolved, setResolved] = useState<ResolvedTheme>("dark");
 
   // Read stored choice after mount (matches the pre-paint init script).
   useEffect(() => {

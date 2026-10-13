@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import { LogoMark } from "@/components/layout/Logo";
 import { ThemeToggle, ThemeRow } from "@/components/layout/ThemeToggle";
 
 const LINKS = [
@@ -23,7 +24,10 @@ export function Navbar() {
 
   // Close the mobile drawer on navigation (e.g. browser back/forward).
   useEffect(() => {
-    setOpen(false);
+    void (async () => {
+      await Promise.resolve();
+      setOpen(false);
+    })();
   }, [pathname]);
 
   const isLanding = pathname === "/";
@@ -31,7 +35,7 @@ export function Navbar() {
   return (
     <div
       className="sticky top-0 z-50"
-      style={{ background: "rgba(29,29,31,0.8)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}
+      style={{ background: "rgba(8,8,18,0.72)", backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)", borderBottom: "1px solid rgba(139,92,246,0.16)" }}
     >
       <header
         className="mx-auto flex h-[48px] items-center justify-between px-4 sm:px-5"
@@ -39,10 +43,12 @@ export function Navbar() {
       >
         <Link
           href={user ? "/dashboard" : "/"}
-          aria-label="ResearchOS home"
+          aria-label="Lumina home"
+          className="flex items-center gap-2"
           style={{ fontFamily: "var(--font-sf-pro-text)", fontSize: 17, fontWeight: 600, letterSpacing: "-0.019em", color: "#f5f5f7" }}
         >
-          ResearchOS
+          <LogoMark size={22} />
+          Lumina
         </Link>
 
         {isLanding ? (
@@ -110,7 +116,7 @@ export function Navbar() {
       </header>
 
       {open && (
-        <nav aria-label="Primary mobile" className="animate-slide-up px-5 pb-6 md:hidden" style={{ background: "rgba(29,29,31,0.96)" }}>
+        <nav aria-label="Primary mobile" className="animate-slide-up px-5 pb-6 md:hidden" style={{ background: "rgba(8,8,20,0.96)", borderBottom: "1px solid rgba(139,92,246,0.16)" }}>
           <div className="flex flex-col">
             {(isLanding ? LINKS.map((l) => ({ href: l.href, label: l.label })) : [
               { href: "/dashboard", label: "Workspace" },
