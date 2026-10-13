@@ -1,9 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect x="2" y="2" width="60" height="60" rx="15" fill="#111214" stroke="#292B2D" stroke-width="2"/>
-  <path d="M24 17V47" stroke="#E7E7E2" stroke-width="4.6" stroke-linecap="round" fill="none"/>
-  <path d="M24 19H33A7.5 7.5 0 0 1 33 34H24" stroke="#E7E7E2" stroke-width="4.6" stroke-linecap="round" fill="none"/>
-  <path d="M29 34 41 47" stroke="#E7E7E2" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-  <circle cx="40.5" cy="26.5" r="4.2" fill="#B7FFDF"/>
-  <path d="M49 19A21 21 0 0 1 52 34" stroke="#62686A" stroke-width="2.4" stroke-linecap="round" fill="none"/>
-  <circle cx="52" cy="34" r="2.5" fill="#B7FFDF" opacity="0.55"/>
+  <rect x="2" y="2" width="60" height="60" rx="28" fill="#f5f5f7"/>
+  <rect x="2" y="2" width="60" height="60" rx="28" fill="none" stroke="#d6d6d6" stroke-width="2"/>
+  <circle cx="32" cy="32" r="21" fill="none" stroke="#1d1d1f" stroke-width="2.5"/>
+  <ellipse cx="32" cy="32" rx="21" ry="9" fill="none" stroke="#86868b" stroke-width="2" transform="rotate(-24 32 32)"/>
+  <circle cx="47" cy="17" r="5" fill="#0071e3"/>
 </svg>

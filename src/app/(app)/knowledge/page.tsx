@@ -1,40 +1,39 @@
 import { KnowledgeGraph } from "@/components/knowledge/KnowledgeGraph";
-import { SectionDivider } from "@/components/editorial/TechnicalLabel";
 
 export default function KnowledgePage() {
   return (
-    <main className="mx-auto px-5 sm:px-8" style={{ maxWidth: "var(--page-width)" }}>
-      <section className="pt-12 sm:pt-16">
-        <p className="font-tech" style={{ color: "var(--color-tertiary-text)" }}>OBSERVATORY / 04 — PREVIEW</p>
-        <h1 className="font-display mt-2" style={{ fontSize: "clamp(48px,7vw,84px)", lineHeight: 0.95, letterSpacing: "-2px" }}>
-          Knowledge
-          <br />
-          Map
+    <div>
+      <section className="pt-6 text-center sm:pt-10">
+        <h1 className="type-heading-sm mx-auto" style={{ color: "var(--color-apple-ink)" }}>
+          Knowledge map.
         </h1>
-        <p className="mt-4 max-w-md text-[15px]" style={{ color: "var(--color-secondary-text)", lineHeight: 1.7 }}>
-          Papers become concepts. Concepts become topics. Topics reveal how your field fits together.
+        <p className="mx-auto mt-3 max-w-xl" style={{ fontSize: 19, color: "var(--color-graphite)" }}>
+          Your papers, plotted by the ideas they share. The blue dot is the paper
+          everything else connects to.
         </p>
       </section>
 
-      <section aria-label="Knowledge visualization" className="mt-10">
+      <section aria-label="Your knowledge map" className="mt-8">
         <KnowledgeGraph />
       </section>
 
-      <div className="mt-10"><SectionDivider label="LEGEND" /></div>
-      <section className="grid gap-6 py-8 sm:grid-cols-4" aria-label="Legend">
+      <section className="gallery-card mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4" aria-label="How to read it">
         {[
-          ["#B7FFDF", "CORE PAPERS", "Highest semantic weight in your library."],
-          ["#8CC8FF", "BRIDGE CONCEPTS", "Ideas that connect distant clusters."],
-          ["#E7E7E2", "TOPICS", "Stable themes across many documents."],
-          ["#62686A", "SIGNALS", "Weak links worth investigating."],
-        ].map(([c, k, v]) => (
+          ["Blue dot", "The most connected paper in your library."],
+          ["Dark dots", "Papers. Bigger means more connections."],
+          ["Lines", "A shared idea between two papers."],
+          ["Drift", "The map settles slowly — positions aren't rankings."],
+        ].map(([k, v]) => (
           <div key={k}>
-            <span className="inline-block" style={{ width: 10, height: 10, borderRadius: 99, background: c }} />
-            <p className="micro-label mt-3" style={{ color: "var(--color-primary-text)" }}>{k}</p>
-            <p className="mt-1 text-[13px]" style={{ color: "var(--color-secondary-text)" }}>{v}</p>
+            <p style={{ fontSize: 17, fontWeight: 600, color: "var(--color-apple-ink)" }}>{k}</p>
+            <p className="mt-1" style={{ fontSize: 15, color: "var(--color-graphite)", lineHeight: 1.5 }}>{v}</p>
           </div>
         ))}
       </section>
-    </main>
+
+      <p className="mt-5 text-center" style={{ fontSize: 12, color: "var(--color-slate)" }}>
+        Preview — full topic clustering arrives with the backend.
+      </p>
+    </div>
   );
 }

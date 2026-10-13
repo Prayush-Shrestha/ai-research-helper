@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { DocumentFilters, ResearchDocument } from "@/types/document";
 import * as api from "@/lib/api";
 import { ApiError } from "@/lib/api";
@@ -27,16 +27,26 @@ export function useDocuments(initialFilters?: DocumentFilters) {
     initialFilters ?? { type: "ALL", sort: "newest", search: "" }
   );
 
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
   const fetchDocuments = useCallback(async () => {
     // Yield first: this is called from a mount effect, and state updates
     // must only happen in async continuations, never synchronously.
     await Promise.resolve();
-    setLoading(true);
-    setError(null);
+    if (mounted.current) setLoading(true);
+    if (mounted.current) setError(null);
     try {
       const docs = await api.getDocuments();
-      setDocuments(docs);
+      if (!mounted.current) return;
+      setDocuments(Array.isArray(docs) ? docs : []);
     } catch (err) {
+      if (!mounted.current) return;
       if (shouldUseMock() && (!getToken() || (err instanceof ApiError && err.status === 0))) {
         // Dev fallback: isolated mock data.
         setDocuments(getMockDocuments());
@@ -44,7 +54,7 @@ export function useDocuments(initialFilters?: DocumentFilters) {
         setError(friendlyApiError(err instanceof Error ? err.message : ""));
       }
     } finally {
-      setLoading(false);
+      if (mounted.current) setLoading(false);
     }
   }, []);
 
@@ -66,9 +76,9 @@ export function useDocuments(initialFilters?: DocumentFilters) {
       // Later: replace with server search GET /documents?search=. UI stays the same.
       list = list.filter(
         (d) =>
-          d.title.toLowerCase().includes(q) ||
-          d.original_filename.toLowerCase().includes(q) ||
-          d.file_type.toLowerCase().includes(q)
+          (d.title ?? "").toLowerCase().includes(q) ||
+          (d.original_filename ?? "").toLowerCase().includes(q) ||
+          (d.file_type ?? "").toLowerCase().includes(q)
       );
     }
     switch (filters.sort) {
@@ -76,7 +86,7 @@ export function useDocuments(initialFilters?: DocumentFilters) {
         list.sort((a, b) => +new Date(a.created_at) - +new Date(b.created_at));
         break;
       case "name":
-        list.sort((a, b) => a.title.localeCompare(b.title));
+        list.sort((a, b) => (a.title ?? "").localeCompare(b.title ?? ""));
         break;
       case "newest":
       default:

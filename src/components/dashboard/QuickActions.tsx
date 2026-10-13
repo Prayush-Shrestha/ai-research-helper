@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { FolderOpen, Search, Settings, Upload } from "lucide-react";
 
 interface QuickAction {
@@ -8,7 +9,7 @@ interface QuickAction {
   description: string;
   href?: string;
   onClick?: () => void;
-  icon: React.ReactNode;
+  icon: ReactNode;
 }
 
 export function QuickActions({ onUpload }: { onUpload: () => void }) {
@@ -21,7 +22,7 @@ export function QuickActions({ onUpload }: { onUpload: () => void }) {
 
   return (
     <section aria-labelledby="quick-actions-heading">
-      <h2 id="quick-actions-heading" className="font-tech" style={{ color: "var(--color-tertiary-text)" }}>
+      <h2 id="quick-actions-heading" className="font-tech" style={{ color: "var(--color-graphite)" }}>
         QUICK ACTIONS
       </h2>
       <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -30,12 +31,12 @@ export function QuickActions({ onUpload }: { onUpload: () => void }) {
             <>
               <span
                 className="flex h-9 w-9 items-center justify-center"
-                style={{ borderRadius: 10, background: "rgba(183,255,223,0.07)", color: "var(--color-research-accent)", border: "1px solid var(--color-hairline)" }}
+                style={{ borderRadius: 10, background: "rgba(183,255,223,0.07)", color: "var(--color-frost)", border: "1px solid var(--color-hairline)" }}
               >
                 {a.icon}
               </span>
-              <span className="block text-sm font-medium" style={{ color: "var(--color-primary-text)" }}>{a.label}</span>
-              <span className="block text-[13px]" style={{ color: "var(--color-secondary-text)" }}>{a.description}</span>
+              <span className="block text-sm font-medium" style={{ color: "var(--color-frost)" }}>{a.label}</span>
+              <span className="block text-[13px]" style={{ color: "var(--color-ash)" }}>{a.description}</span>
             </>
           );
           const cls = "lift p-4 text-left";

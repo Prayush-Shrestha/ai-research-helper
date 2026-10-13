@@ -1,14 +1,12 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  /* Turbopack has built-in CSS support; do not add a "*.css" loader rule —
+     it hijacks [next]/internal/font/google CSS and breaks next/font/google
+     ("queries have exactly one entry"). Tailwind v4 works via `@import "tailwindcss"`. */
   turbopack: {
-    rules: {
-      "*.css": {
-        loaders: ["@tailwindcss/turbopack"],
-        as: "*.css",
-      },
-    },
+    root: path.join(__dirname),
   },
 };
 

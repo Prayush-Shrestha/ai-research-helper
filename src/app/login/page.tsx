@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -8,15 +9,18 @@ import { Wordmark } from "@/components/layout/Logo";
 import { useAuth } from "@/hooks/useAuth";
 import { loginSchema, type LoginInput } from "@/lib/schemas";
 
-const field = {
-  borderBottom: "1px solid #292B2D",
-  color: "var(--color-primary-text)",
-  borderRadius: 0,
-} as const;
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return (
+    <p role="alert" className="mt-1.5" style={{ fontSize: 15, color: "var(--color-alert)" }}>
+      {message}
+    </p>
+  );
+}
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, user, loading } = useAuth();
   const {
     register,
     handleSubmit,
@@ -30,81 +34,74 @@ export default function LoginPage() {
   async function onSubmit(values: LoginInput) {
     try {
       await login(values);
-      router.push("/dashboard");
+      router.replace("/dashboard");
     } catch (err) {
       setError("root", {
-        message: err instanceof Error ? err.message : "Sign in failed.",
+        message: err instanceof Error ? err.message : "Sign in failed. Please try again.",
       });
     }
   }
 
+  // Already signed in — don't show the form again.
+  useEffect(() => {
+    if (!loading && user) router.replace("/dashboard");
+  }, [loading, user, router]);
+
   return (
-    <div className="page-enter min-h-screen" style={{ background: "var(--color-void)" }}>
-      <header style={{ height: 72, borderBottom: "1px solid #292B2D" }}>
-        <div className="mx-auto flex h-full items-center justify-between px-5 sm:px-8" style={{ maxWidth: "var(--page-width)" }}>
+    <div className="page-enter min-h-screen" style={{ background: "var(--color-fog-canvas)" }}>
+      <header style={{ height: 64 }}>
+        <div className="mx-auto flex h-full items-center justify-between px-5 sm:px-8" style={{ maxWidth: "var(--page-max-width)" }}>
           <Link href="/"><Wordmark /></Link>
-          <p className="font-tech" style={{ color: "var(--color-tertiary-text)", fontSize: 10 }}>ACCESS / SIGN IN</p>
+          <Link href="/register" style={{ fontSize: 15, color: "var(--color-link-blue)" }}>Create account</Link>
         </div>
       </header>
       <main className="mx-auto px-5 sm:px-8" style={{ maxWidth: 560 }}>
-        <section className="pt-16 sm:pt-24">
-          <p className="font-tech" style={{ color: "var(--color-tertiary-text)" }}>AUTH / 01</p>
-          <h1 className="font-display mt-3" style={{ fontSize: 56, lineHeight: 1 }}>Return to your research.</h1>
-          <p className="mt-3 text-[15px]" style={{ color: "var(--color-secondary-text)" }}>Your laboratory is preserved exactly as you left it.</p>
+        <section className="pt-10 text-center sm:pt-16">
+          <h1 style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 44, fontWeight: 600, letterSpacing: "-0.009em", lineHeight: 1.1, color: "var(--color-apple-ink)" }}>Welcome back.</h1>
+          <p className="mt-3" style={{ fontSize: 19, color: "var(--color-graphite)" }}>Sign in to open your library.</p>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="mt-10 space-y-5" noValidate>
-            <div>
-              <label htmlFor="email" className="micro-label block" style={{ color: "var(--color-tertiary-text)" }}>EMAIL</label>
-              <input
-                id="email" type="email" autoComplete="email"
-                placeholder="you@university.edu"
-                aria-invalid={Boolean(errors.email)}
-                className="mt-2 w-full bg-transparent px-0 py-3 text-[16px] outline-none"
-                style={field}
-                {...register("email")}
-              />
-              {errors.email && (
-                <p role="alert" className="font-tech mt-2" style={{ color: "#ff9d9d", fontSize: 11 }}>
-                  {errors.email.message?.toUpperCase()}
+          <div className="gallery-card mt-8 text-left">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+              <div>
+                <label htmlFor="email" className="mb-1.5 block text-[17px]" style={{ color: "var(--color-apple-ink)" }}>Email</label>
+                <input
+                  id="email" type="email" autoComplete="email"
+                  placeholder="you@university.edu"
+                  aria-invalid={Boolean(errors.email)}
+                  className="field-input"
+                  {...register("email")}
+                />
+                <FieldError message={errors.email?.message} />
+              </div>
+              <div>
+                <label htmlFor="password" className="mb-1.5 block text-[17px]" style={{ color: "var(--color-apple-ink)" }}>Password</label>
+                <input
+                  id="password" type="password" autoComplete="current-password"
+                  placeholder="Your password"
+                  aria-invalid={Boolean(errors.password)}
+                  className="field-input"
+                  {...register("password")}
+                />
+                <FieldError message={errors.password?.message} />
+              </div>
+              {errors.root && (
+                <p role="alert" style={{ fontSize: 15, color: "var(--color-alert)" }}>
+                  {errors.root.message}
                 </p>
               )}
-            </div>
-            <div>
-              <label htmlFor="password" className="micro-label block" style={{ color: "var(--color-tertiary-text)" }}>PASSWORD</label>
-              <input
-                id="password" type="password" autoComplete="current-password"
-                placeholder="••••••••"
-                aria-invalid={Boolean(errors.password)}
-                className="mt-2 w-full bg-transparent px-0 py-3 text-[16px] outline-none"
-                style={field}
-                {...register("password")}
-              />
-              {errors.password && (
-                <p role="alert" className="font-tech mt-2" style={{ color: "#ff9d9d", fontSize: 11 }}>
-                  {errors.password.message?.toUpperCase()}
-                </p>
-              )}
-            </div>
-            {errors.root && (
-              <p role="alert" className="font-tech" style={{ color: "#ff9d9d", fontSize: 11 }}>
-                {errors.root.message?.toUpperCase()}
-              </p>
-            )}
-            <button
-              type="submit" disabled={isSubmitting}
-              className="font-tech w-full rounded-full py-4"
-              style={{ background: "var(--color-primary-text)", color: "#050505", fontSize: 12, opacity: isSubmitting ? 0.6 : 1 }}
-            >
-              {isSubmitting ? "VERIFYING…" : "ENTER WORKSPACE →"}
-            </button>
-          </form>
-
-          <div className="mt-8 flex items-center justify-between" style={{ borderTop: "1px solid #292B2D", paddingTop: 20 }}>
-            <p className="text-[13px]" style={{ color: "var(--color-secondary-text)" }}>
-              No access? <Link href="/register" style={{ color: "var(--color-primary-text)" }}>Create account</Link>
-            </p>
-            <p className="font-tech" style={{ color: "var(--color-tertiary-text)", fontSize: 10 }}>POST /AUTH/LOGIN</p>
+              <button
+                type="submit" disabled={isSubmitting}
+                className="primary-button w-full"
+                style={{ opacity: isSubmitting ? 0.6 : 1 }}
+              >
+                {isSubmitting ? "Signing in…" : "Sign in"}
+              </button>
+            </form>
           </div>
+
+          <p className="mt-5" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
+            New here? <Link href="/register" style={{ color: "var(--color-link-blue)" }}>Create an account</Link>
+          </p>
         </section>
       </main>
     </div>

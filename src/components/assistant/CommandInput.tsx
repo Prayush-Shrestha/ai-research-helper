@@ -3,13 +3,21 @@
 import { useState } from "react";
 
 const SUGGESTIONS = [
-  "SUMMARIZE THE MAIN FINDINGS",
-  "COMPARE THESE TWO PAPERS",
-  "WHAT RESEARCH GAP IS IDENTIFIED?",
-  "EXPLAIN THIS METHODOLOGY",
+  "Summarise this paper",
+  "What are the key findings?",
+  "Explain the method",
+  "What are the limitations?",
+  "Key terms to know",
+  "Questions this leaves open",
 ];
 
-export function CommandInput({ onAsk }: { onAsk?: (q: string) => void }) {
+export function CommandInput({
+  onAsk,
+  compact = false,
+}: {
+  onAsk?: (q: string) => void;
+  compact?: boolean;
+}) {
   const [value, setValue] = useState("");
 
   function submit(q: string) {
@@ -23,52 +31,43 @@ export function CommandInput({ onAsk }: { onAsk?: (q: string) => void }) {
     <div>
       <form
         role="search"
-        aria-label="Ask your research"
+        aria-label="Ask about your papers"
         onSubmit={(e) => {
           e.preventDefault();
           submit(value);
         }}
-        className="ask-box flex items-center gap-3 px-2 py-2 sm:px-3"
-        style={{
-          border: "1px solid var(--color-hairline)",
-          borderRadius: "var(--radius-panel)",
-          background: "var(--color-graphite)",
-        }}
+        className="ask-box flex items-center gap-2 p-2 pl-5"
+        style={{ background: "var(--color-pure-white)", border: "1px solid var(--color-line)", borderRadius: 980 }}
       >
-        <span aria-hidden className="pulse-dot ml-2 hidden sm:inline-block" style={{ width: 8, height: 8, borderRadius: 99, background: "var(--color-ai-accent)" }} />
-        <label htmlFor="assistant-query" className="sr-only">
-          Ask about your research
-        </label>
+        <label htmlFor="assistant-query" className="sr-only">Ask about your papers</label>
         <input
           id="assistant-query"
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          placeholder="ASK ABOUT YOUR RESEARCH —"
+          placeholder="Ask about your papers…"
           autoComplete="off"
-          className="font-tech w-full bg-transparent px-2 py-4 outline-none placeholder:text-[#62686A]"
-          style={{ color: "var(--color-primary-text)", fontSize: 12 }}
+          className="w-full bg-transparent py-2.5 text-[17px] outline-none"
+          style={{ color: "var(--color-apple-ink)" }}
         />
-        <button
-          type="submit"
-          className="font-tech shrink-0 rounded-full px-6 py-3"
-          style={{ background: "var(--color-primary-text)", color: "#050505", fontSize: 11 }}
-        >
-          ASK →
+        <button type="submit" className="primary-button shrink-0" style={{ padding: "8px 22px", fontSize: 15 }}>
+          Send
         </button>
       </form>
-      <div className="mt-4 flex flex-wrap gap-2" aria-label="Suggested queries">
-        {SUGGESTIONS.map((s) => (
-          <button
-            key={s}
-            type="button"
-            onClick={() => submit(s)}
-            className="font-tech rounded-full px-4 py-2 transition-colors hover:text-white"
-            style={{ border: "1px solid var(--color-hairline)", background: "var(--color-control)", color: "var(--color-secondary-text)", fontSize: 10 }}
-          >
-            {s}
-          </button>
-        ))}
-      </div>
+      {!compact && (
+        <div className="mt-3 flex flex-wrap gap-2" aria-label="Try asking">
+          {SUGGESTIONS.map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => submit(s)}
+              className="tag-pill"
+              style={{ cursor: "pointer", padding: "8px 16px", fontSize: 15 }}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -347,8 +347,9 @@ export const ABROAD_PHASES: Array<[string, string, string]> = [
 // ------------------------------------------------------- citations ---
 
 function lastName(name: string): string {
-  const parts = name.trim().split(/\s+/);
-  return parts.length > 1 ? parts[parts.length - 1] : parts[0];
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "";
+  return parts.length > 1 ? (parts[parts.length - 1] as string) : (parts[0] as string);
 }
 
 export interface CiteInput {
@@ -370,10 +371,10 @@ export function citeAPA(c: CiteInput): string {
   const authors = splitAuthors(c.authors);
   if (authors.length === 0) return "";
   const names = authors.map((a) => {
-    const parts = a.split(/\s+/);
-    const last = parts.length > 1 ? parts[parts.length - 1] : parts[0];
+    const parts = a.split(/\s+/).filter(Boolean);
+    const last = parts.length > 1 ? (parts[parts.length - 1] as string) : (parts[0] as string) ?? "";
     const firsts = parts.length > 1 ? parts.slice(0, -1) : [];
-    return `${cap(last)}, ${firsts.map((w) => `${w.charAt(0).toUpperCase()}.`).join(" ")}`.trim();
+    return `${cap(last)}, ${firsts.map((w) => `${(w.charAt(0) ?? "").toUpperCase()}.`).join(" ")}`.trim();
   });
   const byline = names.length === 1 ? names[0] : names.length === 2
     ? `${names[0]}, & ${names[1]}`
@@ -386,10 +387,10 @@ export function citeIEEE(c: CiteInput): string {
   const authors = splitAuthors(c.authors);
   if (authors.length === 0) return "";
   const names = authors.map((a) => {
-    const parts = a.split(/\s+/);
-    if (parts.length === 1) return cap(parts[0]);
-    const last = parts[parts.length - 1];
-    const firsts = parts.slice(0, -1).map((w) => `${w.charAt(0).toUpperCase()}.`).join(" ");
+    const parts = a.split(/\s+/).filter(Boolean);
+    if (parts.length <= 1) return cap(parts[0] ?? "");
+    const last = parts[parts.length - 1] as string;
+    const firsts = parts.slice(0, -1).map((w) => `${(w.charAt(0) ?? "").toUpperCase()}.`).join(" ");
     return `${firsts} ${cap(last)}`;
   });
   const byline = names.length === 1 ? names[0] : names.length === 2
@@ -401,20 +402,23 @@ export function citeIEEE(c: CiteInput): string {
 export function citeBibTeX(c: CiteInput): string {
   const authors = splitAuthors(c.authors);
   if (authors.length === 0) return "";
-  const keyBase = `${lastName(authors[0]).toLowerCase()}${(c.year.trim() || "nodate").replace(/\D/g, "")}${c.title.trim().split(/\s+/)[0]?.toLowerCase().replace(/[^a-z0-9]/g, "") ?? "paper"}`;
+  const firstWord = c.title.trim().split(/\s+/)[0]?.toLowerCase().replace(/[^a-z0-9]/g, "") || "paper";
+  const keyBase = `${lastName(authors[0] as string).toLowerCase()}${(c.year.trim() || "nodate").replace(/\D/g, "")}${firstWord}`;
   const entry = c.kind === "Journal" ? "article" : "inproceedings";
   const venueField = c.kind === "Journal" ? "journal" : "booktitle";
   return `@${entry}{${keyBase},\n  author = {${authors.join(" and ")}},\n  title = {${c.title.trim()}},\n  ${venueField} = {${c.venue.trim()}},\n  year = {${c.year.trim()}},\n}`;
 }
 
 function cap(s: string): string {
+  if (!s) return "";
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 export function bibKeyPreview(c: CiteInput): string {
   const authors = splitAuthors(c.authors);
   if (authors.length === 0 || !c.title.trim()) return "author2026keyword";
-  return `${lastName(authors[0]).toLowerCase()}${(c.year.trim() || "2026").replace(/\D/g, "")}${c.title.trim().split(/\s+/)[0].toLowerCase().replace(/[^a-z0-9]/g, "")}`;
+  const firstWord = c.title.trim().split(/\s+/)[0]?.toLowerCase().replace(/[^a-z0-9]/g, "") || "paper";
+  return `${lastName(authors[0] as string).toLowerCase()}${(c.year.trim() || "2026").replace(/\D/g, "")}${firstWord}`;
 }
 
 // ------------------------------------------------------- storage ---
@@ -423,7 +427,9 @@ export function loadChecked(key: string): string[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = window.localStorage.getItem(key);
-    return raw ? (JSON.parse(raw) as string[]) : [];
+    if (!raw) return [];
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter((x): x is string => typeof x === "string") : [];
   } catch {
     return [];
   }
@@ -431,5 +437,9 @@ export function loadChecked(key: string): string[] {
 
 export function saveChecked(key: string, ids: string[]): void {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(key, JSON.stringify(ids));
+  try {
+    window.localStorage.setItem(key, JSON.stringify(ids));
+  } catch {
+    /* quota / private mode — ignore */
+  }
 }

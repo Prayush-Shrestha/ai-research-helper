@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { validateResearchFile } from "@/lib/utils";
+import { formatBytes } from "@/lib/utils";
 
 export function UploadPanel({
   open,
@@ -21,8 +22,18 @@ export function UploadPanel({
   const inputRef = useRef<HTMLInputElement>(null);
   const [drag, setDrag] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selected, setSelected] = useState<File | null>(null);
 
-  if (!open) return null;
+  // Reset stale state whenever the panel is reopened (async continuation avoids sync set-state-in-effect).
+  useEffect(() => {
+    if (!open) return;
+    void (async () => {
+      await Promise.resolve();
+      setError(null);
+      setSelected(null);
+      setDrag(false);
+    })();
+  }, [open]);
 
   async function handleFile(file: File | undefined) {
     if (!file) return;
@@ -32,53 +43,50 @@ export function UploadPanel({
       return;
     }
     setError(null);
-    await onUpload(file);
+    setSelected(file);
+    try {
+      await onUpload(file);
+    } catch {
+      // Parent surfaces the failure via phase/error UI; keep the file name for context.
+      return;
+    } finally {
+      // Allow re-selecting the same file.
+      if (inputRef.current) inputRef.current.value = "";
+    }
+    setSelected(null);
   }
 
+  if (!open) return null;
+
   return (
-    <section
-      aria-label="Upload document"
-      className="page-enter"
-      style={{
-        border: "1px solid var(--color-hairline)",
-        borderRadius: "var(--radius-panel)",
-        background: "var(--color-deep-black)",
-      }}
-    >
-      <div className="flex items-start justify-between px-6 pt-6 sm:px-10 sm:pt-8">
+    <section aria-label="Upload a paper" className="gallery-card page-enter">
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="font-tech" style={{ color: "var(--color-tertiary-text)" }}>
-            ARCHIVE / INGEST
-          </p>
-          <h3
-            className="font-display mt-2"
-            style={{ fontSize: 32, lineHeight: 1.05, color: "var(--color-primary-text)" }}
-          >
-            Introduce a new document.
+          <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>UPLOAD</p>
+          <h3 className="mt-1" style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 24, fontWeight: 600, letterSpacing: "-0.009em", color: "var(--color-apple-ink)" }}>
+            Add a paper to your library.
           </h3>
-          <p className="mt-2 max-w-md text-[14px]" style={{ color: "var(--color-secondary-text)" }}>
-            PDF and DOCX documents will be processed and prepared for knowledge indexing.
+          <p className="mt-1.5" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
+            PDF or DOCX, up to 25 MB. Checked automatically on upload.
           </p>
         </div>
-        <button
-          onClick={onClose}
-          aria-label="Close upload panel"
-          className="font-tech rounded-full px-4 py-2"
-          style={{ border: "1px solid var(--color-hairline)", color: "var(--color-secondary-text)", fontSize: 10 }}
-        >
-          CLOSE ✕
+        <button onClick={onClose} aria-label="Close upload panel" className="shrink-0 p-1" style={{ fontSize: 15, color: "var(--color-link-blue)" }}>
+          Close
         </button>
       </div>
 
-      <div className="px-6 pb-6 sm:px-10 sm:pb-8">
+      <div className="mt-5">
         {!uploading ? (
           <div
             role="button"
             tabIndex={0}
-            aria-label="Drop document here or activate to select a file"
+            aria-label="Drop a file here or choose one from your device"
             onClick={() => inputRef.current?.click()}
             onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") inputRef.current?.click();
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                inputRef.current?.click();
+              }
             }}
             onDragOver={(e) => {
               e.preventDefault();
@@ -90,88 +98,50 @@ export function UploadPanel({
               setDrag(false);
               void handleFile(e.dataTransfer.files?.[0]);
             }}
-            className="mt-6 flex min-h-[220px] cursor-pointer flex-col items-center justify-center gap-3 px-6 py-10 text-center"
+            className="flex min-h-[180px] cursor-pointer flex-col items-center justify-center gap-2 px-6 py-8 text-center"
             style={{
-              border: `1px dashed ${drag ? "var(--color-research-accent)" : "var(--color-hairline)"}`,
-              borderRadius: 12,
-              background: drag ? "rgba(183,255,223,0.04)" : "var(--color-graphite)",
-              transition: "background .25s ease, border-color .25s ease",
+              border: `2px dashed ${drag ? "var(--color-electric-blue)" : "var(--color-line)"}`,
+              borderRadius: 28,
+              background: drag ? "rgba(0,113,227,0.06)" : "var(--color-fog-canvas)",
+              transition: "border-color .2s ease, background .2s ease",
             }}
           >
-            <p className="font-tech" style={{ color: "var(--color-primary-text)" }}>
-              DROP DOCUMENT HERE
+            <p style={{ fontSize: 19, fontWeight: 600, color: "var(--color-apple-ink)" }}>
+              {drag ? "Drop it — we'll take it from here." : "Drag a file here"}
             </p>
-            <p className="font-tech" style={{ color: "var(--color-tertiary-text)", fontSize: 10 }}>
-              OR
-            </p>
-            <span
-              className="font-tech rounded-full px-6 py-2.5"
-              style={{ background: "var(--color-control)", border: "1px solid var(--color-hairline)", color: "var(--color-primary-text)" }}
-            >
-              SELECT FILE
-            </span>
-            <p className="micro-label mt-1" style={{ color: "var(--color-tertiary-text)" }}>
-              PDF / DOCX — MAX 25 MB
-            </p>
-            <input
-              ref={inputRef}
-              type="file"
-              accept=".pdf,.docx"
-              className="sr-only"
-              aria-label="Select document file"
-              onChange={(e) => void handleFile(e.target.files?.[0])}
-            />
+            <p style={{ fontSize: 17, color: "var(--color-graphite)" }}>or</p>
+            <span className="primary-button mt-1" style={{ pointerEvents: "none", fontSize: 15 }}>Choose file</span>
+            <p className="mt-2" style={{ fontSize: 12, color: "var(--color-slate)" }}>PDF / DOCX · Max 25 MB</p>
+            <input ref={inputRef} type="file" accept=".pdf,.docx" className="sr-only" aria-label="Select document file" onChange={(e) => { void handleFile(e.target.files?.[0]); }} />
           </div>
         ) : (
-          <div
-            className="mt-6 px-6 py-8"
-            style={{ border: "1px solid var(--color-hairline)", borderRadius: 12, background: "var(--color-graphite)" }}
-            role="status"
-            aria-live="polite"
-          >
-            <div className="flex items-center justify-between">
-              <p className="font-tech" style={{ color: "var(--color-primary-text)" }}>
-                PROCESSING DOCUMENT
+          <div className="py-4" role="status" aria-live="polite" style={{ background: "var(--color-fog-canvas)", borderRadius: 28, padding: 24 }}>
+            <div className="flex items-center justify-between gap-3">
+              <p className="truncate" style={{ fontSize: 17, fontWeight: 500, color: "var(--color-apple-ink)" }}>
+                {selected ? selected.name : "Working on your file…"}
               </p>
-              <p className="font-tech" style={{ color: "var(--color-research-accent)" }}>
-                {progress}%
+              <p className="shrink-0" style={{ fontSize: 17, color: "var(--color-apple-ink)" }}>{progress}%</p>
+            </div>
+            {selected && (
+              <p className="mt-0.5" style={{ fontSize: 12, color: "var(--color-slate)" }}>
+                {formatBytes(selected.size)} · {selected.name.toLowerCase().endsWith(".docx") ? "DOCX" : "PDF"}
               </p>
+            )}
+            <div className="progress-sheen mt-4 h-[8px] w-full overflow-hidden" style={{ background: "var(--color-ash)", borderRadius: 99 }}>
+              <div style={{ width: `${progress}%`, height: "100%", background: "var(--color-electric-blue)", borderRadius: 99, transition: "width .3s ease" }} />
             </div>
-            <div
-              className="progress-sheen mt-4 h-[6px] w-full overflow-hidden rounded-full"
-              style={{ background: "var(--color-control)" }}
-            >
-              <div
-                style={{
-                  width: `${progress}%`,
-                  height: "100%",
-                  background: "var(--color-research-accent)",
-                  borderRadius: 99,
-                  transition: "width .3s ease",
-                }}
-              />
-            </div>
-            <p className="font-tech mt-3" style={{ color: "var(--color-ai-accent)", fontSize: 10 }}>
-              <span className="pulse-dot mr-2 inline-block" style={{ width: 6, height: 6, borderRadius: 99, background: "currentColor", verticalAlign: "1px" }} />
-              {phase.toUpperCase()}
+            <p className="mt-3" style={{ fontSize: 15, color: "var(--color-graphite)" }}>
+              <span className="pulse-dot mr-2 inline-block" style={{ width: 7, height: 7, borderRadius: 99, background: "var(--color-electric-blue)", verticalAlign: "1px" }} />
+              {phase}…
             </p>
           </div>
         )}
 
         {error && (
-          <p role="alert" className="font-tech mt-4" style={{ color: "#ff9d9d", fontSize: 11 }}>
-            {error.toUpperCase()}
+          <p role="alert" className="mt-4" style={{ fontSize: 15, color: "var(--color-alert)" }}>
+            {error}
           </p>
         )}
-
-        <div className="mt-4 flex items-center justify-between">
-          <p className="micro-label" style={{ color: "var(--color-tertiary-text)" }}>
-            SYSTEM READY — AWAITING ARTIFACT
-          </p>
-          <p className="micro-label hidden sm:block" style={{ color: "var(--color-tertiary-text)" }}>
-            EXTRACT → INDEX → LINK
-          </p>
-        </div>
       </div>
     </section>
   );

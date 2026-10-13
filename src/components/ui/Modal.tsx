@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, type ReactNode } from "react";
 import { cx } from "@/lib/utils";
 
 interface ModalProps {
@@ -8,11 +8,11 @@ interface ModalProps {
   onClose: () => void;
   title: string;
   description?: string;
-  children: React.ReactNode;
+  children: ReactNode;
   labelledBy?: string;
 }
 
-export function Modal({ open, onClose, title, description, children }: ModalProps) {
+export function Modal({ open, onClose, title, description, children, labelledBy }: ModalProps) {
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -32,7 +32,7 @@ export function Modal({ open, onClose, title, description, children }: ModalProp
     <div
       className="fixed inset-0 z-50 flex items-end justify-center p-4 animate-fade-in sm:items-center"
       role="presentation"
-      style={{ background: "rgba(5,5,5,0.7)", backdropFilter: "blur(8px)" }}
+      style={{ background: "rgba(29,29,31,0.4)" }}
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -40,13 +40,14 @@ export function Modal({ open, onClose, title, description, children }: ModalProp
       <div
         role="dialog"
         aria-modal="true"
-        aria-label={title}
-        className="w-full max-w-md p-6 animate-slide-up"
-        style={{ border: "1px solid var(--color-hairline)", borderRadius: "var(--radius-panel)", background: "var(--color-deep-black)" }}
+        aria-label={labelledBy ? undefined : title}
+        aria-labelledby={labelledBy}
+        className="w-full max-w-md p-7 animate-slide-up"
+        style={{ borderRadius: 28, background: "var(--color-pure-white)" }}
       >
-        <h2 className="text-[17px] font-semibold tracking-tight" style={{ color: "var(--color-primary-text)" }}>{title}</h2>
-        {description && <p className="mt-1 text-sm leading-6" style={{ color: "var(--color-secondary-text)" }}>{description}</p>}
-        <div className={cx("mt-4")}>{children}</div>
+        <h2 className="tracking-tight" style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 24, fontWeight: 600, letterSpacing: "-0.009em", color: "var(--color-apple-ink)" }}>{title}</h2>
+        {description && <p className="mt-1.5 text-[17px] leading-7" style={{ color: "var(--color-graphite)" }}>{description}</p>}
+        <div className={cx("mt-5")}>{children}</div>
       </div>
     </div>
   );

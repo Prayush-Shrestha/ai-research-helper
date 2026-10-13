@@ -25,7 +25,7 @@ export function DocumentTable({ documents, onRename, onDelete }: DocumentTablePr
       >
         <table className="w-full min-w-[720px] text-left text-sm">
           <thead>
-            <tr className="font-tech" style={{ borderBottom: "1px solid var(--color-hairline)", color: "var(--color-tertiary-text)", fontSize: 9 }}>
+            <tr className="font-tech" style={{ borderBottom: "1px solid var(--color-hairline)", color: "var(--color-graphite)", fontSize: 9 }}>
               <th scope="col" className="px-5 py-3 font-medium">Name</th>
               <th scope="col" className="px-5 py-3 font-medium">Type</th>
               <th scope="col" className="px-5 py-3 font-medium">Size</th>
@@ -38,14 +38,14 @@ export function DocumentTable({ documents, onRename, onDelete }: DocumentTablePr
             {documents.map((d) => (
               <tr key={d.id} className="doc-row" style={{ borderBottom: "1px solid var(--color-hairline)" }}>
                 <td className="max-w-[280px] px-5 py-3.5">
-                  <Link href={`/documents/${d.id}`} className="block truncate font-medium" style={{ color: "var(--color-primary-text)" }}>
+                  <Link href={`/documents/${d.id}`} className="block truncate font-medium" style={{ color: "var(--color-frost)" }}>
                     {d.title}
                   </Link>
-                  <span className="block truncate text-xs" style={{ color: "var(--color-tertiary-text)" }}>{d.original_filename}</span>
+                  <span className="block truncate text-xs" style={{ color: "var(--color-graphite)" }}>{d.original_filename}</span>
                 </td>
-                <td className="px-5 py-3.5" style={{ color: "var(--color-secondary-text)" }}>{d.file_type}</td>
-                <td className="px-5 py-3.5" style={{ color: "var(--color-secondary-text)" }}>{formatBytes(d.file_size)}</td>
-                <td className="px-5 py-3.5" style={{ color: "var(--color-secondary-text)" }}>{formatDate(d.created_at)}</td>
+                <td className="px-5 py-3.5" style={{ color: "var(--color-ash)" }}>{d.file_type}</td>
+                <td className="px-5 py-3.5" style={{ color: "var(--color-ash)" }}>{formatBytes(d.file_size)}</td>
+                <td className="px-5 py-3.5" style={{ color: "var(--color-ash)" }}>{formatDate(d.created_at)}</td>
                 <td className="px-5 py-3.5">
                   <StatusBadge status={d.status} />
                 </td>
@@ -54,7 +54,7 @@ export function DocumentTable({ documents, onRename, onDelete }: DocumentTablePr
                     <Link
                       href={`/documents/${d.id}`}
                       className="font-tech rounded-full px-3 py-1.5"
-                      style={{ border: "1px solid var(--color-hairline)", background: "var(--color-control)", color: "var(--color-secondary-text)", fontSize: 10 }}
+                      style={{ border: "1px solid var(--color-hairline)", background: "var(--color-control)", color: "var(--color-ash)", fontSize: 10 }}
                     >
                       Open
                     </Link>
@@ -65,16 +65,21 @@ export function DocumentTable({ documents, onRename, onDelete }: DocumentTablePr
                       aria-label={`More actions for ${d.title}`}
                       onClick={() => setOpenMenu(openMenu === d.id ? null : d.id)}
                       className="rounded-full px-2.5 py-1.5"
-                      style={{ border: "1px solid var(--color-hairline)", color: "var(--color-secondary-text)" }}
+                      style={{ border: "1px solid var(--color-hairline)", color: "var(--color-ash)" }}
                     >
                       •••
                     </button>
                     {openMenu === d.id && (
                       <>
-                        <span
-                          className="fixed inset-0 z-10"
+                        <button
+                          type="button"
+                          aria-label="Close menu"
+                          className="fixed inset-0 z-10 cursor-default"
                           onClick={() => setOpenMenu(null)}
-                          aria-hidden
+                          onKeyDown={(e) => {
+                            if (e.key === "Escape") setOpenMenu(null);
+                          }}
+                          style={{ background: "transparent", border: "none", padding: 0 }}
                         />
                         <div
                           role="menu"
@@ -89,7 +94,7 @@ export function DocumentTable({ documents, onRename, onDelete }: DocumentTablePr
                               onRename(d);
                             }}
                             className="block w-full px-3 py-2 text-left text-[13px]"
-                            style={{ color: "var(--color-primary-text)" }}
+                            style={{ color: "var(--color-frost)" }}
                           >
                             Rename
                           </button>
@@ -101,7 +106,7 @@ export function DocumentTable({ documents, onRename, onDelete }: DocumentTablePr
                               onDelete(d);
                             }}
                             className="block w-full px-3 py-2 text-left text-[13px]"
-                            style={{ color: "#ff9d9d" }}
+                            style={{ color: "var(--color-crimson-signal)" }}
                           >
                             Delete
                           </button>

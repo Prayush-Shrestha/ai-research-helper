@@ -1,4 +1,4 @@
-import { InputHTMLAttributes, forwardRef } from "react";
+import { forwardRef, type InputHTMLAttributes } from "react";
 import { cx } from "@/lib/utils";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -14,12 +14,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   const inputId = id ?? `input-${label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
   return (
     <div className="w-full">
-      <label htmlFor={inputId} className="mb-1.5 block text-[13px] font-medium" style={{ color: "var(--color-secondary-text)" }}>
+      <label htmlFor={inputId} className="mb-1.5 block text-[17px]" style={{ color: "var(--color-apple-ink)" }}>
         {label}
         {required && (
-          <span aria-hidden className="ml-0.5" style={{ color: "#ff9d9d" }}>
-            *
-          </span>
+          <span aria-hidden className="ml-1" style={{ color: "var(--color-alert)" }}>*</span>
         )}
       </label>
       <input
@@ -28,23 +26,16 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         required={required}
         aria-invalid={Boolean(error)}
         aria-describedby={error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined}
-        className={cx(
-          "h-10 w-full rounded-xl border px-3 text-sm placeholder:text-[#62686A]",
-          "transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50",
-          error
-            ? "border-[#5A3535]"
-            : "hover:border-[#34383B] focus:border-[#B7FFDF]",
-          className
-        )}
-        style={{ background: "var(--color-graphite)", borderColor: error ? undefined : "var(--color-hairline)", color: "var(--color-primary-text)" }}
+        className={cx("field-input", className)}
+        style={error ? { borderColor: "var(--color-alert)" } : undefined}
         {...rest}
       />
       {error ? (
-        <p id={`${inputId}-error`} role="alert" className="mt-1.5 text-[13px]" style={{ color: "#ff9d9d" }}>
+        <p id={`${inputId}-error`} role="alert" className="mt-1.5 text-[15px]" style={{ color: "var(--color-alert)" }}>
           {error}
         </p>
       ) : hint ? (
-        <p id={`${inputId}-hint`} className="mt-1.5 text-[13px]" style={{ color: "var(--color-tertiary-text)" }}>
+        <p id={`${inputId}-hint`} className="mt-1.5 text-[15px]" style={{ color: "var(--color-slate)" }}>
           {hint}
         </p>
       ) : null}

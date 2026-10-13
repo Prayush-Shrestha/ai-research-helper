@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/hooks/useAuth";
 
-export default function AppGroupLayout({ children }: { children: React.ReactNode }) {
+export default function AppGroupLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
 
@@ -18,9 +19,9 @@ export default function AppGroupLayout({ children }: { children: React.ReactNode
     return (
       <div className="flex min-h-screen flex-col" style={{ background: "var(--color-void)" }}>
         <Navbar />
-        <div className="mx-auto w-full px-5 py-20 sm:px-8" style={{ maxWidth: "var(--page-width)" }}>
-          <p className="font-tech pulse-dot" style={{ color: "var(--color-secondary-text)" }}>
-            RESTORING WORKSPACE…
+        <div className="mx-auto w-full px-5 py-20 sm:px-8" style={{ maxWidth: "var(--page-max-width)" }}>
+          <p className="tech-label pulse-dot" style={{ color: "var(--color-graphite)" }}>
+            Restoring workspace…
           </p>
         </div>
       </div>
@@ -32,7 +33,7 @@ export default function AppGroupLayout({ children }: { children: React.ReactNode
   return (
     <div className="min-h-screen" style={{ background: "var(--color-void)" }}>
       <Navbar />
-      <div className="page-enter">{children}</div>
+      <AppShell>{children}</AppShell>
       <Footer />
     </div>
   );

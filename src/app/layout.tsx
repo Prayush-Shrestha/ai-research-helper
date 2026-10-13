@@ -1,39 +1,60 @@
-import type { Metadata } from "next";
-import { Cormorant_Garamond, IBM_Plex_Mono, Inter } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import type { ReactNode } from "react";
+import Script from "next/script";
+import { Inter, Inter_Tight } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
-const cormorant = Cormorant_Garamond({
+const interTight = Inter_Tight({
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["600"],
   variable: "--font-display",
   display: "swap",
 });
-const plexMono = IBM_Plex_Mono({
+
+const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-mono",
+  weight: ["400", "500", "600"],
+  variable: "--font-text",
   display: "swap",
 });
 
 export const metadata: Metadata = {
   title: {
-    default: "ResearchOS — Research Workspace for Students",
+    default: "ResearchOS — Read Less. Understand More.",
     template: "%s · ResearchOS",
   },
   description:
-    "ResearchOS is a quiet research laboratory for university students: upload papers, get published, and turn research into admits.",
+    "ResearchOS is your AI-powered research workspace. Explore papers, uncover findings, and turn complex academic documents into actionable knowledge.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f5f5f7" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
+};
+
+/**
+ * Sets data-theme before first paint so the saved (or OS) mode
+ * applies with no flash. Mirrors ThemeProvider's logic.
+ */
+const THEME_INIT_SCRIPT = `(function(){try{var s=localStorage.getItem("rl_theme");var t=s==="light"||s==="dark"?s:(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.dataset.theme=t;}catch(e){document.documentElement.dataset.theme="light";}})();`;
+
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${cormorant.variable} ${plexMono.variable} h-full`}>
+    <html lang="en" className={`${interTight.variable} ${inter.variable} h-full`} suppressHydrationWarning>
       <body
         className="min-h-full antialiased"
-        style={{ background: "var(--color-void)", color: "var(--color-primary-text)" }}
+        style={{ background: "var(--color-fog-canvas)", color: "var(--color-apple-ink)" }}
       >
-        <AuthProvider>{children}</AuthProvider>
+        <Script id="theme-init" strategy="beforeInteractive">
+          {THEME_INIT_SCRIPT}
+        </Script>
+        <ThemeProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import type { LoginPayload, RegisterPayload, User } from "@/types/user";
 import * as api from "@/lib/api";
@@ -22,7 +22,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 const MOCK_TOKEN = "mock-token-dev-only";
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
@@ -31,6 +31,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(() => {
     clearToken();
     setUser(null);
+    setAuthError(null);
+    try {
+      // Never leak the previous user's local demo data to the next login.
+      window.localStorage.removeItem("ara_mock_docs");
+      window.localStorage.removeItem("ara_mock_user");
+    } catch {
+      /* ignore */
+    }
     router.push("/login");
   }, [router]);
 
@@ -77,11 +85,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const { token, user: apiUser } = await api.loginUser(payload);
       setToken(token);
-      if (apiUser) {
-        setUser(apiUser);
-      } else {
-        const me = await api.getCurrentUser();
-        setUser(me);
+      try {
+        if (apiUser) {
+          setUser(apiUser);
+        } else {
+          const me = await api.getCurrentUser();
+          setUser(me);
+        }
+      } catch {
+        // Don't leave a half-logged-in token behind if the profile fetch fails.
+        clearToken();
+        setUser(null);
+        throw new ApiError("Sign in failed. Please try again.", 0);
       }
     } catch (err) {
       // Dev fallback only: if backend is unreachable, use isolated mock.
@@ -106,8 +121,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Many FastAPI starters require a separate login after register.
       const { token } = await api.loginUser({ email: payload.email, password: payload.password });
       setToken(token);
-      const me = await api.getCurrentUser();
-      setUser(me);
+      try {
+        const me = await api.getCurrentUser();
+        setUser(me);
+      } catch {
+        clearToken();
+        setUser(null);
+        throw new ApiError("Registration succeeded but loading your profile failed. Please sign in.", 0);
+      }
     } catch (err) {
       if (shouldUseMock() && err instanceof ApiError && err.status === 0) {
         const mockUser = await mockRegister(payload.name, payload.email);

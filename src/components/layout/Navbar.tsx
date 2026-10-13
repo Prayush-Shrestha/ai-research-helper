@@ -3,266 +3,143 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogoMark } from "@/components/layout/Logo";
 import { useAuth } from "@/hooks/useAuth";
-import { cx } from "@/lib/utils";
+import { ThemeToggle, ThemeRow } from "@/components/layout/ThemeToggle";
 
-const APP_LINKS = [
-  { href: "/dashboard", label: "Library" },
-  { href: "/documents", label: "Research" },
-  { href: "/publish", label: "Publish" },
-  { href: "/toolkit", label: "Toolkit" },
-  { href: "/roadmap", label: "Roadmap" },
-  { href: "/assistant", label: "Assistant" },
-  { href: "/guide", label: "Guide" },
+const LINKS = [
+  { href: "#product", label: "Product" },
+  { href: "#features", label: "Features" },
+  { href: "#workflow", label: "How It Works" },
 ];
-
-const PUBLIC_LINKS = [
-  { href: "/dashboard", label: "Library" },
-  { href: "/publish", label: "Publish" },
-  { href: "/toolkit", label: "Toolkit" },
-  { href: "/roadmap", label: "Roadmap" },
-  { href: "/guide", label: "Guide" },
-];
-
-function isActive(pathname: string | null, href: string): boolean {
-  if (!pathname) return false;
-  if (href === "/dashboard") return pathname === "/dashboard";
-  return pathname === href || pathname.startsWith(`${href}/`);
-}
 
 /**
- * Floating pill navbar — one component used by the landing page,
- * auth screens and the whole protected workspace.
- *
- * Shape (inspired by modern agency navs, built for this app):
- *   [ logo | wordmark ]   [ link link link link ]   [ CTA / user ]
- * all sitting inside a single rounded bar.
+ * Gallery nav bar — dark translucent band, 48px, 12px links.
+ * Floats over the fog canvas with backdrop blur, no borders.
  */
 export function Navbar() {
   const pathname = usePathname();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
 
-  const links = user ? APP_LINKS : PUBLIC_LINKS;
-
+  // Close the mobile drawer on navigation (e.g. browser back/forward).
   useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [open ]);
+    setOpen(false);
+  }, [pathname]);
+
+  const isLanding = pathname === "/";
 
   return (
     <div
-      className="sticky z-50 mx-auto w-full px-4 pt-3 sm:px-6"
-      style={{ maxWidth: 1230, top: 12 }}
+      className="sticky top-0 z-50"
+      style={{ background: "rgba(29,29,31,0.8)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}
     >
-      <div
-        className="flex items-center justify-between gap-3"
-        style={{
-          border: "1px solid rgba(231,231,226,0.13)",
-          borderRadius: 999,
-          background: "rgba(8,8,8,0.82)",
-          backdropFilter: "blur(14px)",
-          WebkitBackdropFilter: "blur(14px)",
-          padding: 8,
-          paddingLeft: 18,
-        }}
+      <header
+        className="mx-auto flex h-[48px] items-center justify-between px-4 sm:px-5"
+        style={{ maxWidth: 1024 }}
       >
-        {/* left — brand */}
         <Link
           href={user ? "/dashboard" : "/"}
-          aria-label="Research home"
-          className="flex shrink-0 items-center gap-3"
+          aria-label="ResearchOS home"
+          style={{ fontFamily: "var(--font-sf-pro-text)", fontSize: 17, fontWeight: 600, letterSpacing: "-0.019em", color: "#f5f5f7" }}
         >
-          <LogoMark />
-          <span
-            className="font-tech hidden sm:block"
-            style={{ fontSize: 12, letterSpacing: "1.6px" }}
-          >
-            <span style={{ color: "var(--color-primary-text)" }}>Research</span>
-            <span style={{ color: "var(--color-research-accent)" }}>OS</span>
-          </span>
+          ResearchOS
         </Link>
 
-        {/* center — link pill (desktop) */}
-        <nav
-          aria-label="Primary"
-          className="hidden items-center gap-1 lg:flex"
-          style={{
-            border: "1px solid #26282B",
-            borderRadius: 999,
-            background: "#131315",
-            padding: 5,
-          }}
-        >
-          {links.map((item) => {
-            const active = isActive(pathname, item.href);
-            return (
+        {isLanding ? (
+          <nav aria-label="Primary" className="hidden items-center gap-7 md:flex">
+            {LINKS.map((l) => (
               <Link
-                key={item.href}
-                href={item.href}
-                aria-current={active ? "page" : undefined}
-                className={cx("font-tech rounded-full")}
-                style={{
-                  fontSize: 10,
-                  padding: "9px 15px",
-                  background: active ? "var(--color-control)" : "transparent",
-                  border: active ? "1px solid var(--color-hairline)" : "1px solid transparent",
-                  color: active ? "var(--color-primary-text)" : "var(--color-secondary-text)",
-                }}
+                key={l.href}
+                href={l.href}
+                style={{ fontSize: 12, fontWeight: 400, letterSpacing: "-0.01em", color: "#f5f5f7", opacity: 0.85 }}
               >
-                {item.label}
+                {l.label}
               </Link>
-            );
-          })}
-        </nav>
+            ))}
+            <ThemeToggle tone="dark" />
+            {user ? (
+              <Link href="/dashboard" className="rounded-full px-4 py-1.5" style={{ fontSize: 12, background: "var(--color-electric-blue)", color: "#fff" }}>
+                Open
+              </Link>
+            ) : (
+              <Link href="/register" className="rounded-full px-4 py-1.5" style={{ fontSize: 12, background: "var(--color-electric-blue)", color: "#fff" }}>
+                Get started
+              </Link>
+            )}
+          </nav>
+        ) : (
+          <nav aria-label="Primary" className="hidden items-center gap-7 md:flex">
+            {[
+              ["/dashboard", "Workspace"],
+              ["/documents", "Library"],
+              ["/assistant", "Assistant"],
+              ["/guide", "Guide"],
+            ].map(([href, label]) => (
+              <Link
+                key={href}
+                href={href}
+                aria-current={pathname === href ? "page" : undefined}
+                style={{ fontSize: 12, fontWeight: 400, letterSpacing: "-0.01em", color: "#f5f5f7", opacity: pathname === href ? 1 : 0.75 }}
+              >
+                {label}
+              </Link>
+            ))}
+            <ThemeToggle tone="dark" />
+          </nav>
+        )}
 
-        {/* right — CTA / session */}
-        <div className="flex shrink-0 items-center gap-2">
-          {user ? (
-            <>
-              <Link
-                href="/documents"
-                className="font-tech hidden rounded-full px-4 py-2.5 sm:inline-block"
-                style={{
-                  fontSize: 10,
-                  background: "transparent",
-                  border: "1px solid transparent",
-                  color: "var(--color-secondary-text)",
-                }}
-              >
-                SEARCH
-              </Link>
-              <button
-                onClick={logout}
-                title={user.email}
-                className="font-tech rounded-full px-5 py-2.5"
-                style={{
-                  fontSize: 10,
-                  background: "var(--color-primary-text)",
-                  color: "#050505",
-                }}
-              >
-                {user.name ? user.name.split(" ")[0].toUpperCase().slice(0, 10) : "USER"}
-              </button>
-            </>
-          ) : (
-            <>
-              <Link
-                href="/login"
-                className="font-tech hidden rounded-full px-4 py-2.5 sm:inline-block"
-                style={{ fontSize: 10, color: "var(--color-secondary-text)" }}
-              >
-                SIGN IN
-              </Link>
-              <Link
-                href="/register"
-                className="font-tech rounded-full px-5 py-2.5 sm:px-6"
-                style={{
-                  fontSize: 10,
-                  background: "var(--color-primary-text)",
-                  color: "#050505",
-                }}
-              >
-                ENTER →
-              </Link>
-            </>
+        <div className="flex items-center gap-1 md:hidden">
+          <ThemeToggle tone="dark" />
+          {!isLanding && user && (
+            <Link href="/documents" className="rounded-full px-3.5 py-1" style={{ fontSize: 12, background: "var(--color-electric-blue)", color: "#fff" }}>
+              New
+            </Link>
           )}
-
-          {/* mobile toggle */}
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-label={open ? "Close menu" : "Open menu"}
-            className="font-tech rounded-full px-4 py-2.5 lg:hidden"
-            style={{
-              fontSize: 10,
-              border: "1px solid var(--color-hairline)",
-              background: "var(--color-control)",
-              color: "var(--color-secondary-text)",
-            }}
+            className="flex h-9 w-9 flex-col items-center justify-center gap-1.5"
+            style={{ color: "#f5f5f7" }}
           >
-            {open ? "CLOSE ✕" : "MENU ☰"}
+            <span aria-hidden style={{ display: "block", width: 18, height: 1.5, background: "currentColor", borderRadius: 2 }} />
+            <span aria-hidden style={{ display: "block", width: 18, height: 1.5, background: "currentColor", borderRadius: 2 }} />
           </button>
         </div>
-      </div>
+      </header>
 
-      {/* mobile dropdown */}
       {open && (
-        <nav
-          aria-label="Primary mobile"
-          className="mt-2 px-2 py-3 animate-slide-up lg:hidden"
-          style={{
-            border: "1px solid var(--color-hairline)",
-            borderRadius: 22,
-            background: "rgba(10,10,10,0.96)",
-            backdropFilter: "blur(14px)",
-          }}
-        >
-          {links.map((item) => {
-            const active = isActive(pathname, item.href);
-            return (
+        <nav aria-label="Primary mobile" className="animate-slide-up px-5 pb-6 md:hidden" style={{ background: "rgba(29,29,31,0.96)" }}>
+          <div className="flex flex-col">
+            {(isLanding ? LINKS.map((l) => ({ href: l.href, label: l.label })) : [
+              { href: "/dashboard", label: "Workspace" },
+              { href: "/documents", label: "Library" },
+              { href: "/assistant", label: "Assistant" },
+              { href: "/collections", label: "Collections" },
+              { href: "/notes", label: "Notes" },
+              { href: "/guide", label: "Guide" },
+            ]).map((l) => (
               <Link
-                key={item.href}
-                href={item.href}
+                key={l.href}
+                href={l.href}
                 onClick={() => setOpen(false)}
-                aria-current={active ? "page" : undefined}
-                className="font-tech block rounded-full px-5 py-3"
-                style={{
-                  fontSize: 11,
-                  background: active ? "var(--color-control)" : "transparent",
-                  color: active ? "var(--color-primary-text)" : "var(--color-secondary-text)",
-                }}
+                className="py-3.5"
+                style={{ fontSize: 17, color: "#f5f5f7", borderBottom: "1px solid rgba(245,245,247,0.15)" }}
               >
-                {item.label}
+                {l.label}
               </Link>
-            );
-          })}
-          <div
-            className="mx-3 mt-2 flex items-center justify-between gap-3 pt-3"
-            style={{ borderTop: "1px solid var(--color-hairline)" }}
-          >
+            ))}
             {user ? (
-              <>
-                <p className="font-tech truncate" style={{ color: "var(--color-tertiary-text)", fontSize: 10 }}>
-                  {user.email?.toUpperCase()}
-                </p>
-                <button
-                  onClick={() => {
-                    setOpen(false);
-                    logout();
-                  }}
-                  className="font-tech shrink-0 rounded-full px-5 py-2.5"
-                  style={{ fontSize: 10, background: "var(--color-primary-text)", color: "#050505" }}
-                >
-                  SIGN OUT
-                </button>
-              </>
+              <Link href="/documents" onClick={() => setOpen(false)} className="mt-4 rounded-full py-2.5 text-center" style={{ fontSize: 17, background: "var(--color-electric-blue)", color: "#fff" }}>
+                New research
+              </Link>
             ) : (
-              <>
-                <Link
-                  href="/login"
-                  onClick={() => setOpen(false)}
-                  className="font-tech rounded-full px-5 py-2.5"
-                  style={{ fontSize: 10, color: "var(--color-secondary-text)" }}
-                >
-                  SIGN IN
-                </Link>
-                <Link
-                  href="/register"
-                  onClick={() => setOpen(false)}
-                  className="font-tech rounded-full px-5 py-2.5"
-                  style={{ fontSize: 10, background: "var(--color-primary-text)", color: "#050505" }}
-                >
-                  ENTER →
-                </Link>
-              </>
+              <Link href="/register" onClick={() => setOpen(false)} className="mt-4 rounded-full py-2.5 text-center" style={{ fontSize: 17, background: "var(--color-electric-blue)", color: "#fff" }}>
+                Get started
+              </Link>
             )}
+            <ThemeRow dark onNavigate={() => setOpen(false)} />
           </div>
         </nav>
       )}

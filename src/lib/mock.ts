@@ -79,12 +79,15 @@ function seedDocuments(userId: string): ResearchDocument[] {
 
 export function getMockUser(): User {
   if (typeof window === "undefined") {
-    return { id: "mock-user", name: "Alex Morgan", email: "alex@university.edu", created_at: new Date().toISOString() };
+    return { id: "mock-user-1", name: "Alex Morgan", email: "alex@university.edu", created_at: new Date().toISOString() };
   }
   const raw = window.localStorage.getItem(USER_KEY);
   if (raw) {
     try {
-      return JSON.parse(raw) as User;
+      const parsed: unknown = JSON.parse(raw);
+      if (parsed && typeof parsed === "object" && typeof (parsed as User).id === "string") {
+        return parsed as User;
+      }
     } catch {
       /* reseed */
     }
@@ -95,12 +98,21 @@ export function getMockUser(): User {
     email: "alex@university.edu",
     created_at: new Date().toISOString(),
   };
-  window.localStorage.setItem(USER_KEY, JSON.stringify(user));
+  try {
+    window.localStorage.setItem(USER_KEY, JSON.stringify(user));
+  } catch {
+    /* quota / private mode — ignore */
+  }
   return user;
 }
 
 export function setMockUser(user: User): void {
-  window.localStorage.setItem(USER_KEY, JSON.stringify(user));
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(USER_KEY, JSON.stringify(user));
+  } catch {
+    /* ignore */
+  }
 }
 
 export function getMockDocuments(): ResearchDocument[] {
@@ -108,18 +120,28 @@ export function getMockDocuments(): ResearchDocument[] {
   const raw = window.localStorage.getItem(DOCS_KEY);
   if (raw) {
     try {
-      return JSON.parse(raw) as ResearchDocument[];
+      const parsed: unknown = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed as ResearchDocument[];
     } catch {
       /* reseed below */
     }
   }
   const seeded = seedDocuments(getMockUser().id);
-  window.localStorage.setItem(DOCS_KEY, JSON.stringify(seeded));
+  try {
+    window.localStorage.setItem(DOCS_KEY, JSON.stringify(seeded));
+  } catch {
+    /* ignore */
+  }
   return seeded;
 }
 
 export function saveMockDocuments(docs: ResearchDocument[]): void {
-  window.localStorage.setItem(DOCS_KEY, JSON.stringify(docs));
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(DOCS_KEY, JSON.stringify(docs));
+  } catch {
+    /* ignore */
+  }
 }
 
 export function resetMockData(): void {

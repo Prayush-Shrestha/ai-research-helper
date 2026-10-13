@@ -1,8 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import Link from "next/link";
-import { SectionDivider } from "@/components/editorial/TechnicalLabel";
 import { VENUES, daysUntil, formatDeadline, type Venue } from "@/lib/student";
 
 type Filter = "ALL" | "Conference" | "Journal";
@@ -11,16 +10,16 @@ type Sort = "deadline" | "acceptance";
 function Countdown({ v }: { v: Venue }) {
   if (!v.deadline) {
     return (
-      <span className="font-tech" style={{ color: "var(--color-ai-accent)", fontSize: 10 }}>
-        ROLLING — APPLY ANYTIME
+      <span className="tag-pill">
+        Rolling · apply anytime
       </span>
     );
   }
   const days = daysUntil(v.deadline);
-  const urgent = days <= 45;
+  const urgent = days <= 45 && days >= 0;
   return (
-    <span className="font-tech" style={{ color: urgent ? "#ff9d9d" : "var(--color-research-accent)", fontSize: 10 }}>
-      {days < 0 ? "PASSED — SEE NEXT EDITION" : days === 0 ? "DUE TODAY" : `${days} DAYS LEFT · ${formatDeadline(v.deadline)}`}
+    <span className="tag-pill" style={urgent ? { background: "rgba(215,0,21,0.08)", color: "var(--color-alert)" } : undefined}>
+      {days < 0 ? "Passed · see next edition" : days === 0 ? "Due today" : `${days} days left · ${formatDeadline(v.deadline)}`}
     </span>
   );
 }
@@ -51,153 +50,127 @@ export default function PublishPage() {
     return out;
   }, [search, filter, sort]);
 
-  const pill = (active: boolean): React.CSSProperties => ({
-    border: "1px solid var(--color-hairline)",
-    background: active ? "var(--color-primary-text)" : "var(--color-control)",
-    color: active ? "#050505" : "var(--color-secondary-text)",
-    borderRadius: 100,
-    fontSize: 10,
+  const chip = (active: boolean): CSSProperties => ({
+    border: "none",
+    background: active ? "var(--color-apple-ink)" : "var(--color-ash)",
+    color: active ? "#fff" : "var(--color-apple-ink)",
+    borderRadius: 999,
+    fontSize: 15,
   });
 
   return (
-    <main className="mx-auto px-5 sm:px-8" style={{ maxWidth: "var(--page-width)" }}>
-      <section className="pt-12 sm:pt-16">
-        <p className="font-tech" style={{ color: "var(--color-tertiary-text)" }}>PUBLISH / 07 — FOR STUDENTS</p>
-        <h1
-          className="font-display mt-2"
-          style={{ fontSize: "clamp(48px,7vw,84px)", lineHeight: 0.95, letterSpacing: "-2px" }}
-        >
-          Get published
-          <br />
-          before you apply.
+    <div>
+      <section className="pt-6 text-center sm:pt-10">
+        <h1 className="type-heading mx-auto" style={{ color: "var(--color-apple-ink)" }}>
+          Get published.
         </h1>
-        <p className="mt-4 max-w-lg text-[15px]" style={{ color: "var(--color-secondary-text)", lineHeight: 1.7 }}>
-          One published line on your SOP changes how committees read you. These venues welcome
-          student and first-time authors — pick one by deadline and work backwards.
+        <p className="mx-auto mt-4 max-w-xl" style={{ fontSize: 21, color: "var(--color-graphite)" }}>
+          One published line changes how committees read you. These venues welcome
+          students and first-time authors.
         </p>
       </section>
 
-      <div className="mt-10"><SectionDivider label="WHY THIS MATTERS ABROAD" /></div>
-      <section className="grid gap-8 py-8 sm:grid-cols-3">
+      <section className="mx-auto mt-8 grid gap-5 sm:grid-cols-3" style={{ maxWidth: 1024 }} aria-label="Why publish">
         {[
-          ["PROOF, NOT PROMISES", "A paper says you can finish research. Grades only say you can pass exams."],
-          ["SHORT COUNTS", "Workshops and 2–4 page tracks accept student work. You don't need a full paper."],
-          ["ROLLING HAS NO GATE", "Journals with rolling review let you submit the month your draft is ready."],
+          ["Proof, not promises", "A paper says you can finish research. Grades say you can pass exams."],
+          ["Short counts", "Workshops and 2–4 page tracks accept student work. No full paper needed."],
+          ["Rolling has no gate", "Rolling-review journals let you submit the month your draft is ready."],
         ].map(([k, v]) => (
-          <div key={k}>
-            <p className="micro-label" style={{ color: "var(--color-tertiary-text)" }}>{k}</p>
-            <p className="mt-2 text-[14px]" style={{ color: "var(--color-secondary-text)", lineHeight: 1.7 }}>{v}</p>
+          <div key={k} className="gallery-card">
+            <p style={{ fontSize: 19, fontWeight: 600, letterSpacing: "-0.015em", color: "var(--color-apple-ink)" }}>{k}</p>
+            <p className="mt-1.5" style={{ fontSize: 17, color: "var(--color-graphite)" }}>{v}</p>
           </div>
         ))}
       </section>
 
-      <SectionDivider label="VENUES THAT WELCOME STUDENTS" />
-
-      <section aria-label="Venue controls" className="mt-6" style={{ borderTop: "1px solid var(--color-hairline)", borderBottom: "1px solid var(--color-hairline)", padding: "20px 0" }}>
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex flex-1 items-center gap-3">
-            <span className="font-tech" style={{ color: "var(--color-tertiary-text)" }}>⌕</span>
-            <label htmlFor="venue-search" className="sr-only">Search venues</label>
-            <input
-              id="venue-search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="SEARCH VENUES OR FIELDS —"
-              autoComplete="off"
-              className="font-tech w-full bg-transparent py-2 outline-none placeholder:text-[#62686A]"
-              style={{ color: "var(--color-primary-text)", fontSize: 12 }}
-            />
-            {search && (
-              <button onClick={() => setSearch("")} aria-label="Clear search" className="font-tech" style={{ color: "var(--color-tertiary-text)", fontSize: 10 }}>CLEAR ✕</button>
-            )}
-          </div>
+      <section aria-label="Find a venue" className="mx-auto mt-8" style={{ maxWidth: 680 }}>
+        <div className="flex items-center gap-3 px-5 py-3.5" style={{ background: "var(--color-pure-white)", borderRadius: 980, border: "1px solid var(--color-line)" }}>
+          <span aria-hidden style={{ color: "var(--color-slate)", fontSize: 17 }}>⌕</span>
+          <label htmlFor="venue-search" className="sr-only">Search venues</label>
+          <input
+            id="venue-search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search venues or fields"
+            autoComplete="off"
+            className="w-full bg-transparent text-[17px] outline-none"
+            style={{ color: "var(--color-apple-ink)" }}
+          />
+          {search && (
+            <button onClick={() => setSearch("")} aria-label="Clear search" style={{ fontSize: 15, color: "var(--color-link-blue)" }}>Clear</button>
+          )}
         </div>
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          <span className="micro-label mr-1" style={{ color: "var(--color-tertiary-text)" }}>TYPE</span>
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
           {(["ALL", "Conference", "Journal"] as Filter[]).map((f) => (
-            <button key={f} onClick={() => setFilter(f)} aria-pressed={filter === f} className="font-tech rounded-full px-4 py-1.5" style={pill(filter === f)}>
-              {f === "ALL" ? "ALL" : f === "Conference" ? "CONFERENCES" : "JOURNALS"}
+            <button key={f} onClick={() => setFilter(f)} aria-pressed={filter === f} className="px-4 py-1.5" style={chip(filter === f)}>
+              {f === "ALL" ? "All" : f === "Conference" ? "Conferences" : "Journals"}
             </button>
           ))}
-          <span className="micro-label ml-4 mr-1" style={{ color: "var(--color-tertiary-text)" }}>SORT</span>
+          <span aria-hidden style={{ color: "var(--color-line)", margin: "0 4px" }}>|</span>
           {(["deadline", "acceptance"] as Sort[]).map((s) => (
-            <button key={s} onClick={() => setSort(s)} aria-pressed={sort === s} className="font-tech rounded-full px-4 py-1.5" style={pill(sort === s)}>
-              {s === "deadline" ? "DEADLINE" : "EASIEST FIRST"}
+            <button key={s} onClick={() => setSort(s)} aria-pressed={sort === s} className="px-4 py-1.5" style={chip(sort === s)}>
+              {s === "deadline" ? "By deadline" : "Easiest first"}
             </button>
           ))}
-          <span className="font-tech ml-auto" style={{ color: "var(--color-tertiary-text)", fontSize: 10 }}>
-            {String(list.length).padStart(2, "0")} VENUES
-          </span>
         </div>
+        <p className="mt-3 text-center" style={{ fontSize: 12, color: "var(--color-slate)" }}>
+          {list.length} venues
+        </p>
       </section>
 
-      <section aria-label="Venues" className="mt-4" style={{ borderTop: "1px solid var(--color-hairline)" }}>
+      <section aria-label="Venues" className="gallery-card mt-5 !p-4 sm:!p-5">
         {list.length === 0 && (
-          <div className="py-12">
-            <p className="font-tech" style={{ color: "var(--color-tertiary-text)" }}>NO MATCHES</p>
-            <p className="mt-2 text-[15px]" style={{ color: "var(--color-secondary-text)" }}>Try a different field or venue name.</p>
+          <div className="py-10 text-center">
+            <p style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>No matches.</p>
+            <p className="mt-2" style={{ fontSize: 17, color: "var(--color-graphite)" }}>Try a different field or venue name.</p>
           </div>
         )}
-        {list.map((v, i) => (
+        {list.map((v) => (
           <article
             key={v.id}
-            className="grid gap-3 py-6 sm:grid-cols-[56px_1fr_200px] sm:items-start"
-            style={{ borderBottom: "1px solid var(--color-hairline)" }}
+            className="grid gap-2 py-5 sm:grid-cols-[1fr_220px] sm:items-start"
+            style={{ borderBottom: "1px solid var(--color-line)" }}
           >
-            <span className="font-tech" style={{ color: "var(--color-tertiary-text)" }}>{String(i + 1).padStart(2, "0")}</span>
             <div>
-              <div className="flex flex-wrap items-center gap-3">
-                <h2 className="text-[17px] font-medium tracking-tight" style={{ color: "var(--color-primary-text)" }}>{v.name}</h2>
-                <span
-                  className="font-tech rounded-full px-3 py-1"
-                  style={{
-                    fontSize: 9,
-                    border: "1px solid var(--color-hairline)",
-                    background: v.type === "Conference" ? "rgba(183,255,223,0.07)" : "rgba(140,200,255,0.07)",
-                    color: v.type === "Conference" ? "var(--color-research-accent)" : "var(--color-ai-accent)",
-                  }}
-                >
-                  {v.type.toUpperCase()}
-                </span>
+              <div className="flex flex-wrap items-center gap-2.5">
+                <h2 style={{ fontSize: 19, fontWeight: 600, letterSpacing: "-0.015em", color: "var(--color-apple-ink)" }}>{v.name}</h2>
+                <span className="tag-pill">{v.type}</span>
               </div>
-              <p className="font-tech mt-2" style={{ color: "var(--color-tertiary-text)", fontSize: 10 }}>
-                {v.field.toUpperCase()} · {v.location.toUpperCase()} · ACCEPT {v.acceptance} · {v.fee.toUpperCase()}
+              <p className="mt-1.5" style={{ fontSize: 15, color: "var(--color-slate)" }}>
+                {v.field} · {v.location} · Accepts {v.acceptance} · {v.fee}
               </p>
-              <p className="mt-2 max-w-xl text-[14px]" style={{ color: "var(--color-secondary-text)", lineHeight: 1.7 }}>
-                <span style={{ color: "var(--color-primary-text)" }}>For students: </span>{v.whyStudents}
+              <p className="mt-1.5 max-w-xl" style={{ fontSize: 17, color: "var(--color-iron)", lineHeight: 1.55 }}>
+                <span style={{ fontWeight: 600, color: "var(--color-apple-ink)" }}>For students: </span>{v.whyStudents}
               </p>
             </div>
             <div className="sm:text-right">
               <Countdown v={v} />
-              <p className="font-tech mt-2" style={{ color: "var(--color-tertiary-text)", fontSize: 10 }}>
-                {v.deadline ? "SUBMISSION DEADLINE" : "NO DEADLINE"}
+              <p className="mt-2" style={{ fontSize: 12, color: "var(--color-slate)" }}>
+                {v.deadline ? "Submission deadline" : "No deadline"}
               </p>
             </div>
           </article>
         ))}
       </section>
 
-      <p className="font-tech mt-4" style={{ color: "var(--color-tertiary-text)", fontSize: 10 }}>
-        DATES ARE INDICATIVE FOR PLANNING — ALWAYS CONFIRM ON THE OFFICIAL VENUE SITE.
+      <p className="mt-4 text-center" style={{ fontSize: 12, color: "var(--color-slate)" }}>
+        Dates are indicative for planning — always confirm on the official venue site.
       </p>
 
-      <section
-        className="mb-4 mt-10 px-6 py-8 sm:px-10"
-        style={{ border: "1px solid var(--color-hairline)", borderRadius: "var(--radius-panel)", background: "var(--color-deep-black)" }}
-      >
-        <p className="font-tech" style={{ color: "var(--color-tertiary-text)", fontSize: 10 }}>PICKED A VENUE?</p>
-        <p className="font-display mt-2" style={{ fontSize: "clamp(26px,4vw,40px)", lineHeight: 1.1 }}>
+      <section className="gallery-card mb-4 mt-8 text-center">
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>PICKED A VENUE?</p>
+        <p className="mt-2" style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 32, fontWeight: 600, color: "var(--color-apple-ink)" }}>
           Work backwards from its deadline.
         </p>
-        <div className="mt-5 flex flex-wrap gap-2">
-          <Link href="/roadmap" className="font-tech rounded-full px-7 py-3" style={{ background: "var(--color-primary-text)", color: "#050505", fontSize: 11 }}>
-            SEE THE ROADMAP →
+        <div className="mt-5 flex flex-wrap justify-center gap-3">
+          <Link href="/roadmap" className="primary-button">
+            See the roadmap
           </Link>
-          <Link href="/toolkit" className="font-tech rounded-full px-7 py-3" style={{ border: "1px solid var(--color-hairline)", color: "var(--color-secondary-text)", fontSize: 11 }}>
-            WRITING TOOLKIT
+          <Link href="/toolkit" className="ghost-pill">
+            Writing toolkit
           </Link>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

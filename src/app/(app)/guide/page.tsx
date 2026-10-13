@@ -1,192 +1,140 @@
 import Link from "next/link";
-import { SectionDivider } from "@/components/editorial/TechnicalLabel";
 
 const STEPS = [
   {
-    n: "01",
-    title: "Run it",
-    body: "npm install, then npm run dev, then open http://localhost:3002. That's it. You don't need the backend — the app ships with a local demo mode so you can click around straight away.",
-    code: "npm install\nnpm run dev",
+    n: "1",
+    title: "Create your account",
+    body: "Tap Start research and enter your name, email, and a password (6+ characters). Your library is ready immediately — no setup, no waiting.",
   },
   {
-    n: "02",
-    title: "Make an account",
-    body: "Hit ENTER WORKSPACE on the home page. It asks for a name, email, and a password (6+ characters). In demo mode any email works — it just stores things in your browser. If you already signed up, use Sign in instead.",
-    code: null,
-  },
-  {
-    n: "03",
-    title: "Look around the dashboard",
-    body: "The dashboard is just an overview — how many docs you have, the 5 most recent ones, and some placeholder signals. Two buttons matter: OPEN LIBRARY takes you to your files, ASK RESEARCH opens the assistant preview.",
-    code: null,
-  },
-  {
-    n: "04",
+    n: "2",
     title: "Upload your first paper",
-    body: "Go to Research Library (/documents) and press UPLOAD DOCUMENT +. Pick a PDF or DOCX. You'll see it go through Extracting → Indexing → Indexed. In demo mode it fakes the extracted text so the reader has something to show.",
-    code: null,
+    body: "Open the Library and tap “Upload a paper”. Pick a PDF or DOCX (up to 25 MB). The text is extracted automatically and the paper appears at the top.",
   },
   {
-    n: "05",
-    title: "Find things again",
-    body: "The search box matches titles and filenames. FILTER switches between ALL / PDF / DOCX, SORT does RECENT / OLDEST / A–Z. The little counter on the right tells you how many matches you got.",
-    code: null,
+    n: "3",
+    title: "Read it",
+    body: "Tap any row to open the reader: contents on the left, clean text on the right. Search within the paper, rename it inline, or print it.",
   },
   {
-    n: "06",
-    title: "Read, rename, delete",
-    body: "Click any row to open the reader. Top line shows type, pages, size, status, date. You can RENAME inline, DOWNLOAD (just prints), or DELETE (it asks first, no undo). The AI box at the bottom is a placeholder — real answers come in month 2.",
-    code: null,
+    n: "4",
+    title: "Ask it questions",
+    body: "Open the Assistant, pick the paper (or a few), and ask — “summarise this”, “what method is used?”, “what are the limitations?” Answers quote the file.",
+  },
+  {
+    n: "5",
+    title: "Keep what matters",
+    body: "Pin notes to their source paper, group papers into collections, and generate APA, IEEE or BibTeX citations in the Toolkit. History remembers the rest.",
   },
 ];
 
 export default function GuidePage() {
   return (
-    <main className="mx-auto px-5 sm:px-8" style={{ maxWidth: "var(--page-width)" }}>
-      <section className="pt-12 sm:pt-16">
-        <p className="font-tech" style={{ color: "var(--color-tertiary-text)" }}>
-          MANUAL / 00 — START HERE
-        </p>
-        <h1
-          className="font-display mt-2"
-          style={{ fontSize: "clamp(48px,7vw,84px)", lineHeight: 0.95, letterSpacing: "-2px" }}
-        >
-          How to use
+    <div>
+      <section className="pt-6 text-center sm:pt-10">
+        <h1 className="type-heading mx-auto" style={{ color: "var(--color-apple-ink)" }}>
+          Five minutes,
           <br />
-          this thing
+          then file something.
         </h1>
-        <p className="mt-4 max-w-lg text-[15px]" style={{ color: "var(--color-secondary-text)", lineHeight: 1.7 }}>
-          I wrote this page because the app can feel a bit empty the first time you open it.
-          Five minutes here and you&apos;ll know where everything lives and why it works the way it does.
+        <p className="mx-auto mt-4 max-w-xl" style={{ fontSize: 21, color: "var(--color-graphite)" }}>
+          New here? This page shows where everything lives and what to tap first.
         </p>
-        <div className="mt-6 flex flex-wrap gap-2">
-          <Link
-            href="/register"
-            className="font-tech rounded-full px-6 py-3"
-            style={{ background: "var(--color-primary-text)", color: "#050505", fontSize: 10 }}
-          >
-            CREATE ACCOUNT →
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
+          <Link href="/register" className="primary-button">
+            Create account
           </Link>
-          <Link
-            href="/documents"
-            className="font-tech rounded-full px-6 py-3"
-            style={{ border: "1px solid var(--color-hairline)", color: "var(--color-secondary-text)", fontSize: 10 }}
-          >
-            SKIP TO LIBRARY
+          <Link href="/documents" className="ghost-pill">
+            Skip to library
           </Link>
         </div>
       </section>
 
-      <div className="mt-10">
-        <SectionDivider label="WHAT THIS APP ACTUALLY IS" />
-      </div>
-      <section className="grid gap-8 py-8 lg:grid-cols-[1fr_1fr]">
+      <section className="gallery-card mt-10 grid gap-6 lg:grid-cols-2" aria-label="What this app is">
         <div>
-          <p className="text-[15px]" style={{ color: "var(--color-secondary-text)", lineHeight: 1.8 }}>
-            Think of it as a private shelf for your papers. You upload PDFs, the app pulls out the text,
-            and you get a clean reading view instead of wrestling with raw PDFs. Search and filters sit on
-            top so you can actually find things again.
+          <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>WHAT IT IS</p>
+          <p className="mt-2" style={{ fontSize: 17, color: "var(--color-iron)", lineHeight: 1.6 }}>
+            A private shelf for your papers. Upload PDFs, read them cleanly,
+            ask questions that quote the page, and keep notes and citations together.
           </p>
-          <p className="mt-4 text-[15px]" style={{ color: "var(--color-secondary-text)", lineHeight: 1.8 }}>
-            The AI side — asking questions, getting cited answers — isn&apos;t wired up yet. The assistant,
-            knowledge map and insights pages are previews of where that&apos;ll live. Month 1 was just about
-            getting the boring foundation right: login, upload, storage, reading.
+          <p className="mt-3" style={{ fontSize: 17, color: "var(--color-iron)", lineHeight: 1.6 }}>
+            Answers come from your uploaded files — open the reader any time
+            to verify a line word for word.
           </p>
         </div>
-        <div
-          className="px-6 py-6"
-          style={{ border: "1px solid var(--color-hairline)", borderRadius: "var(--radius-panel)", background: "var(--color-deep-black)" }}
-        >
-          <p className="micro-label" style={{ color: "var(--color-tertiary-text)" }}>UNDER THE HOOD, briefly</p>
-          <ul className="mt-3 space-y-2 text-[14px]" style={{ color: "var(--color-secondary-text)", lineHeight: 1.7 }}>
-            <li>— Next.js App Router, one route per folder in <span className="font-tech">src/app</span>.</li>
-            <li>— All backend calls live in <span className="font-tech">src/lib/api.ts</span> and nowhere else.</li>
-            <li>— Login token sits in localStorage as <span className="font-tech">ara_token</span>.</li>
-            <li>— No backend running? It falls back to demo data in <span className="font-tech">src/lib/mock.ts</span>.</li>
+        <div style={{ background: "var(--color-fog-canvas)", borderRadius: 18, padding: 20 }}>
+          <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>WHERE THINGS LIVE</p>
+          <ul className="mt-2.5 space-y-2" style={{ fontSize: 15, color: "var(--color-iron)", lineHeight: 1.55 }}>
+            <li>· <strong style={{ color: "var(--color-apple-ink)" }}>Library</strong> — every paper, searchable.</li>
+            <li>· <strong style={{ color: "var(--color-apple-ink)" }}>Assistant</strong> — questions and summaries.</li>
+            <li>· <strong style={{ color: "var(--color-apple-ink)" }}>Collections & Notes</strong> — your organisation.</li>
+            <li>· <strong style={{ color: "var(--color-apple-ink)" }}>Toolkit</strong> — citations and checklists.</li>
           </ul>
-          <p className="font-tech mt-4" style={{ color: "var(--color-tertiary-text)", fontSize: 10 }}>
-            .env.local → NEXT_PUBLIC_API_URL + NEXT_PUBLIC_USE_MOCK
-          </p>
         </div>
       </section>
 
-      <SectionDivider label="FIRST TIME? DO THIS IN ORDER" />
-      <section style={{ borderTop: "1px solid var(--color-hairline)" }}>
-        {STEPS.map((s) => (
-          <div
-            key={s.n}
-            className="grid gap-3 py-7 sm:grid-cols-[56px_1fr_280px] sm:items-start"
-            style={{ borderBottom: "1px solid var(--color-hairline)" }}
-          >
-            <span className="font-tech" style={{ color: "var(--color-tertiary-text)" }}>{s.n}</span>
-            <div>
-              <h2 className="text-[17px] font-medium tracking-tight" style={{ color: "var(--color-primary-text)" }}>
-                {s.title}
-              </h2>
-              <p className="mt-1 max-w-xl text-[14px]" style={{ color: "var(--color-secondary-text)", lineHeight: 1.7 }}>
-                {s.body}
-              </p>
-            </div>
-            <div>
-              {s.code ? (
-                <pre
-                  className="font-tech px-4 py-3"
-                  style={{ background: "#111214", border: "1px solid var(--color-hairline)", borderRadius: 8, fontSize: 11, color: "var(--color-primary-text)", whiteSpace: "pre-wrap" }}
-                >
-                  {s.code}
-                </pre>
-              ) : (
-                <p className="font-tech" style={{ color: "var(--color-tertiary-text)", fontSize: 10 }}>
-                  NO SETUP NEEDED
+      <section className="mt-8" aria-label="First steps">
+        <h2 className="type-heading-sm" style={{ color: "var(--color-apple-ink)" }}>First time? Do this in order.</h2>
+        <div className="gallery-card mt-4 !p-4 sm:!p-5">
+          {STEPS.map((s) => (
+            <div
+              key={s.n}
+              className="flex gap-4 py-4"
+              style={{ borderBottom: "1px solid var(--color-line)" }}
+            >
+              <span
+                aria-hidden
+                className="flex h-8 w-8 shrink-0 items-center justify-center"
+                style={{ borderRadius: 999, background: "var(--color-apple-ink)", color: "var(--color-fog-canvas)", fontSize: 15, fontWeight: 600 }}
+              >
+                {s.n}
+              </span>
+              <div>
+                <h3 style={{ fontSize: 19, fontWeight: 600, letterSpacing: "-0.015em", color: "var(--color-apple-ink)" }}>
+                  {s.title}
+                </h3>
+                <p className="mt-1 max-w-xl" style={{ fontSize: 17, color: "var(--color-iron)", lineHeight: 1.55 }}>
+                  {s.body}
                 </p>
-              )}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </section>
 
-      <SectionDivider label="THINGS PEOPLE TRIP ON" />
-      <section className="grid gap-8 py-8 sm:grid-cols-3">
-        {[
-          ["I got sent back to login?", "Your token expired or got cleared. Just sign in again. Demo data stays put."],
-          ["Upload says it can't reach the server?", "Totally normal without the backend. Demo mode catches that and saves locally instead."],
-          ["Library is empty?", "Either you haven't uploaded yet, or you cleared storage. Upload one PDF and it seeds from there."],
-          ["Where's the AI?", "Assistant page is a mock for now. It shows a sample answer so you can see the layout. Real Q&A lands next."],
-          ["How do I start over?", "Settings → RESET clears the demo library on that browser. Or wipe localStorage in devtools."],
-          ["Which files work?", "PDF and DOCX. Anything else gets treated as PDF in demo mode — the real backend will validate properly."],
-        ].map(([q, a]) => (
-          <div key={q}>
-            <p className="text-[14px] font-medium" style={{ color: "var(--color-primary-text)" }}>{q}</p>
-            <p className="mt-1 text-[13px]" style={{ color: "var(--color-secondary-text)", lineHeight: 1.7 }}>{a}</p>
-          </div>
-        ))}
+      <section className="mt-8" aria-label="Troubleshooting">
+        <h2 className="type-heading-sm" style={{ color: "var(--color-apple-ink)" }}>If something looks off.</h2>
+        <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {[
+            ["Sent back to login?", "Your session expired or was cleared. Sign in again — your papers stay put."],
+            ["Upload won't go through?", "Check it's a PDF or DOCX under 25 MB, then try again."],
+            ["Library is empty?", "You haven't uploaded yet, or the demo data was reset. Upload one paper."],
+            ["No text in the reader?", "Some scanned PDFs have no selectable text. Try another file."],
+            ["Want a fresh start?", "Settings lets you reset the demo library on this browser."],
+            ["Which files work?", "PDF and DOCX. Anything else is turned away at upload."],
+          ].map(([q, a]) => (
+            <div key={q} className="gallery-card">
+              <p style={{ fontSize: 17, fontWeight: 600, color: "var(--color-apple-ink)" }}>{q}</p>
+              <p className="mt-1" style={{ fontSize: 15, color: "var(--color-graphite)", lineHeight: 1.55 }}>{a}</p>
+            </div>
+          ))}
+        </div>
       </section>
 
-      <section
-        className="mb-4 px-6 py-8 text-center sm:px-12"
-        style={{ border: "1px solid var(--color-hairline)", borderRadius: "var(--radius-panel)", background: "var(--color-deep-black)" }}
-      >
-        <p className="font-tech" style={{ color: "var(--color-tertiary-text)", fontSize: 10 }}>READY WHEN YOU ARE</p>
-        <p className="font-display mx-auto mt-2" style={{ fontSize: "clamp(26px,4vw,40px)", maxWidth: 560, lineHeight: 1.1 }}>
-          Upload one paper. That&apos;s the whole trick.
+      <section className="gallery-card mb-4 mt-8 text-center">
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>READY WHEN YOU ARE</p>
+        <p className="mx-auto mt-2" style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 32, fontWeight: 600, maxWidth: 560, lineHeight: 1.15, color: "var(--color-apple-ink)" }}>
+          Upload one paper. That&rsquo;s the whole trick.
         </p>
-        <div className="mt-5 flex flex-wrap justify-center gap-2">
-          <Link
-            href="/documents"
-            className="font-tech rounded-full px-7 py-3"
-            style={{ background: "var(--color-primary-text)", color: "#050505", fontSize: 11 }}
-          >
-            OPEN MY LIBRARY →
+        <div className="mt-5 flex flex-wrap justify-center gap-3">
+          <Link href="/documents" className="primary-button">
+            Open my library
           </Link>
-          <Link
-            href="/dashboard"
-            className="font-tech px-4 py-3"
-            style={{ color: "var(--color-secondary-text)", fontSize: 11 }}
-          >
-            back to dashboard
+          <Link href="/dashboard" className="secondary-button">
+            Back to dashboard
           </Link>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

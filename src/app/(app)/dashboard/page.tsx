@@ -1,135 +1,259 @@
 "use client";
 
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { useDocuments } from "@/hooks/useDocuments";
+import { useCollections } from "@/hooks/useCollections";
+import { useNotes } from "@/hooks/useNotes";
+import { useHistory, recordHistory } from "@/hooks/useHistory";
 import { DocumentRow } from "@/components/documents/DocumentRow";
-import { SectionDivider } from "@/components/editorial/TechnicalLabel";
+import { UploadPanel } from "@/components/documents/UploadPanel";
+import { NucleusLoader } from "@/components/research/Nucleus";
+import { loadConversations } from "@/lib/research";
+import { formatDate } from "@/lib/utils";
+import { ApiError } from "@/lib/api";
 
-function Shell({ children }: { children: React.ReactNode }) {
+function PanelHead({ title, href, link }: { title: string; href: string; link: string }) {
   return (
-    <main className="mx-auto px-5 sm:px-8" style={{ maxWidth: "var(--page-width)" }}>
-      {children}
-    </main>
+    <div className="flex items-baseline justify-between">
+      <h2 style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 21, fontWeight: 600, letterSpacing: "-0.012em", color: "var(--color-apple-ink)" }}>{title}</h2>
+      <Link href={href} style={{ fontSize: 17, color: "var(--color-link-blue)" }}>{link} →</Link>
+    </div>
   );
 }
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const { allDocuments, loading } = useDocuments();
-  const firstName = user?.name?.split(" ")[0]?.toUpperCase() ?? "RESEARCHER";
+  const { allDocuments, loading, upload, error } = useDocuments();
+  const { collections } = useCollections();
+  const { notes } = useNotes();
+  const { entries } = useHistory();
+  const [search, setSearch] = useState("");
+  const [uploadOpen, setUploadOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [phase, setPhase] = useState("Extracting text");
+  const timers = useRef<number[]>([]);
 
-  const total = allDocuments.length || 24;
-  const pdf = allDocuments.filter((d) => d.file_type === "PDF").length || 18;
-  const docx = allDocuments.filter((d) => d.file_type === "DOCX").length || 6;
-  const recent = [...allDocuments].slice(0, 5);
+  useEffect(() => {
+    const stash = timers.current;
+    return () => {
+      stash.forEach((t) => window.clearTimeout(t));
+      timers.current = [];
+    };
+  }, []);
+
+  // Derive the phase from progress — never call setState inside another setState updater.
+  useEffect(() => {
+    if (!uploading) return;
+    if (progress < 40) setPhase("Extracting text");
+    else if (progress < 80) setPhase("Indexing passages");
+    else if (progress < 100) setPhase("Linking concepts");
+  }, [progress, uploading]);
+
+  const firstName = user?.name?.trim().split(/\s+/)[0] || "there";
+  const total = allDocuments.length;
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return [];
+    return allDocuments
+      .filter((d) => (d.title ?? "").toLowerCase().includes(q) || (d.original_filename ?? "").toLowerCase().includes(q))
+      .slice(0, 5);
+  }, [allDocuments, search]);
+
+  const recent = useMemo(() => [...allDocuments].sort((a, b) => +new Date(b.updated_at) - +new Date(a.updated_at)).slice(0, 5), [allDocuments]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const conversations = useMemo(() => loadConversations().filter((m) => m.role === "user").slice(0, 3), [entries.length]);
+
+  async function handleUpload(file: File) {
+    setUploading(true);
+    setProgress(4);
+    setPhase("Extracting text");
+    const timer = window.setInterval(() => {
+      setProgress((p) => {
+        if (p < 40) return p + 4;
+        if (p < 80) return p + 3;
+        return Math.min(p + 2, 96);
+      });
+    }, 160);
+    try {
+      const created = await upload(file, (p) => setProgress(Math.max(p, 20)));
+      setProgress(100);
+      setPhase("Document indexed");
+      recordHistory({ kind: "document_uploaded", label: `Uploaded ${created.title}`, detail: `${created.file_type} · ${created.page_count} pages`, href: `/documents/${created.id}` });
+      timers.current.push(window.setTimeout(() => {
+        setUploading(false);
+        setUploadOpen(false);
+        setProgress(0);
+      }, 700));
+    } catch (err) {
+      setPhase(err instanceof ApiError ? err.message : "Upload failed");
+      timers.current.push(window.setTimeout(() => setUploading(false), 1200));
+    } finally {
+      window.clearInterval(timer);
+    }
+  }
 
   return (
-    <Shell>
-      {/* title block */}
-      <section className="pt-12 sm:pt-16">
-        <p className="font-tech" style={{ color: "var(--color-tertiary-text)" }}>
-          YOUR RESEARCH
+    <div>
+      <section className="pt-6 text-center sm:pt-10">
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>
+          {total} {total === 1 ? "paper" : "papers"} in your library
         </p>
-        <h1 className="font-display mt-2" style={{ fontSize: "clamp(48px,7vw,84px)", lineHeight: 0.95, letterSpacing: "-2px" }}>
-          Knowledge
-          <br />
-          Workspace
+        <h1 className="type-heading-sm mx-auto mt-2" style={{ color: "var(--color-apple-ink)", maxWidth: 640 }}>
+          Good to see you, {firstName}.
         </h1>
-        <p className="font-tech mt-6" style={{ color: "var(--color-secondary-text)", fontSize: 10 }}>
-          USER / {firstName}&nbsp;&nbsp;&nbsp;DOCUMENTS / {String(total).padStart(3, "0")}&nbsp;&nbsp;&nbsp;INDEXED / {String(Math.max(total - 1, 0)).padStart(3, "0")}&nbsp;&nbsp;&nbsp;
-          <span style={{ color: "var(--color-research-accent)" }}>AI STATUS / READY</span>
+        <p className="mx-auto mt-3 max-w-xl" style={{ fontSize: 19, color: "var(--color-graphite)" }}>
+          Search your papers, upload the next one, or carry on where you left off.
         </p>
-      </section>
-
-      <div className="mt-10"><SectionDivider /></div>
-
-      {/* research overview — asymmetric */}
-      <section aria-label="Research overview" className="grid gap-10 py-12 lg:grid-cols-[1fr_1.2fr] lg:py-16">
-        <div>
-          <p className="font-display" style={{ fontSize: "clamp(90px,12vw,150px)", lineHeight: 0.9, letterSpacing: "-4px" }}>
-            {String(total).padStart(3, "0")}
-          </p>
-          <p className="font-tech mt-2" style={{ color: "var(--color-secondary-text)" }}>DOCUMENTS</p>
-        </div>
-        <div className="flex flex-col justify-end">
-          <p className="max-w-md text-[16px]" style={{ color: "var(--color-secondary-text)", lineHeight: 1.7 }}>
-            Your research library currently contains {total} indexed documents across 6 research areas.
-          </p>
-          <p className="font-tech mt-6" style={{ color: "var(--color-tertiary-text)" }}>
-            PDF / {String(pdf).padStart(2, "0")}&nbsp;&nbsp;&nbsp;DOCX / {String(docx).padStart(2, "0")}&nbsp;&nbsp;&nbsp;OTHER / 00
-          </p>
-          <div className="mt-6 flex gap-2">
-            <Link href="/documents" className="font-tech rounded-full px-6 py-3" style={{ background: "var(--color-control)", border: "1px solid var(--color-hairline)", color: "var(--color-primary-text)", fontSize: 10 }}>
-              OPEN LIBRARY →
-            </Link>
-            <Link href="/assistant" className="font-tech rounded-full px-6 py-3" style={{ border: "1px solid var(--color-hairline)", color: "var(--color-secondary-text)", fontSize: 10 }}>
-              ASK RESEARCH
-            </Link>
-          </div>
+        <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <button onClick={() => setUploadOpen((v) => !v)} className="primary-button">
+            {uploadOpen ? "Close" : "Upload a paper"}
+          </button>
+          <Link href="/documents" className="ghost-pill">
+            Open library
+          </Link>
         </div>
       </section>
 
-      <SectionDivider label="RECENT DOCUMENTS" />
-
-      {/* recent documents — archive list, no cards */}
-      <section aria-label="Recent documents" className="py-6">
-        {loading ? (
-          <p className="font-tech pulse-dot py-8" style={{ color: "var(--color-secondary-text)" }}>LOADING ARCHIVE…</p>
-        ) : recent.length === 0 ? (
-          <div className="py-10">
-            <p className="font-tech" style={{ color: "var(--color-tertiary-text)" }}>ARCHIVE EMPTY</p>
-            <p className="mt-2 text-[15px]" style={{ color: "var(--color-secondary-text)" }}>Upload your first paper to begin the collection.</p>
-          </div>
-        ) : (
-          <div style={{ borderTop: "1px solid var(--color-hairline)" }}>
-            {recent.map((d, i) => (
-              <DocumentRow key={d.id} doc={d} index={i} />
-            ))}
+      <section aria-label="Search your papers" className="mx-auto mt-8" style={{ maxWidth: 680 }}>
+        <div className="flex items-center gap-3 px-5 py-3.5" style={{ background: "var(--color-pure-white)", borderRadius: 980, border: "1px solid var(--color-line)" }}>
+          <span aria-hidden style={{ color: "var(--color-slate)", fontSize: 17 }}>⌕</span>
+          <label htmlFor="dash-search" className="sr-only">Search your papers</label>
+          <input
+            id="dash-search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search your papers"
+            autoComplete="off"
+            className="w-full bg-transparent text-[17px] outline-none"
+            style={{ color: "var(--color-apple-ink)" }}
+          />
+          {search && (
+            <button onClick={() => setSearch("")} aria-label="Clear search" style={{ fontSize: 15, color: "var(--color-link-blue)" }}>Clear</button>
+          )}
+        </div>
+        {search.trim() && (
+          <div className="gallery-card mt-4 !p-4" aria-live="polite">
+            {filtered.length === 0 ? (
+              <p className="px-2 py-3" style={{ fontSize: 17, color: "var(--color-graphite)" }}>No papers match “{search}”.</p>
+            ) : (
+              filtered.map((d, i) => (
+                <DocumentRow key={d.id} doc={d} index={i} />
+              ))
+            )}
           </div>
         )}
-        <Link href="/documents" className="font-tech mt-6 inline-block" style={{ color: "var(--color-secondary-text)", fontSize: 11 }}>
-          VIEW FULL ARCHIVE →
-        </Link>
       </section>
 
-      <SectionDivider label="KNOWLEDGE ACTIVITY" />
+      <div className="mt-4">
+        <UploadPanel open={uploadOpen} onClose={() => setUploadOpen(false)} onUpload={handleUpload} uploading={uploading} progress={progress} phase={phase} />
+      </div>
+      {error && <p role="alert" className="mt-4 text-center" style={{ fontSize: 15, color: "var(--color-alert)" }}>{error}</p>}
 
-      <section aria-label="Knowledge activity" className="grid gap-8 py-10 sm:grid-cols-3">
-        {[
-          ["INDEXING", "018 / 024 COMPLETE", "94% FIDELITY — PAGE ANCHORS PRESERVED", "var(--color-research-accent)"],
-          ["CONNECTIONS", "312 CONCEPTS LINKED", "48 CLUSTERS EMERGING ACROSS 6 AREAS", "var(--color-ai-accent)"],
-          ["SIGNALS", "03 GAPS DETECTED", "RESEARCH SIGNAL — REVIEW INSIGHTS", "var(--color-secondary-text)"],
-        ].map(([k, v, d, c]) => (
-          <div key={k}>
-            <p className="micro-label" style={{ color: "var(--color-tertiary-text)" }}>{k}</p>
-            <p className="font-tech mt-2" style={{ color: c as string }}>{v}</p>
-            <p className="micro-label mt-2" style={{ color: "var(--color-tertiary-text)" }}>{d}</p>
-          </div>
-        ))}
-      </section>
-
-      <SectionDivider label="RESEARCH SIGNALS" />
-
-      <section aria-label="Research signals" className="py-10">
-        <div className="grid gap-0 sm:grid-cols-2" style={{ border: "1px solid var(--color-hairline)", borderRadius: "var(--radius-panel)", overflow: "hidden" }}>
-          {[
-            ["01", "CITATION DENSITY RISING", "Retrieval papers reference evaluation methods 3× more than last quarter."],
-            ["02", "METHOD GAP", "Long-context evaluation is under-represented across your 24 documents."],
-            ["03", "EMERGING THEME", "Hybrid lexical + semantic retrieval appears in 6 recent papers."],
-            ["04", "NEXT READ", "Vector Databases: A Comparative Study connects to 4 open threads."],
-          ].map(([n, t, d], i) => (
-            <div key={n} className="px-6 py-6" style={{ borderTop: i >= 2 ? "1px solid var(--color-hairline)" : undefined, borderLeft: i % 2 === 1 ? "1px solid var(--color-hairline)" : undefined }}>
-              <p className="font-tech" style={{ color: "var(--color-tertiary-text)" }}>{n}</p>
-              <p className="mt-2 text-[15px] font-medium" style={{ color: "var(--color-primary-text)" }}>{t}</p>
-              <p className="mt-1 text-[14px]" style={{ color: "var(--color-secondary-text)" }}>{d}</p>
+      <section aria-label="Recently opened" className="gallery-card mt-8">
+        <PanelHead title="Recently opened" href="/documents" link="See all" />
+        <div className="mt-2">
+          {loading ? (
+            <NucleusLoader label="Loading your library" />
+          ) : recent.length === 0 ? (
+            <div className="py-8 text-center">
+              <p style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>Your shelf is empty.</p>
+              <p className="mx-auto mt-2 max-w-md" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
+                Upload your first paper — PDF or DOCX, up to 25 MB — and it will appear here.
+              </p>
+              <button onClick={() => setUploadOpen(true)} className="primary-button mt-5">Upload a paper</button>
             </div>
-          ))}
+          ) : (
+            recent.map((d, i) => (
+              <DocumentRow key={d.id} doc={d} index={i} />
+            ))
+          )}
         </div>
-        <Link href="/insights" className="font-tech mt-6 inline-block" style={{ color: "var(--color-secondary-text)", fontSize: 11 }}>
-          OPEN RESEARCH SIGNALS →
-        </Link>
       </section>
-    </Shell>
+
+      <section className="mt-5 grid gap-5 lg:grid-cols-3" aria-label="Workspace overview">
+        <div className="gallery-card">
+          <PanelHead title="Collections" href="/collections" link="Open" />
+          <div className="mt-2">
+            {collections.length === 0 ? (
+              <p className="py-3" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
+                No collections yet. Group papers that belong together.
+              </p>
+            ) : (
+              collections.slice(0, 4).map((c) => (
+                <Link key={c.id} href="/collections" className="flex items-baseline justify-between py-2.5" style={{ borderBottom: "1px solid var(--color-line)" }}>
+                  <span className="truncate" style={{ fontSize: 17, color: "var(--color-apple-ink)" }}>{c.name}</span>
+                  <span className="shrink-0" style={{ fontSize: 12, color: "var(--color-slate)" }}>{c.documentIds.length} papers</span>
+                </Link>
+              ))
+            )}
+          </div>
+        </div>
+
+        <div className="gallery-card">
+          <PanelHead title="Recent questions" href="/assistant" link="Open" />
+          <div className="mt-2">
+            {conversations.length === 0 ? (
+              <p className="py-3" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
+                No questions yet. Ask your first one in the Assistant.
+              </p>
+            ) : (
+              conversations.map((m) => (
+                <Link key={m.id} href="/assistant" className="block py-2.5" style={{ borderBottom: "1px solid var(--color-line)" }}>
+                  <p className="truncate" style={{ fontSize: 17, color: "var(--color-apple-ink)" }}>{m.body}</p>
+                  <p className="mt-0.5" style={{ fontSize: 12, color: "var(--color-slate)" }}>{formatDate(m.created_at)} · {(m.scope ?? "").slice(0, 50)}</p>
+                </Link>
+              ))
+            )}
+          </div>
+        </div>
+
+        <div className="gallery-card">
+          <PanelHead title="Saved notes" href="/notes" link="Open" />
+          <div className="mt-2">
+            {notes.length === 0 ? (
+              <p className="py-3" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
+                No notes yet. Pin observations to their source paper.
+              </p>
+            ) : (
+              notes.slice(0, 4).map((n) => (
+                <Link key={n.id} href="/notes" className="block py-2.5" style={{ borderBottom: "1px solid var(--color-line)" }}>
+                  <p className="truncate" style={{ fontSize: 17, color: "var(--color-apple-ink)" }}>{n.title}</p>
+                  <p className="mt-0.5 truncate" style={{ fontSize: 12, color: "var(--color-slate)" }}>
+                    {(n.documentTitle ?? "No source")} · {formatDate(n.updated_at)}
+                  </p>
+                </Link>
+              ))
+            )}
+          </div>
+        </div>
+      </section>
+
+      <section aria-label="Activity" className="gallery-card mt-5">
+        <PanelHead title="Activity" href="/history" link="Full history" />
+        <div className="mt-2">
+          {entries.length === 0 ? (
+            <p className="py-3" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
+              Uploads, readings, questions and notes will appear here.
+            </p>
+          ) : (
+            entries.slice(0, 6).map((e) => (
+              <div key={e.id} className="flex items-baseline gap-4 py-2.5" style={{ borderBottom: "1px solid var(--color-line)" }}>
+                <span className="shrink-0" style={{ fontSize: 12, color: "var(--color-slate)" }}>
+                  {formatDate(e.created_at)}
+                </span>
+                <div className="min-w-0">
+                  <p className="truncate" style={{ fontSize: 17, color: "var(--color-apple-ink)" }}>{e.label}</p>
+                  <p className="truncate" style={{ fontSize: 12, color: "var(--color-slate)" }}>{e.detail}</p>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </section>
+    </div>
   );
 }

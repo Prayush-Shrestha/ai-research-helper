@@ -1,84 +1,35 @@
 /**
- * Brand mark for ResearchOS.
- *
- * Concept — "the connected R":
- *   - The letter R drawn as stem, bowl and leg.
- *   - A mint node hub sits on the bowl's edge — every piece of
- *     research connects to something larger, the operating idea
- *     of the whole platform.
- *   - A faint orbit arc (observatory / research instrument) sweeps the
- *     top-right, ending in a small satellite dot.
- *
- * Single accent (research mint) so it stays crisp from 16px favicon
- * up to hero sizes. Everything else is theme neutrals.
+ * ResearchOS brand mark — gallery edition.
+ * Ink disc with a quiet orbital ring and one blue accession dot.
+ * Flat, monochrome + one blue. No shadows.
  */
-export function LogoMark({ size = 28, className }: { size?: number; className?: string }) {
+export function LogoMark({ size = 30, className }: { size?: number; className?: string }) {
   return (
     <span
       aria-hidden
-      className={className ?? "inline-flex items-center justify-center"}
-      style={{
-        width: size,
-        height: size,
-        border: "1px solid var(--color-hairline)",
-        borderRadius: Math.max(8, Math.round(size * 0.28)),
-        background: "var(--color-machine-surface)",
-      }}
+      className={`inline-flex items-center justify-center ${className ?? ""}`}
+      style={{ width: size, height: size, borderRadius: 9999, background: "var(--color-apple-ink)", position: "relative", flexShrink: 0 }}
     >
-      <svg
-        width={Math.round(size * 0.72)}
-        height={Math.round(size * 0.72)}
-        viewBox="0 0 32 32"
-        fill="none"
-        aria-hidden
-      >
-        {/* R — stem */}
-        <path
-          d="M12 8.5V23.5"
-          stroke="#E7E7E2"
-          strokeWidth="2.4"
-          strokeLinecap="round"
-        />
-        {/* R — bowl */}
-        <path
-          d="M12 9.5h4.5a3.75 3.75 0 0 1 0 7.5H12"
-          stroke="#E7E7E2"
-          strokeWidth="2.4"
-          strokeLinecap="round"
-        />
-        {/* R — leg */}
-        <path
-          d="M14.5 17 20.5 23.5"
-          stroke="#E7E7E2"
-          strokeWidth="2.4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        {/* hub node on the bowl's edge */}
-        <circle cx="20.25" cy="13.25" r="2.2" fill="#B7FFDF" />
-        {/* orbit arc + satellite */}
-        <path
-          d="M24.5 9.5A10.5 10.5 0 0 1 26 17"
-          stroke="#62686A"
-          strokeWidth="1.3"
-          strokeLinecap="round"
-        />
-        <circle cx="26" cy="17" r="1.3" fill="#B7FFDF" opacity="0.55" />
+      <svg width={Math.round(size * 0.68)} height={Math.round(size * 0.68)} viewBox="0 0 32 32" fill="none" aria-hidden>
+        <circle cx="16" cy="16" r="10.5" stroke="var(--color-fog-canvas)" strokeWidth="1.4" opacity="0.9" />
+        <ellipse cx="16" cy="16" rx="10.5" ry="4.6" stroke="var(--color-fog-canvas)" strokeWidth="1.1" opacity="0.45" transform="rotate(-24 16 16)" />
+        <line x1="10" y1="14.5" x2="20" y2="14.5" stroke="var(--color-fog-canvas)" strokeWidth="1.5" />
+        <line x1="10" y1="18" x2="17" y2="18" stroke="var(--color-fog-canvas)" strokeWidth="1.2" opacity="0.65" />
+        <circle cx="23" cy="9" r="2.6" fill="var(--color-electric-blue)" />
       </svg>
     </span>
   );
 }
 
-export function Wordmark() {
+export function Wordmark({ compact = false, tone = "auto" }: { compact?: boolean; tone?: "auto" | "light" }) {
+  const dark = tone === "light";
   return (
-    <span className="flex items-center gap-3">
-      <LogoMark />
+    <span className="flex items-center gap-2.5">
+      <LogoMark size={compact ? 26 : 30} />
       <span
-        className="font-tech"
-        style={{ fontSize: 12, letterSpacing: "1.6px" }}
+        style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 19, fontWeight: 600, letterSpacing: "-0.015em", color: dark ? "#f5f5f7" : "var(--color-apple-ink)" }}
       >
-        <span style={{ color: "var(--color-primary-text)" }}>Research</span>
-        <span style={{ color: "var(--color-research-accent)" }}>OS</span>
+        ResearchOS
       </span>
     </span>
   );

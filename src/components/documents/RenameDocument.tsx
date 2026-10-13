@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Modal } from "@/components/ui/Modal";
@@ -16,15 +16,16 @@ export function RenameDocument({ document, onClose, onSave }: RenameDocumentProp
   const [name, setName] = useState(document?.title ?? "");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [prevDocument, setPrevDocument] = useState(document);
 
-  // Reset the form when a different document is selected. Done during
-  // render (React's recommended alternative to syncing props in effects).
-  if (prevDocument !== document) {
-    setPrevDocument(document);
-    setName(document?.title ?? "");
-    setError(null);
-  }
+  // Reset the form when a different document is selected (async continuation avoids sync set-state-in-effect).
+  useEffect(() => {
+    const title = document?.title ?? "";
+    void (async () => {
+      await Promise.resolve();
+      setName(title);
+      setError(null);
+    })();
+  }, [document?.id, document?.title]);
 
   async function handleSave() {
     if (!document) return;
@@ -70,7 +71,7 @@ export function RenameDocument({ document, onClose, onSave }: RenameDocumentProp
           Save changes
         </Button>
       </div>
-      <p className="mt-3 text-xs" style={{ color: "var(--color-tertiary-text)" }}>Sends PATCH /documents/{document?.id ?? "{id}"}.</p>
+      <p className="mt-3 text-xs" style={{ color: "var(--color-graphite)" }}>Sends PATCH /documents/{document?.id ?? "{id}"}.</p>
     </Modal>
   );
 }

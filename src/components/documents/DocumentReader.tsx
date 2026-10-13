@@ -1,113 +1,114 @@
-const CONTENTS = [
-  "01 ABSTRACT",
-  "02 INTRODUCTION",
-  "03 RELATED WORK",
-  "04 METHODOLOGY",
-  "05 RESULTS",
-  "06 CONCLUSION",
-];
+"use client";
+
+import { useMemo, useState } from "react";
+import { splitParagraphs } from "@/lib/research";
 
 export function DocumentReader({ text }: { text: string }) {
-  const paragraphs = text
-    .split(/\n{2,}|\n(?=\d\.\s)/)
-    .map((p) => p.trim())
-    .filter(Boolean);
+  const paragraphs = useMemo(() => splitParagraphs(text), [text]);
+  const [query, setQuery] = useState("");
+  const [active, setActive] = useState(0);
+
+  const headings = useMemo(() => {
+    const out: Array<{ label: string; index: number }> = [];
+    paragraphs.forEach((p, i) => {
+      if (/^\d\.\s[A-Z]/.test(p.slice(0, 24)) && p.length < 140) out.push({ label: p.slice(0, 60), index: i });
+    });
+    return out.slice(0, 8);
+  }, [paragraphs]);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return null;
+    return paragraphs
+      .map((p, i) => ({ p, i }))
+      .filter(({ p }) => p.toLowerCase().includes(q))
+      .slice(0, 12);
+  }, [paragraphs, query]);
 
   return (
-    <div
-      className="grid gap-0 overflow-hidden lg:grid-cols-[280px_1fr]"
-      style={{
-        border: "1px solid var(--color-hairline)",
-        borderRadius: "var(--radius-media)",
-        background: "var(--color-deep-black)",
-      }}
-    >
-      {/* index */}
-      <aside
-        aria-label="Document contents"
-        className="px-6 py-6 lg:py-10 lg:pl-8"
-        style={{ borderBottom: "1px solid var(--color-hairline)" }}
-      >
-        <p className="micro-label" style={{ color: "var(--color-tertiary-text)" }}>
-          CONTENTS
-        </p>
-        <ol className="mt-4 space-y-1 lg:sticky lg:top-24">
-          {CONTENTS.map((c, i) => (
-            <li key={c}>
-              <a
-                href={`#reader-section-${i}`}
-                className="font-tech block rounded px-2 py-2"
-                style={{
-                  color: i === 0 ? "var(--color-primary-text)" : "var(--color-secondary-text)",
-                  background: i === 0 ? "var(--color-machine-surface)" : "transparent",
-                  fontSize: 10,
-                }}
-              >
-                {c}
-              </a>
-            </li>
-          ))}
-        </ol>
-        <div className="mt-6 hidden lg:block">
-          <div className="h-px" style={{ background: "var(--color-hairline)" }} />
-          <p className="micro-label mt-4" style={{ color: "var(--color-tertiary-text)" }}>
-            SOURCE VERIFIED
-            <br />
-            TEXT EXTRACTED
-          </p>
+    <div className="grid gap-5 lg:grid-cols-[260px_1fr]">
+      <aside aria-label="Contents" className="gallery-card !p-5">
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>CONTENTS</p>
+        <div className="mt-3">
+          <label htmlFor="reader-search" className="sr-only">Search in this paper</label>
+          <input
+            id="reader-search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Find a word…"
+            autoComplete="off"
+            className="field-input !rounded-full !px-4 !py-2.5 !text-[15px]"
+            style={{ background: "var(--color-fog-canvas)" }}
+          />
         </div>
+        {filtered ? (
+          <div className="mt-3">
+            <p style={{ fontSize: 12, color: "var(--color-slate)" }}>{filtered.length} matches</p>
+            <ol className="mt-1.5 space-y-2">
+              {filtered.map(({ p, i }) => (
+                <li key={i}>
+                  <a href={`#reader-p-${i}`} className="block text-[15px]" style={{ color: "var(--color-iron)", lineHeight: 1.5 }}>
+                    <span style={{ color: "var(--color-link-blue)" }}>¶{i + 1} · </span>
+                    {p.slice(0, 88)}…
+                  </a>
+                </li>
+              ))}
+            </ol>
+            {filtered.length === 0 && <p className="mt-2" style={{ fontSize: 15, color: "var(--color-slate)" }}>No matches. Try fewer letters.</p>}
+          </div>
+        ) : (
+          <ol className="mt-2">
+            {headings.length === 0 && (
+              <li style={{ fontSize: 15, color: "var(--color-slate)", lineHeight: 1.5 }}>This paper runs straight through, with no section headings.</li>
+            )}
+            {headings.map((h, i) => (
+              <li key={`${h.index}-${i}`} style={{ borderBottom: "1px solid var(--color-line)" }}>
+                <a
+                  href={`#reader-p-${h.index}`}
+                  onClick={() => setActive(i)}
+                  className="flex items-baseline justify-between gap-2 py-2"
+                  style={{ fontSize: 15, color: i === active ? "var(--color-electric-blue)" : "var(--color-apple-ink)", fontWeight: i === active ? 600 : 400 }}
+                >
+                  <span className="truncate">{h.label}</span>
+                  <span className="shrink-0" style={{ fontSize: 12, color: "var(--color-slate)" }}>¶{h.index + 1}</span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        )}
+        <p className="mt-4" style={{ fontSize: 12, color: "var(--color-slate)" }}>
+          Extracted from your file, pages kept. Check any line against the original.
+        </p>
       </aside>
 
-      {/* reading surface */}
-      <article
-        className="reader-scroll max-h-[80vh] overflow-y-auto px-6 py-8 sm:px-10 lg:px-16 lg:py-12"
-        style={{ background: "#0C0D0E" }}
-      >
-        <p className="font-tech" style={{ color: "var(--color-tertiary-text)", fontSize: 10 }}>
-          EXTRACTED TEXT — READING VIEW
-        </p>
-        <div className="mt-6 max-w-[68ch] space-y-6">
+      <article className="gallery-card reader-scroll max-h-[78vh] overflow-y-auto">
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>READING VIEW</p>
+        <div className="mt-4 max-w-[66ch] space-y-5">
           {paragraphs.length === 0 && (
-            <p style={{ color: "var(--color-secondary-text)" }}>
-              No extracted text is available for this document yet.
-            </p>
+            <p style={{ fontSize: 17, color: "var(--color-graphite)" }}>No text came out of this file. Try uploading it again.</p>
           )}
           {paragraphs.map((p, i) => {
-            const isHeading = /^\d\.\s[A-Z]/.test(p.slice(0, 24));
-            if (isHeading && p.length < 120) {
+            const isHeading = /^\d\.\s[A-Z]/.test(p.slice(0, 24)) && p.length < 140;
+            if (isHeading) {
               return (
-                <h3
-                  key={i}
-                  id={`reader-section-${Math.min(i, 5)}`}
-                  className="font-medium tracking-tight"
-                  style={{ fontSize: 22, color: "var(--color-primary-text)", paddingTop: 8 }}
-                >
+                <h3 key={i} id={`reader-p-${i}`} style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 21, fontWeight: 600, letterSpacing: "-0.012em", color: "var(--color-apple-ink)", paddingTop: 8 }}>
                   {p}
                 </h3>
               );
             }
+            const q = query.trim().toLowerCase();
+            const highlight = q && p.toLowerCase().includes(q);
             return (
-              <p
-                key={i}
-                id={i < 6 ? `reader-section-${i}` : undefined}
-                style={{ fontSize: 18, lineHeight: 1.85, color: "#CFCFC9" }}
-              >
+              <p key={i} id={`reader-p-${i}`} style={{ fontSize: 17, lineHeight: 1.65, color: "var(--color-iron)", background: highlight ? "rgba(0,113,227,0.1)" : undefined, borderRadius: 8 }}>
                 {p}
               </p>
             );
           })}
         </div>
-        <div className="mt-10 flex items-center justify-between border-t pt-4" style={{ borderColor: "var(--color-hairline)" }}>
-          <p className="micro-label" style={{ color: "var(--color-tertiary-text)" }}>
-            END OF EXTRACT
-          </p>
-          <p className="micro-label" style={{ color: "var(--color-tertiary-text)" }}>
-            AI READY
-          </p>
-        </div>
+        <p className="mt-8" style={{ fontSize: 12, color: "var(--color-slate)", borderTop: "1px solid var(--color-line)", paddingTop: 12 }}>
+          End of extracted text · ∎
+        </p>
       </article>
-
-      <style>{`@media(min-width:1024px){aside{border-bottom:none!important;border-right:1px solid var(--color-hairline)}}`}</style>
     </div>
   );
 }

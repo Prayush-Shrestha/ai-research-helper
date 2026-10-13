@@ -1,77 +1,44 @@
 import Link from "next/link";
 import type { ResearchDocument } from "@/types/document";
+import { formatBytes } from "@/lib/utils";
 
-function techDate(iso: string): string {
+function friendlyDate(iso: string): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "—";
-  return d
-    .toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
-    .toUpperCase();
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
-export function DocumentRow({
-  doc,
-  index,
-}: {
-  doc: ResearchDocument;
-  index: number;
-}) {
-  const num = String(index + 1).padStart(2, "0");
-  const ready = doc.status === "Ready";
+export function DocumentRow({ doc }: { doc: ResearchDocument; index?: number }) {
+  const processing = doc.status === "Processing";
+  const failed = doc.status === "Failed";
   return (
     <Link
       href={`/documents/${doc.id}`}
-      className="doc-row group relative grid grid-cols-[auto_1fr_auto] items-center gap-4 px-2 py-5 sm:grid-cols-[56px_1fr_90px_80px_130px_90px_32px] sm:gap-6 sm:px-4"
-      style={{ borderBottom: "1px solid var(--color-hairline)" }}
+      className="doc-row group grid grid-cols-[1fr_auto] items-center gap-3 px-3 py-4 sm:grid-cols-[1fr_auto_auto_auto] sm:gap-5"
+      style={{ borderBottom: "1px solid var(--color-line)" }}
     >
-      <span
-        aria-hidden
-        className="doc-accent-line absolute left-0 top-0 h-full w-px"
-        style={{ background: "var(--color-research-accent)" }}
-      />
-      <span className="font-tech hidden sm:block" style={{ color: "var(--color-tertiary-text)" }}>
-        {num}
-      </span>
       <span className="min-w-0">
-        <span className="font-tech sm:hidden" style={{ color: "var(--color-tertiary-text)", fontSize: 10 }}>
-          {num} — {doc.file_type} / {doc.page_count} PAGES
-        </span>
-        <span
-          className="block truncate text-[16px] font-medium tracking-tight"
-          style={{ color: "var(--color-primary-text)" }}
-        >
+        <span className="doc-title block truncate tracking-tight" style={{ fontSize: 17, fontWeight: 500, color: "var(--color-apple-ink)" }}>
           {doc.title}
         </span>
-        <span className="font-tech mt-1 block sm:hidden" style={{ color: "var(--color-tertiary-text)", fontSize: 10 }}>
-          {techDate(doc.updated_at)} — {doc.status.toUpperCase()}
+        <span className="mt-0.5 block truncate" style={{ fontSize: 12, color: "var(--color-slate)" }}>
+          {doc.original_filename} · {formatBytes(doc.file_size)} · {friendlyDate(doc.updated_at)}
+        </span>
+        <span className="mt-1.5 flex gap-1.5 sm:hidden">
+          <span className="tag-pill">{doc.file_type}</span>
+          <span className="tag-pill" style={failed || processing ? { background: "rgba(0,113,227,0.12)", color: "var(--color-electric-blue)" } : undefined}>{doc.status}</span>
         </span>
       </span>
-      <span className="font-tech hidden sm:block" style={{ color: "var(--color-secondary-text)" }}>
-        {doc.file_type}
+      <span className="tag-pill hidden sm:inline-flex">{doc.file_type}</span>
+      <span className="hidden sm:block" style={{ fontSize: 15, color: "var(--color-graphite)" }}>
+        {doc.page_count} pages
       </span>
-      <span className="font-tech hidden sm:block" style={{ color: "var(--color-secondary-text)" }}>
-        {doc.page_count} PAGES
+      <span className="hidden items-center gap-1.5 sm:flex" style={{ fontSize: 12, color: failed || processing ? "var(--color-electric-blue)" : "var(--color-slate)" }}>
+        {processing && <span className="pulse-dot inline-block" style={{ width: 6, height: 6, borderRadius: 99, background: "currentColor" }} />}
+        {doc.status}
       </span>
-      <span className="font-tech hidden sm:block" style={{ color: "var(--color-tertiary-text)" }}>
-        {techDate(doc.updated_at)}
-      </span>
-      <span
-        className="font-tech hidden items-center gap-2 sm:flex"
-        style={{ color: ready ? "var(--color-research-accent)" : "var(--color-ai-accent)", fontSize: 10 }}
-      >
-        {ready ? null : (
-          <span className="pulse-dot inline-block" style={{ width: 6, height: 6, borderRadius: 99, background: "currentColor" }} />
-        )}
-        {doc.status.toUpperCase()}
-      </span>
-      <span
-        aria-hidden
-        className="doc-arrow justify-self-end text-[18px]"
-        style={{ color: "var(--color-tertiary-text)" }}
-      >
+      <span aria-hidden className="doc-arrow hidden justify-self-end text-[17px] sm:block">
         →
-      </span>
-      <span className="font-tech pointer-events-none absolute right-10 top-1/2 hidden -translate-y-1/2 group-hover:block" style={{ color: "var(--color-tertiary-text)", fontSize: 9 }}>
       </span>
     </Link>
   );
@@ -80,12 +47,8 @@ export function DocumentRow({
 export function DocumentMeta({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="micro-label" style={{ color: "var(--color-tertiary-text)" }}>
-        {label}
-      </p>
-      <p className="font-tech mt-1" style={{ color: "var(--color-primary-text)" }}>
-        {value}
-      </p>
+      <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>{label}</p>
+      <p className="mt-0.5" style={{ fontSize: 15, color: "var(--color-apple-ink)" }}>{value}</p>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -8,24 +9,18 @@ import { Wordmark } from "@/components/layout/Logo";
 import { useAuth } from "@/hooks/useAuth";
 import { registerSchema, type RegisterInput } from "@/lib/schemas";
 
-const field = {
-  borderBottom: "1px solid #292B2D",
-  color: "var(--color-primary-text)",
-  borderRadius: 0,
-} as const;
-
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
   return (
-    <p role="alert" className="font-tech mt-2" style={{ color: "#ff9d9d", fontSize: 11 }}>
-      {message.toUpperCase()}
+    <p role="alert" className="mt-1.5" style={{ fontSize: 15, color: "var(--color-alert)" }}>
+      {message}
     </p>
   );
 }
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { register: signUp } = useAuth();
+  const { register: signUp, user, loading } = useAuth();
   const {
     register,
     handleSubmit,
@@ -39,77 +34,85 @@ export default function RegisterPage() {
   async function onSubmit(values: RegisterInput) {
     try {
       await signUp(values);
-      router.push("/dashboard");
+      router.replace("/dashboard");
     } catch (err) {
       setError("root", {
-        message: err instanceof Error ? err.message : "Registration failed.",
+        message: err instanceof Error ? err.message : "Registration failed. Please try again.",
       });
     }
   }
 
+  // Already signed in — don't show the form again.
+  useEffect(() => {
+    if (!loading && user) router.replace("/dashboard");
+  }, [loading, user, router]);
+
   return (
-    <div className="page-enter min-h-screen" style={{ background: "var(--color-void)" }}>
-      <header style={{ height: 72, borderBottom: "1px solid #292B2D" }}>
-        <div className="mx-auto flex h-full items-center justify-between px-5 sm:px-8" style={{ maxWidth: "var(--page-width)" }}>
+    <div className="page-enter min-h-screen" style={{ background: "var(--color-fog-canvas)" }}>
+      <header style={{ height: 64 }}>
+        <div className="mx-auto flex h-full items-center justify-between px-5 sm:px-8" style={{ maxWidth: "var(--page-max-width)" }}>
           <Link href="/"><Wordmark /></Link>
-          <p className="font-tech" style={{ color: "var(--color-tertiary-text)", fontSize: 10 }}>ACCESS / REGISTER</p>
+          <Link href="/login" style={{ fontSize: 15, color: "var(--color-link-blue)" }}>Sign in</Link>
         </div>
       </header>
       <main className="mx-auto px-5 sm:px-8" style={{ maxWidth: 560 }}>
-        <section className="pt-16 sm:pt-24">
-          <p className="font-tech" style={{ color: "var(--color-tertiary-text)" }}>AUTH / 02</p>
-          <h1 className="font-display mt-3" style={{ fontSize: 56, lineHeight: 1 }}>Open your laboratory.</h1>
-          <p className="mt-3 text-[15px]" style={{ color: "var(--color-secondary-text)" }}>One archive. Every paper. Ready for intelligence.</p>
-          <form onSubmit={handleSubmit(onSubmit)} className="mt-10 space-y-5" noValidate>
-            <div>
-              <label htmlFor="name" className="micro-label block" style={{ color: "var(--color-tertiary-text)" }}>FULL NAME</label>
-              <input
-                id="name" autoComplete="name"
-                placeholder="Ada Lovelace"
-                aria-invalid={Boolean(errors.name)}
-                className="mt-2 w-full bg-transparent px-0 py-3 text-[16px] outline-none" style={field}
-                {...register("name")}
-              />
-              <FieldError message={errors.name?.message} />
-            </div>
-            <div>
-              <label htmlFor="email" className="micro-label block" style={{ color: "var(--color-tertiary-text)" }}>EMAIL</label>
-              <input
-                id="email" type="email" autoComplete="email"
-                placeholder="you@university.edu"
-                aria-invalid={Boolean(errors.email)}
-                className="mt-2 w-full bg-transparent px-0 py-3 text-[16px] outline-none" style={field}
-                {...register("email")}
-              />
-              <FieldError message={errors.email?.message} />
-            </div>
-            <div>
-              <label htmlFor="password" className="micro-label block" style={{ color: "var(--color-tertiary-text)" }}>PASSWORD</label>
-              <input
-                id="password" type="password" autoComplete="new-password"
-                placeholder="Minimum 6 characters"
-                aria-invalid={Boolean(errors.password)}
-                className="mt-2 w-full bg-transparent px-0 py-3 text-[16px] outline-none" style={field}
-                {...register("password")}
-              />
-              <FieldError message={errors.password?.message} />
-            </div>
-            {errors.root && (
-              <p role="alert" className="font-tech" style={{ color: "#ff9d9d", fontSize: 11 }}>
-                {errors.root.message?.toUpperCase()}
-              </p>
-            )}
-            <button type="submit" disabled={isSubmitting} className="font-tech w-full rounded-full py-4"
-              style={{ background: "var(--color-primary-text)", color: "#050505", fontSize: 12, opacity: isSubmitting ? 0.6 : 1 }}>
-              {isSubmitting ? "PROVISIONING…" : "CREATE WORKSPACE →"}
-            </button>
-          </form>
-          <div className="mt-8 flex items-center justify-between" style={{ borderTop: "1px solid #292B2D", paddingTop: 20 }}>
-            <p className="text-[13px]" style={{ color: "var(--color-secondary-text)" }}>
-              Have access? <Link href="/login" style={{ color: "var(--color-primary-text)" }}>Sign in</Link>
-            </p>
-            <p className="font-tech" style={{ color: "var(--color-tertiary-text)", fontSize: 10 }}>POST /AUTH/REGISTER</p>
+        <section className="pt-10 text-center sm:pt-16">
+          <h1 style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 44, fontWeight: 600, letterSpacing: "-0.009em", lineHeight: 1.1, color: "var(--color-apple-ink)" }}>Create your account.</h1>
+          <p className="mt-3" style={{ fontSize: 19, color: "var(--color-graphite)" }}>Free. Your library is ready in a minute.</p>
+
+          <div className="gallery-card mt-8 text-left">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+              <div>
+                <label htmlFor="name" className="mb-1.5 block text-[17px]" style={{ color: "var(--color-apple-ink)" }}>Name</label>
+                <input
+                  id="name" autoComplete="name"
+                  placeholder="Ada Lovelace"
+                  aria-invalid={Boolean(errors.name)}
+                  className="field-input"
+                  {...register("name")}
+                />
+                <FieldError message={errors.name?.message} />
+              </div>
+              <div>
+                <label htmlFor="email" className="mb-1.5 block text-[17px]" style={{ color: "var(--color-apple-ink)" }}>Email</label>
+                <input
+                  id="email" type="email" autoComplete="email"
+                  placeholder="you@university.edu"
+                  aria-invalid={Boolean(errors.email)}
+                  className="field-input"
+                  {...register("email")}
+                />
+                <FieldError message={errors.email?.message} />
+              </div>
+              <div>
+                <label htmlFor="password" className="mb-1.5 block text-[17px]" style={{ color: "var(--color-apple-ink)" }}>Password</label>
+                <input
+                  id="password" type="password" autoComplete="new-password"
+                  placeholder="Minimum 6 characters"
+                  aria-invalid={Boolean(errors.password)}
+                  className="field-input"
+                  {...register("password")}
+                />
+                <FieldError message={errors.password?.message} />
+              </div>
+              {errors.root && (
+                <p role="alert" style={{ fontSize: 15, color: "var(--color-alert)" }}>
+                  {errors.root.message}
+                </p>
+              )}
+              <button
+                type="submit" disabled={isSubmitting}
+                className="primary-button w-full"
+                style={{ opacity: isSubmitting ? 0.6 : 1 }}
+              >
+                {isSubmitting ? "Creating…" : "Create account"}
+              </button>
+            </form>
           </div>
+
+          <p className="mt-5" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
+            Already have one? <Link href="/login" style={{ color: "var(--color-link-blue)" }}>Sign in</Link>
+          </p>
         </section>
       </main>
     </div>

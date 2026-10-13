@@ -59,7 +59,10 @@ export function UploadDocument({ open, onClose, onUpload }: UploadDocumentProps)
         tabIndex={0}
         aria-label="Drop a PDF or DOCX file here, or press Enter to browse"
         onKeyDown={(e) => {
-          if (e.key === "Enter") inputRef.current?.click();
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            inputRef.current?.click();
+          }
         }}
         onClick={() => inputRef.current?.click()}
         onDragOver={(e) => {
@@ -74,14 +77,14 @@ export function UploadDocument({ open, onClose, onUpload }: UploadDocumentProps)
         }}
         className="flex cursor-pointer flex-col items-center rounded-2xl border border-dashed px-6 py-8 text-center transition-all"
         style={{
-          borderColor: dragging ? "var(--color-research-accent)" : "var(--color-hairline)",
+          borderColor: dragging ? "var(--color-frost)" : "var(--color-hairline)",
           background: dragging ? "rgba(183,255,223,0.05)" : "var(--color-graphite)",
         }}
       >
-        <Upload size={26} aria-hidden style={{ color: "var(--color-secondary-text)" }} />
-        <p className="mt-2 text-sm font-medium" style={{ color: "var(--color-primary-text)" }}>Drag and drop your file here</p>
-        <p className="mt-0.5 text-[13px]" style={{ color: "var(--color-secondary-text)" }}>
-          or <span className="font-medium" style={{ color: "var(--color-research-accent)" }}>browse files</span>
+        <Upload size={26} aria-hidden style={{ color: "var(--color-ash)" }} />
+        <p className="mt-2 text-sm font-medium" style={{ color: "var(--color-frost)" }}>Drag and drop your file here</p>
+        <p className="mt-0.5 text-[13px]" style={{ color: "var(--color-ash)" }}>
+          or <span className="font-medium" style={{ color: "var(--color-frost)" }}>browse files</span>
         </p>
         <input
           ref={inputRef}
@@ -95,21 +98,21 @@ export function UploadDocument({ open, onClose, onUpload }: UploadDocumentProps)
 
       {file && (
         <div className="mt-3 rounded-xl px-3.5 py-3" style={{ border: "1px solid var(--color-hairline)", background: "var(--color-graphite)" }}>
-          <p className="truncate text-sm font-medium" style={{ color: "var(--color-primary-text)" }}>{file.name}</p>
-          <p className="mt-0.5 text-xs" style={{ color: "var(--color-tertiary-text)" }}>{formatBytes(file.size)}</p>
+          <p className="truncate text-sm font-medium" style={{ color: "var(--color-frost)" }}>{file.name}</p>
+          <p className="mt-0.5 text-xs" style={{ color: "var(--color-graphite)" }}>{formatBytes(file.size)}</p>
           {progress !== null && (
             <div className="mt-2" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100} aria-label="Upload progress">
               <div className="h-1.5 overflow-hidden rounded-full" style={{ background: "var(--color-control)" }}>
-                <div className="h-full rounded-full transition-all" style={{ width: `${progress}%`, background: "var(--color-research-accent)" }} />
+                <div className="h-full rounded-full transition-all" style={{ width: `${progress}%`, background: "var(--color-frost)" }} />
               </div>
-              <p className="mt-1 text-xs" style={{ color: "var(--color-secondary-text)" }}>{progress}% uploaded</p>
+              <p className="mt-1 text-xs" style={{ color: "var(--color-ash)" }}>{progress}% uploaded</p>
             </div>
           )}
         </div>
       )}
 
       {validationError && (
-        <p role="alert" className="mt-3 rounded-xl px-3 py-2.5 text-[13px]" style={{ background: "rgba(255,157,157,0.06)", border: "1px solid #4A2E2E", color: "#ff9d9d" }}>
+        <p role="alert" className="mt-3 rounded-xl px-3 py-2.5 text-[13px]" style={{ background: "rgba(255,157,157,0.06)", border: "1px solid #4A2E2E", color: "var(--color-crimson-signal)" }}>
           {validationError}
         </p>
       )}

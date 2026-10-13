@@ -66,7 +66,11 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   if (res.status === 204) return undefined as T;
   const text = await res.text();
   if (!text) return undefined as T;
-  return JSON.parse(text) as T;
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    throw new ApiError("The server returned an unexpected response. Please try again.", res.status);
+  }
 }
 
 // ---------------------------------------------------------------- Auth ---
@@ -93,6 +97,9 @@ export async function loginUser(payload: LoginPayload): Promise<{ token: string;
     method: "POST",
     body: JSON.stringify(payload),
   });
+  if (!data || typeof data.access_token !== "string" || !data.access_token) {
+    throw new ApiError("Sign in failed. Please try again.", 0);
+  }
   return { token: data.access_token, user: data.user };
 }
 

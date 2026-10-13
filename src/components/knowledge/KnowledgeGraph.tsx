@@ -8,28 +8,28 @@ interface Node {
   y: number;
   r: number;
   label: string;
-  color: string;
   vx: number;
   vy: number;
 }
 
 /**
- * Slow-drifting academic knowledge graph placeholder.
- * Canvas-free SVG with requestAnimationFrame-free CSS drift + interval nudges.
+ * Gallery knowledge map — ink dots on white, drifting slowly.
+ * Flat, no shadows. Respects reduced motion.
  */
-export function KnowledgeGraph() {
+export function KnowledgeGraph({ height = 480 }: { height?: number }) {
   const [nodes, setNodes] = useState<Node[]>([
-    { id: 0, x: 18, y: 42, r: 5, label: "RAG SURVEY", color: "#B7FFDF", vx: 0.08, vy: 0.05 },
-    { id: 1, x: 34, y: 26, r: 3, label: "RETRIEVAL", color: "#8CC8FF", vx: -0.06, vy: 0.07 },
-    { id: 2, x: 50, y: 50, r: 7, label: "METHODS", color: "#E7E7E2", vx: 0.05, vy: -0.06 },
-    { id: 3, x: 66, y: 30, r: 3.5, label: "VECTORS", color: "#B7FFDF", vx: 0.07, vy: 0.06 },
-    { id: 4, x: 82, y: 55, r: 4, label: "EVAL", color: "#8CC8FF", vx: -0.05, vy: -0.05 },
-    { id: 5, x: 30, y: 70, r: 2.5, label: "CITATIONS", color: "#62686A", vx: 0.06, vy: -0.07 },
-    { id: 6, x: 58, y: 74, r: 3, label: "SYNTHESIS", color: "#92989A", vx: -0.07, vy: 0.05 },
-    { id: 7, x: 74, y: 72, r: 2.5, label: "GAPS", color: "#B7FFDF", vx: 0.05, vy: 0.08 },
+    { id: 0, x: 18, y: 42, r: 5, label: "RAG Survey", vx: 0.08, vy: 0.05 },
+    { id: 1, x: 34, y: 26, r: 3, label: "Retrieval", vx: -0.06, vy: 0.07 },
+    { id: 2, x: 50, y: 50, r: 7, label: "Methods", vx: 0.05, vy: -0.06 },
+    { id: 3, x: 66, y: 30, r: 3.5, label: "Vectors", vx: 0.07, vy: 0.06 },
+    { id: 4, x: 82, y: 55, r: 4, label: "Eval", vx: -0.05, vy: -0.05 },
+    { id: 5, x: 30, y: 70, r: 2.5, label: "Citations", vx: 0.06, vy: -0.07 },
+    { id: 6, x: 58, y: 74, r: 3, label: "Synthesis", vx: -0.07, vy: 0.05 },
+    { id: 7, x: 74, y: 72, r: 2.5, label: "Gaps", vx: 0.05, vy: 0.08 },
   ]);
 
   useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const t = window.setInterval(() => {
       setNodes((prev) =>
         prev.map((n) => {
@@ -44,7 +44,7 @@ export function KnowledgeGraph() {
           return { ...n, x: nx, y: ny, vx, vy };
         })
       );
-    }, 90);
+    }, 120);
     return () => window.clearInterval(t);
   }, []);
 
@@ -53,25 +53,25 @@ export function KnowledgeGraph() {
   return (
     <div
       role="img"
-      aria-label="Knowledge map showing papers linked to concepts, topics and relationships"
+      aria-label="Map showing your papers linked by shared ideas"
       className="relative overflow-hidden"
-      style={{ border: "1px solid var(--color-hairline)", borderRadius: "var(--radius-media)", background: "var(--color-graphite)", height: 520 }}
+      style={{ borderRadius: 28, background: "var(--color-pure-white)", height }}
     >
       <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full" aria-hidden>
         {links.map(([a, b], i) => (
-          <line key={i} x1={nodes[a].x} y1={nodes[a].y} x2={nodes[b].x} y2={nodes[b].y} stroke="#292B2D" strokeWidth="0.25" vectorEffect="non-scaling-stroke" />
+          <line key={i} x1={nodes[a].x} y1={nodes[a].y} x2={nodes[b].x} y2={nodes[b].y} stroke="var(--color-line)" strokeWidth="0.3" vectorEffect="non-scaling-stroke" />
         ))}
       </svg>
       {nodes.map((n) => (
         <div key={n.id} className="absolute" style={{ left: `${n.x}%`, top: `${n.y}%`, transform: "translate(-50%,-50%)" }}>
-          <div style={{ width: n.r * 3, height: n.r * 3, borderRadius: 99, background: n.color, opacity: 0.14 }} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" />
-          <div style={{ width: n.r * 1.4, height: n.r * 1.4, borderRadius: 99, background: n.color, opacity: 0.9 }} className="relative" />
-          <p className="micro-label mt-2 whitespace-nowrap text-center" style={{ color: "var(--color-secondary-text)" }}>{n.label}</p>
+          <div style={{ width: n.r * 3, height: n.r * 3, borderRadius: 99, background: n.id === 2 ? "rgba(0,113,227,0.12)" : "rgba(29,29,31,0.06)" }} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" />
+          <div style={{ width: n.r * 1.5, height: n.r * 1.5, borderRadius: 99, background: n.id === 2 ? "var(--color-electric-blue)" : "var(--color-apple-ink)" }} className="relative" />
+          <p className="mt-1.5 whitespace-nowrap text-center" style={{ fontSize: 12, color: "var(--color-iron)" }}>{n.label}</p>
         </div>
       ))}
-      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between px-5 py-3" style={{ borderTop: "1px solid #292B2D", background: "rgba(5,5,5,0.75)", backdropFilter: "blur(8px)" }}>
-        <p className="font-tech" style={{ color: "var(--color-secondary-text)", fontSize: 10 }}>RESEARCH PAPERS → CONCEPTS → TOPICS → RELATIONSHIPS</p>
-        <p className="font-tech hidden sm:block" style={{ color: "var(--color-tertiary-text)", fontSize: 10 }}>MAP / PREVIEW — MONTH 02</p>
+      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between px-6 py-3.5" style={{ background: "rgba(255,255,255,0.9)" }}>
+        <p style={{ fontSize: 12, color: "var(--color-graphite)" }}>Papers → ideas → topics</p>
+        <p className="hidden sm:block" style={{ fontSize: 12, color: "var(--color-slate)" }}>Live preview</p>
       </div>
     </div>
   );

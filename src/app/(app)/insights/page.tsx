@@ -1,61 +1,75 @@
-import { SectionDivider } from "@/components/editorial/TechnicalLabel";
+"use client";
 
-const CLUSTERS = [
-  ["RETRIEVAL-AUGMENTED GENERATION", "09 DOCS", "92%", "The dominant cluster. Dense citation links to evaluation and vector storage."],
-  ["VECTOR REPRESENTATION", "06 DOCS", "78%", "Comparative studies converge on hybrid lexical + semantic pipelines."],
-  ["EVALUATION METHODOLOGY", "05 DOCS", "64%", "Sparse coverage. Long-context benchmarks are the clear gap."],
-  ["RESEARCH WORKFLOWS", "04 DOCS", "51%", "Emerging theme: team knowledge practices and citation discipline."],
-];
+import { useMemo } from "react";
+import Link from "next/link";
+import { useDocuments } from "@/hooks/useDocuments";
+import { extractTerminology } from "@/lib/research";
 
 export default function InsightsPage() {
+  const { allDocuments } = useDocuments();
+
+  const terms = useMemo(() => {
+    const combined = allDocuments.map((d) => d.extracted_text || "").join("\n").slice(0, 20000);
+    return extractTerminology(combined, 12);
+  }, [allDocuments]);
+
   return (
-    <main className="mx-auto px-5 sm:px-8" style={{ maxWidth: "var(--page-width)" }}>
-      <section className="pt-12 sm:pt-16">
-        <p className="font-tech" style={{ color: "var(--color-tertiary-text)" }}>SIGNALS / 05 — PREVIEW</p>
-        <h1 className="font-display mt-2" style={{ fontSize: "clamp(48px,7vw,84px)", lineHeight: 0.95, letterSpacing: "-2px" }}>
-          Research
-          <br />
-          Signals
+    <div>
+      <section className="pt-6 text-center sm:pt-10">
+        <h1 className="type-heading-sm mx-auto" style={{ color: "var(--color-apple-ink)" }}>
+          Summaries.
         </h1>
-        <p className="mt-4 max-w-md text-[15px]" style={{ color: "var(--color-secondary-text)", lineHeight: 1.7 }}>
-          Editorial metrics drawn quietly from your archive. No dashboards shouting for attention.
+        <p className="mx-auto mt-3 max-w-xl" style={{ fontSize: 19, color: "var(--color-graphite)" }}>
+          Counted from your actual files — what you have, and the words you use most.
+          Nothing invented.
         </p>
       </section>
 
-      <div className="mt-10"><SectionDivider label="TOPIC CLUSTERS" /></div>
-
-      <section aria-label="Topic clusters" style={{ borderTop: "1px solid var(--color-hairline)" }}>
-        {CLUSTERS.map(([title, docs, conf, desc], i) => (
-          <div key={title} className="grid gap-3 py-6 sm:grid-cols-[56px_1fr_120px] sm:items-baseline" style={{ borderBottom: "1px solid var(--color-hairline)" }}>
-            <span className="font-tech" style={{ color: "var(--color-tertiary-text)" }}>{String(i + 1).padStart(2, "0")}</span>
-            <div>
-              <h2 className="text-[17px] font-medium tracking-tight" style={{ color: "var(--color-primary-text)" }}>{title}</h2>
-              <p className="mt-1 max-w-xl text-[14px]" style={{ color: "var(--color-secondary-text)" }}>{desc}</p>
-              {/* restrained bar — thin, mono, no color explosion */}
-              <div className="mt-3 h-[3px] w-full max-w-xl" style={{ background: "var(--color-control)", borderRadius: 99 }}>
-                <div style={{ width: conf, height: "100%", background: i === 0 ? "var(--color-research-accent)" : i === 1 ? "var(--color-ai-accent)" : "#3A3D40", borderRadius: 99 }} />
-              </div>
-            </div>
-            <div className="font-tech sm:text-right" style={{ color: "var(--color-secondary-text)", fontSize: 10 }}>
-              {docs}<br /><span style={{ color: "var(--color-tertiary-text)" }}>{conf} COHERENCE</span>
-            </div>
+      <section aria-label="Your library at a glance" className="gallery-card mt-8">
+        {allDocuments.length === 0 ? (
+          <div className="py-8 text-center">
+            <p style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>Nothing to summarise yet.</p>
+            <p className="mx-auto mt-2 max-w-md" style={{ fontSize: 17, color: "var(--color-graphite)" }}>Upload papers and their summary will appear here.</p>
+            <Link href="/documents" className="primary-button mt-5">Open library</Link>
           </div>
-        ))}
+        ) : (
+          <>
+            <div className="flex items-baseline justify-between py-3" style={{ borderBottom: "1px solid var(--color-line)" }}>
+              <p style={{ fontSize: 19, fontWeight: 600, color: "var(--color-apple-ink)" }}>Your library</p>
+              <p style={{ fontSize: 15, color: "var(--color-graphite)" }}>
+                {allDocuments.length} {allDocuments.length === 1 ? "paper" : "papers"} · {allDocuments.filter((d) => d.file_type === "PDF").length} PDF · {allDocuments.filter((d) => d.file_type === "DOCX").length} DOCX
+              </p>
+            </div>
+            <div className="py-3" style={{ borderBottom: "1px solid var(--color-line)" }}>
+              <p style={{ fontSize: 19, fontWeight: 600, color: "var(--color-apple-ink)" }}>Words you use most</p>
+              <p className="mt-1" style={{ fontSize: 15, color: "var(--color-graphite)" }}>
+                {terms.length ? terms.slice(0, 6).join(" · ") : "Upload papers to see shared vocabulary."}
+              </p>
+            </div>
+            <div className="py-3">
+              <p style={{ fontSize: 19, fontWeight: 600, color: "var(--color-apple-ink)" }}>Honest limits</p>
+              <p className="mt-1" style={{ fontSize: 15, color: "var(--color-graphite)" }}>
+                These counts come straight from your files. Deeper topic analysis arrives with the backend.
+              </p>
+            </div>
+          </>
+        )}
       </section>
 
-      <div className="mt-6"><SectionDivider label="EMERGING" /></div>
-      <section className="grid gap-8 py-8 sm:grid-cols-3" aria-label="Emerging themes">
-        {[
-          ["RESEARCH GAPS", "Long-context evaluation and multilingual retrieval are under-represented."],
-          ["MOST REFERENCED", "“Attention Is All You Need” anchors 7 of your 24 documents."],
-          ["DOCUMENT SIMILARITY", "RAG Survey ↔ Vector Databases share 68% conceptual overlap."],
-        ].map(([k, v]) => (
-          <div key={k}>
-            <p className="micro-label" style={{ color: "var(--color-tertiary-text)" }}>{k}</p>
-            <p className="mt-2 text-[14px]" style={{ color: "var(--color-secondary-text)", lineHeight: 1.7 }}>{v}</p>
-          </div>
-        ))}
+      <section className="gallery-card mt-5" aria-label="Shared words">
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>SHARED WORDS — FROM YOUR FILES</p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {terms.length === 0 ? (
+            <span style={{ fontSize: 17, color: "var(--color-slate)" }}>—</span>
+          ) : (
+            terms.map((t) => <span key={t} className="tag-pill" style={{ fontSize: 15, padding: "6px 14px" }}>{t}</span>)
+          )}
+        </div>
       </section>
-    </main>
+
+      <section className="mt-6 text-center" aria-label="Next">
+        <Link href="/assistant" className="secondary-button">Ask about your library →</Link>
+      </section>
+    </div>
   );
 }
