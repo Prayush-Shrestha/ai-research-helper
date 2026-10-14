@@ -54,14 +54,15 @@ export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle:
         {!collapsed && <span className="truncate">{item.label}</span>}
       </>
     );
-    const cls = "flex items-center gap-3 px-4 py-2 text-[15px]";
-    const style: CSSProperties = {
-      color: active ? "var(--color-apple-ink)" : "var(--color-iron)",
-      fontWeight: active ? 600 : 400,
-      background: active ? "var(--surface-elevated)" : "transparent",
-      borderRadius: 10,
-      borderLeft: active ? "2px solid var(--color-electric-blue)" : "2px solid transparent",
-    };
+    const cls = active
+      ? "liquid-active-row flex items-center gap-3 px-4 py-2 text-[15px]"
+      : "liquid-link flex items-center gap-3 px-4 py-2 text-[15px] w-full";
+    const style: CSSProperties = active
+      ? { color: "var(--color-apple-ink)", fontWeight: 600, borderRadius: 10 }
+      : {
+          color: "var(--color-iron)",
+          fontWeight: 400,
+        };
     if (item.href) {
       return (
         <Link key={item.label} href={item.href} aria-current={active ? "page" : undefined} className={cls} style={style} title={item.label}>
@@ -100,16 +101,14 @@ export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle:
   return (
     <aside
       aria-label="Workspace"
-      className="hidden shrink-0 flex-col lg:flex"
+      className="liquid-sidebar hidden shrink-0 flex-col lg:flex"
       style={{
         width: collapsed ? 76 : 248,
-        background: "var(--surface-sidebar)",
-        borderRight: "1px solid var(--color-line)",
-        minHeight: "calc(100vh - 48px)",
+        minHeight: "calc(100vh - var(--nav-h))",
         position: "sticky",
-        top: 48,
+        top: "var(--nav-h)",
         alignSelf: "flex-start",
-        maxHeight: "calc(100vh - 48px)",
+        maxHeight: "calc(100vh - var(--nav-h))",
         overflowY: "auto",
         transition: "width 200ms ease",
       }}

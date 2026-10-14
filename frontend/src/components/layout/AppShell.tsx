@@ -27,7 +27,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   if (!user) return null;
 
   return (
-    <div className="flex min-h-[calc(100vh-48px)]" style={{ background: "var(--color-fog-canvas)" }}>
+    <div className="flex" style={{ background: "transparent", minHeight: "calc(100vh - var(--nav-h))" }}>
       <Sidebar collapsed={collapsed} onToggle={toggle} />
       <div className="flex min-w-0 flex-1 flex-col">
         <MobileNav />

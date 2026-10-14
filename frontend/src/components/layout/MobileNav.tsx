@@ -39,7 +39,7 @@ export function MobileNav() {
 
   return (
     <>
-      <header className="sticky top-[48px] z-30 flex h-14 items-center justify-between px-4 lg:hidden" style={{ borderBottom: "1px solid var(--color-line)", background: "color-mix(in srgb, var(--color-pure-white) 90%, transparent)", backdropFilter: "blur(12px)" }}>
+      <header className="liquid-bar flex h-14 items-center justify-between px-4 lg:hidden" style={{ top: "var(--nav-h)" }}>
         <span className="flex items-center gap-2">
           <LogoMark size={24} />
           <span style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 17, fontWeight: 600, color: "var(--color-apple-ink)" }}>Lumina</span>
@@ -62,7 +62,7 @@ export function MobileNav() {
       {open && (
         <div className="fixed inset-0 z-40 lg:hidden" role="dialog" aria-modal="true" aria-label="Workspace menu">
           <div className="absolute inset-0 animate-fade-in" style={{ background: "rgba(29,29,31,0.4)" }} onClick={() => setOpen(false)} />
-          <nav aria-label="Mobile workspace" className="absolute inset-x-3 top-[104px] max-h-[70vh] overflow-y-auto px-4 pb-4 pt-2 animate-slide-up" style={{ background: "var(--color-pure-white)", borderRadius: 28 }}>
+          <nav aria-label="Mobile workspace" className="gallery-card absolute inset-x-3 top-[calc(var(--nav-h)+56px)] max-h-[70vh] overflow-y-auto px-4 pb-4 pt-2 animate-slide-up" style={{ borderRadius: 20 }}>
             <p className="px-2 pb-1 pt-3" style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>Workspace</p>
             {LINKS.map((l) => {
               const active = pathname === l.href || (l.href === "/documents" && pathname.startsWith("/documents"));

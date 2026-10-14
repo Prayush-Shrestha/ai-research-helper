@@ -83,7 +83,7 @@ export default function NotesPage() {
       </section>
 
       <section aria-label="Find a note" className="mx-auto mt-5" style={{ maxWidth: 680 }}>
-        <div className="flex items-center gap-3 px-5 py-3" style={{ background: "var(--color-pure-white)", borderRadius: 12, border: "1px solid var(--color-line)" }}>
+        <div className="liquid-search flex items-center gap-3 px-5 py-3">
           <span aria-hidden style={{ color: "var(--color-slate)", fontSize: 17 }}>⌕</span>
           <label htmlFor="notes-search" className="sr-only">Search notes</label>
           <input

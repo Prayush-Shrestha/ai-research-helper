@@ -14,8 +14,8 @@ const LINKS = [
 ];
 
 /**
- * Gallery nav bar — dark translucent band, 48px, 12px links.
- * Floats over the fog canvas with backdrop blur, no borders.
+ * Liquid glass nav — full-width translucent bar with blur, shine, and depth.
+ * Inner content stays capped; the glass itself runs edge to edge.
  */
 export function Navbar() {
   const pathname = usePathname();
@@ -33,68 +33,70 @@ export function Navbar() {
   const isLanding = pathname === "/";
 
   return (
-    <div
-      className="sticky top-0 z-50"
-      style={{ background: "rgba(16,18,17,0.88)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", borderBottom: "1px solid var(--color-line)" }}
-    >
+    <div className="liquid-bar">
       <header
-        className="mx-auto flex h-[48px] items-center justify-between px-4 sm:px-5"
-        style={{ maxWidth: 1024 }}
+        className="mx-auto flex items-center justify-between px-4 sm:px-5"
+        style={{ maxWidth: 1120, height: "var(--nav-h)" }}
       >
         <Link
           href={user ? "/dashboard" : "/"}
           aria-label="Lumina home"
           className="flex items-center gap-2"
-          style={{ fontFamily: "var(--font-sf-pro-text)", fontSize: 17, fontWeight: 600, letterSpacing: "-0.019em", color: "#f5f5f7" }}
+          style={{ fontFamily: "var(--font-sf-pro-text)", fontSize: 17, fontWeight: 600, letterSpacing: "-0.019em", color: "var(--color-apple-ink)" }}
         >
           <LogoMark size={22} />
           Lumina
         </Link>
 
         {isLanding ? (
-          <nav aria-label="Primary" className="hidden items-center gap-7 md:flex">
+          <nav aria-label="Primary" className="hidden items-center gap-1.5 md:flex">
             {LINKS.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
-                style={{ fontSize: 12, fontWeight: 400, letterSpacing: "-0.01em", color: "#f5f5f7", opacity: 0.85 }}
+                className="liquid-link"
+                style={{ fontSize: 13, fontWeight: 500, color: "var(--color-graphite)" }}
               >
                 {l.label}
               </Link>
             ))}
             <ThemeToggle tone="dark" />
             {user ? (
-              <Link href="/dashboard" className="rounded-full px-4 py-1.5" style={{ fontSize: 12, fontWeight: 600, background: "#9DE7C1", color: "#101211" }}>
+              <Link href="/dashboard" className="primary-button liquid-cta ml-1" style={{ fontSize: 13, padding: "7px 16px" }}>
                 Open
               </Link>
             ) : (
               <>
-                <Link href="/login" style={{ fontSize: 12, color: "#F2F1EB", opacity: 0.85 }}>
+                <Link href="/login" className="liquid-link" style={{ fontSize: 13, fontWeight: 500, color: "var(--color-apple-ink)" }}>
                   Sign in
                 </Link>
-                <Link href="/register" className="rounded-full px-4 py-1.5" style={{ fontSize: 12, fontWeight: 600, background: "#9DE7C1", color: "#101211" }}>
+                <Link href="/register" className="primary-button liquid-cta" style={{ fontSize: 13, padding: "7px 16px" }}>
                   Get started
                 </Link>
               </>
             )}
           </nav>
         ) : (
-          <nav aria-label="Primary" className="hidden items-center gap-7 md:flex">
+          <nav aria-label="Primary" className="hidden items-center gap-1.5 md:flex">
             {[
               ["/dashboard", "Workspace"],
               ["/documents", "Library"],
               ["/assistant", "Assistant"],
               ["/guide", "Guide"],
-            ].map(([href, label]) => (
-              <Link
-                key={href}
-                href={href}
-                aria-current={pathname === href ? "page" : undefined}
-                style={{ fontSize: 12, fontWeight: 400, letterSpacing: "-0.01em", color: "#f5f5f7", opacity: pathname === href ? 1 : 0.75 }}
-              >
-                {label}
-              </Link>
-            ))}
+            ].map(([href, label]) => {
+              const active = pathname === href;
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  aria-current={active ? "page" : undefined}
+                  className={active ? "liquid-link liquid-link-active" : "liquid-link"}
+                  style={{ fontSize: 13, fontWeight: active ? 600 : 500, color: active ? "var(--color-apple-ink)" : "var(--color-graphite)" }}
+                >
+                  {label}
+                </Link>
+              );
+            })}
             <ThemeToggle tone="dark" />
           </nav>
         )}
@@ -102,7 +104,7 @@ export function Navbar() {
         <div className="flex items-center gap-1 md:hidden">
           <ThemeToggle tone="dark" />
           {!isLanding && user && (
-            <Link href="/documents" className="rounded-full px-3.5 py-1" style={{ fontSize: 12, fontWeight: 600, background: "#9DE7C1", color: "#101211" }}>
+            <Link href="/documents" className="primary-button liquid-cta" style={{ fontSize: 12, fontWeight: 600, padding: "6px 14px" }}>
               New
             </Link>
           )}
@@ -111,8 +113,8 @@ export function Navbar() {
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-label={open ? "Close menu" : "Open menu"}
-            className="flex h-9 w-9 flex-col items-center justify-center gap-1.5"
-            style={{ color: "#f5f5f7" }}
+            className="liquid-link flex h-9 w-9 flex-col items-center justify-center gap-1.5"
+            style={{ color: "var(--color-apple-ink)" }}
           >
             <span aria-hidden style={{ display: "block", width: 18, height: 1.5, background: "currentColor", borderRadius: 2 }} />
             <span aria-hidden style={{ display: "block", width: 18, height: 1.5, background: "currentColor", borderRadius: 2 }} />
@@ -121,7 +123,7 @@ export function Navbar() {
       </header>
 
       {open && (
-        <nav aria-label="Primary mobile" className="animate-slide-up px-5 pb-6 md:hidden" style={{ background: "rgba(16,18,17,0.97)", borderBottom: "1px solid var(--color-line)" }}>
+        <nav aria-label="Primary mobile" className="liquid-drawer animate-slide-up px-5 pb-6 md:hidden">
           <div className="flex flex-col">
             {(isLanding ? LINKS.map((l) => ({ href: l.href, label: l.label })) : [
               { href: "/dashboard", label: "Workspace" },
@@ -136,17 +138,17 @@ export function Navbar() {
                 href={l.href}
                 onClick={() => setOpen(false)}
                 className="py-3.5"
-                style={{ fontSize: 17, color: "#f5f5f7", borderBottom: "1px solid rgba(245,245,247,0.15)" }}
+                style={{ fontSize: 17, color: "var(--color-apple-ink)", borderBottom: "1px solid var(--liquid-border)" }}
               >
                 {l.label}
               </Link>
             ))}
             {user ? (
-              <Link href="/documents" onClick={() => setOpen(false)} className="mt-4 rounded-full py-2.5 text-center" style={{ fontSize: 17, fontWeight: 600, background: "#9DE7C1", color: "#101211" }}>
+              <Link href="/documents" onClick={() => setOpen(false)} className="primary-button liquid-cta mt-4 py-2.5 text-center" style={{ fontSize: 17 }}>
                 New research
               </Link>
             ) : (
-              <Link href="/register" onClick={() => setOpen(false)} className="mt-4 rounded-full py-2.5 text-center" style={{ fontSize: 17, fontWeight: 600, background: "#9DE7C1", color: "#101211" }}>
+              <Link href="/register" onClick={() => setOpen(false)} className="primary-button liquid-cta mt-4 py-2.5 text-center" style={{ fontSize: 17 }}>
                 Get started
               </Link>
             )}
