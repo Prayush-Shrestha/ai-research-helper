@@ -58,7 +58,7 @@ export default function LoginPage() {
       <main className="mx-auto px-5 sm:px-8" style={{ maxWidth: 560 }}>
         <section className="pt-10 text-center sm:pt-16">
           <h1 style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 44, fontWeight: 600, letterSpacing: "-0.009em", lineHeight: 1.1, color: "var(--color-apple-ink)" }}>Welcome back.</h1>
-          <p className="mt-3" style={{ fontSize: 19, color: "var(--color-graphite)" }}>Sign in to open your library.</p>
+          <p className="mt-3" style={{ fontSize: 19, color: "var(--color-graphite)" }}>Good to see you again. Your library is right where you left it.</p>
 
           <div className="gallery-card mt-8 text-left">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>

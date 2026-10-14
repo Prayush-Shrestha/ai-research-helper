@@ -7,7 +7,7 @@ const SUGGESTIONS = [
   "What are the key findings?",
   "Explain the method",
   "What are the limitations?",
-  "Key terms to know",
+  "Explain it simply",
   "Questions this leaves open",
 ];
 
@@ -44,7 +44,7 @@ export function CommandInput({
           id="assistant-query"
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          placeholder="Ask about your papers…"
+          placeholder="What do you want to know…"
           autoComplete="off"
           className="w-full bg-transparent py-2.5 text-[17px] outline-none"
           style={{ color: "var(--color-apple-ink)" }}

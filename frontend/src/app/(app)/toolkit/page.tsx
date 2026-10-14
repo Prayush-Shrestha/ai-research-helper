@@ -72,11 +72,11 @@ function CitationBuilder() {
   return (
     <div className="gallery-card grid gap-8 lg:grid-cols-[1fr_1.2fr]">
       <div>
-        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>DETAILS</p>
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>Details</p>
         <div className="mt-3 space-y-4">
           <div>
             <label htmlFor="cite-authors" className="mb-1.5 block text-[17px]" style={{ color: "var(--color-apple-ink)" }}>
-              Authors <span style={{ fontSize: 15, color: "var(--color-slate)" }}>— separate with commas</span>
+              Authors <span style={{ fontSize: 15, color: "var(--color-slate)" }}>(separate with commas)</span>
             </label>
             <input
               id="cite-authors" value={form.authors} onChange={(e) => updateField("authors", e.target.value)}
@@ -124,13 +124,13 @@ function CitationBuilder() {
         </div>
       </div>
       <div>
-        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>RESULT — LIVE</p>
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>Live result</p>
         <div className="mt-3 space-y-3">
           {(
             [
               ["APA", apa],
               ["IEEE", ieee],
-              ["BIBTEX", bib],
+              ["BibTeX", bib],
             ] as Array<[string, string]>
           ).map(([label, text]) => (
             <div key={label} style={{ background: "var(--color-fog-canvas)", borderRadius: 18, padding: "14px 18px" }}>
@@ -239,15 +239,15 @@ export default function ToolkitPage() {
           Write it right.
         </h1>
         <p className="mx-auto mt-4 max-w-xl" style={{ fontSize: 21, color: "var(--color-graphite)" }}>
-          Sloppy citations and missing sections sink first papers.
-          Fix both below — free, in your browser.
+          Citations and structure get easier with practice.
+          Both tools below run free in your browser.
         </p>
       </section>
 
       <section className="mt-10" aria-label="Citation builder">
         <h2 className="type-heading-sm" style={{ color: "var(--color-apple-ink)" }}>1 · Citation builder.</h2>
         <p className="mt-2 max-w-xl" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
-          Type the details once — get APA, IEEE and BibTeX instantly.
+          Type the details once and get APA, IEEE and BibTeX back right away.
         </p>
         <div className="mt-5"><CitationBuilder /></div>
       </section>
@@ -261,7 +261,7 @@ export default function ToolkitPage() {
       </section>
 
       <section className="gallery-card mb-4 mt-8 text-center">
-        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>DRAFT TAKING SHAPE?</p>
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>Draft taking shape?</p>
         <p className="mt-2" style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 32, fontWeight: 600, color: "var(--color-apple-ink)" }}>
           Now give it a deadline.
         </p>

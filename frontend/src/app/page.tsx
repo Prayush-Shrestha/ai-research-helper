@@ -63,7 +63,7 @@ function ProductPreview() {
       <div className="grid md:grid-cols-[168px_1fr]">
         {/* miniature sidebar */}
         <div className="hidden p-4 md:block" style={{ borderRight: "1px solid var(--color-line)", background: "var(--surface-sidebar)" }}>
-          <p className="mono-meta" style={{ fontSize: 11, color: "var(--color-slate)" }}>LUMINA</p>
+          <p style={{ fontSize: 12, color: "var(--color-slate)" }}>Lumina</p>
           <div className="mt-4 space-y-1">
             {["Overview", "My Research", "Collections", "Assistant", "Notes"].map((item, i) => (
               <p
@@ -86,7 +86,7 @@ function ProductPreview() {
         {/* document list + detail + notes */}
         <div className="min-w-0">
           <div className="px-4 pt-4">
-            <p className="mono-meta" style={{ fontSize: 11, color: "var(--color-slate)" }}>MY RESEARCH · 3 PAPERS</p>
+            <p style={{ fontSize: 12, color: "var(--color-slate)" }}>A few papers, as an example</p>
           </div>
           <div className="px-2 pb-2">
             {PREVIEW_DOCS.slice(0, 2).map((d) => (
@@ -95,20 +95,20 @@ function ProductPreview() {
           </div>
           <div className="grid gap-px sm:grid-cols-2" style={{ borderTop: "1px solid var(--color-line)", background: "var(--color-line)" }}>
             <div className="p-4" style={{ background: "var(--color-pure-white)" }}>
-              <p className="mono-meta" style={{ fontSize: 11, color: "var(--color-slate)" }}>READING NOW</p>
+              <p style={{ fontSize: 12, color: "var(--color-slate)" }}>Currently reading</p>
               <p className="mt-1.5 truncate" style={{ fontSize: 14, fontWeight: 600, color: "var(--color-apple-ink)" }}>
                 Retrieval-Augmented Generation — A Survey
               </p>
-              <p className="mono-meta mt-1" style={{ fontSize: 11, color: "var(--color-slate)" }}>PDF · 42 PAGES · READY</p>
+              <p className="mt-1" style={{ fontSize: 12, color: "var(--color-slate)" }}>PDF, 42 pages, ready to read</p>
             </div>
             <div className="p-4" style={{ background: "var(--color-pure-white)" }}>
-              <p className="mono-meta" style={{ fontSize: 11, color: "var(--color-slate)" }}>PINNED NOTE</p>
+              <p style={{ fontSize: 12, color: "var(--color-slate)" }}>A note I left myself</p>
               <p className="mt-1.5" style={{ fontSize: 14, color: "var(--color-iron)", lineHeight: 1.5 }}>
-                “Three-stage pipeline: parse, index, verify against source.”
+                “Three stages: parse it, index it, then check against the source.”
               </p>
-              <p className="mono-meta mt-1.5 flex items-center gap-1.5" style={{ fontSize: 11, color: "var(--color-electric-blue)" }}>
+              <p className="mt-1.5 flex items-center gap-1.5" style={{ fontSize: 12, color: "var(--color-electric-blue)" }}>
                 <span aria-hidden style={{ width: 6, height: 6, borderRadius: 99, background: "currentColor", display: "inline-block" }} />
-                SAVED · SYNCED
+                Saved
               </p>
             </div>
           </div>
@@ -127,26 +127,27 @@ export default function LandingPage() {
         {/* ——— HERO: split editorial ——— */}
         <section className="grid items-center gap-10 pt-12 sm:pt-20 lg:grid-cols-[1fr_1.1fr]" aria-labelledby="hero-title" id="product">
           <div>
-            <p className="mono-meta" style={{ fontSize: 12, letterSpacing: "0.08em", color: "var(--color-electric-blue)" }}>
-              PERSONAL RESEARCH WORKSPACE
+            <p style={{ fontSize: 14, color: "var(--color-graphite)" }}>
+              Built for students drowning in PDFs
             </p>
             <h1 id="hero-title" className="font-editorial mt-4" style={{ fontSize: "clamp(44px,6vw,72px)", lineHeight: 1.04, color: "var(--color-apple-ink)" }}>
-              Your research, connected.
+              A desk for your papers.
             </h1>
             <p className="mt-5 max-w-md" style={{ fontSize: 18, lineHeight: 1.6, color: "var(--color-graphite)" }}>
-              Lumina keeps your papers, notes, and references in one quiet
-              workspace — organised today, ready for AI assistance tomorrow.
+              I started Lumina because my downloads folder was a mess of
+              half-read papers. Upload them here, keep notes next to the source,
+              and find things again. That is the whole idea.
             </p>
             <div className="mt-7 flex flex-wrap items-center gap-4">
               <Link href="/register" className="primary-button">
-                Start researching
+                Make an account
               </Link>
               <Link href="/dashboard" style={{ fontSize: 16, color: "var(--color-link-blue)" }}>
-                Explore the workspace →
+                Look inside →
               </Link>
             </div>
-            <p className="mono-meta mt-5" style={{ fontSize: 12, color: "var(--color-slate)" }}>
-              PDF + DOCX · FREE TO START · YOUR FILES STAY YOURS
+            <p className="mt-5" style={{ fontSize: 13, color: "var(--color-slate)" }}>
+              Takes PDFs and Word files. Free. I never see your uploads.
             </p>
           </div>
           <div>
@@ -159,33 +160,33 @@ export default function LandingPage() {
 
         {/* ——— FEATURES ——— */}
         <section id="features" className="mx-auto mt-24" aria-label="Features" style={{ maxWidth: 860 }}>
-          <p className="mono-meta" style={{ fontSize: 12, letterSpacing: "0.08em", color: "var(--color-electric-blue)" }}>WHAT IT DOES</p>
+          <p style={{ fontSize: 14, color: "var(--color-graphite)" }}>What you actually get</p>
           <h2 className="font-editorial mt-3" style={{ fontSize: "clamp(32px,4vw,48px)", lineHeight: 1.08, color: "var(--color-apple-ink)" }}>
-            A workspace, not another folder.
+            Less filing, more reading.
           </h2>
           <div className="mt-6" style={{ borderTop: "1px solid var(--color-line)" }}>
-            <Feature title="Document library" body="Every paper in one searchable list — filter by type, sort by date or title, paginate through hundreds. Extraction status is always visible." />
-            <Feature title="Real text extraction" body="PDFs and DOCX files are parsed on upload. Scanned documents say so honestly instead of pretending." />
-            <Feature title="Notes that stay attached" body="Pin observations to their source paper. Saved to your library with timestamps — never lost silently." />
-            <Feature title="Citations and structure" body="Generate APA, IEEE, and BibTeX references from one form, and tick through a paper checklist as you write." />
-            <Feature title="Private by default" body="Your library is scoped to your account. Ownership is checked on every read, rename, download, and delete." />
+            <Feature title="One list for everything" body="All your papers in a single searchable list. Filter by file type, sort a few ways. It is plain on purpose, so a hundred papers still feel manageable." />
+            <Feature title="It reads the file for you" body="Upload a PDF or Word doc and the text comes out automatically. If a scan has no readable text, it tells you straight instead of showing a blank page." />
+            <Feature title="Notes sit next to their paper" body="Jot down why a paper matters while you are reading it. The note stays attached to that paper, with a date, so you remember the context later." />
+            <Feature title="Citations without the fuss" body="Fill in a small form and get APA, IEEE, or BibTeX back. There is also a checklist if you are writing and keep forgetting sections." />
+            <Feature title="Yours means yours" body="You only ever see your own uploads. Every page checks that before showing anything." />
           </div>
         </section>
 
         {/* ——— HOW IT WORKS ——— */}
         <section id="workflow" className="mx-auto mt-24" aria-label="How it works" style={{ maxWidth: 860 }}>
-          <p className="mono-meta" style={{ fontSize: 12, letterSpacing: "0.08em", color: "var(--color-electric-blue)" }}>HOW IT WORKS</p>
+          <p style={{ fontSize: 14, color: "var(--color-graphite)" }}>Getting started</p>
           <h2 className="font-editorial mt-3" style={{ fontSize: "clamp(32px,4vw,48px)", lineHeight: 1.08, color: "var(--color-apple-ink)" }}>
-            Three steps to an organised library.
+            Up and running in a few minutes.
           </h2>
           <div className="mt-6 grid gap-5 sm:grid-cols-3">
             {[
-              ["01", "Create an account", "Free. Takes about 30 seconds.", "/register", "Register"],
-              ["02", "Upload a paper", "PDF or DOCX, up to 15 MB. Text extracts automatically.", "/documents", "Open library"],
-              ["03", "Read and note", "Read the extracted text, pin notes, build citations.", "/guide", "Read the guide"],
+              ["First", "Make an account", "Name, email, password. About half a minute.", "/register", "Register"],
+              ["Then", "Drop in a paper", "PDF or Word, up to 15 MB. The text pulls out by itself.", "/documents", "Open library"],
+              ["After that", "Read and scribble", "Read the text, save a note, grab a citation when you need one.", "/guide", "Read the guide"],
             ].map(([n, t, d, href, link]) => (
               <div key={t} className="gallery-card">
-                <p className="mono-meta" style={{ fontSize: 13, color: "var(--color-electric-blue)" }}>{n}</p>
+                <p style={{ fontSize: 13, color: "var(--color-graphite)" }}>{n}</p>
                 <p className="mt-2" style={{ fontSize: 18, fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-apple-ink)" }}>{t}</p>
                 <p className="mt-1.5" style={{ fontSize: 15, color: "var(--color-graphite)", lineHeight: 1.55 }}>{d}</p>
                 <Link href={href} className="mt-3 inline-block" style={{ fontSize: 15, color: "var(--color-link-blue)" }}>{link} →</Link>
@@ -197,16 +198,15 @@ export default function LandingPage() {
         {/* ——— HONEST AI NOTE ——— */}
         <section className="mx-auto mt-24" aria-label="About future AI features" style={{ maxWidth: 860 }}>
           <div className="gallery-card">
-            <p className="mono-meta" style={{ fontSize: 12, letterSpacing: "0.08em", color: "var(--color-electric-blue)" }}>ROADMAP</p>
+            <p style={{ fontSize: 14, color: "var(--color-graphite)" }}>A note on AI</p>
             <h2 className="mt-3" style={{ fontSize: 24, fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-apple-ink)" }}>
-              AI answers are coming — grounded or not at all.
+              Question answering is next. It will quote or stay quiet.
             </h2>
             <p className="mt-2 max-w-2xl" style={{ fontSize: 16, color: "var(--color-graphite)", lineHeight: 1.6 }}>
-              Phase 1 is the foundation: reliable uploads, real extraction, and
-              organised notes. Phase 2 will add question answering over your
-              documents with quoted sources. Until then, the assistant and
-              insights pages are clearly labelled previews — nothing is
-              fabricated.
+              Right now this is a solid base: uploads that work, text you can
+              read, notes that stay put. The next step is asking questions over
+              your own files with real quotes. The assistant pages are marked
+              as early previews until that lands.
             </p>
           </div>
         </section>
@@ -214,14 +214,14 @@ export default function LandingPage() {
         {/* ——— FINAL CTA ——— */}
         <section className="mx-auto mt-24 text-center" aria-label="Get started" style={{ maxWidth: 680, marginBottom: 48 }}>
           <h2 className="font-editorial" style={{ fontSize: "clamp(36px,5vw,56px)", lineHeight: 1.06, color: "var(--color-apple-ink)" }}>
-            Start with one paper.
+            Got one PDF lying around?
           </h2>
           <p className="mx-auto mt-4 max-w-md" style={{ fontSize: 18, color: "var(--color-graphite)" }}>
-            Create an account, upload a PDF, and read it properly.
+            Put it here and see if this feels better than your downloads folder.
           </p>
           <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link href="/register" className="primary-button">Start researching</Link>
-            <Link href="/guide" className="ghost-pill">Beginner&rsquo;s guide</Link>
+            <Link href="/register" className="primary-button">Make an account</Link>
+            <Link href="/guide" className="ghost-pill">How it works</Link>
           </div>
         </section>
       </main>

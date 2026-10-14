@@ -77,16 +77,18 @@ export default function DocumentsPage() {
 
   return (
     <div>
-      <section className="pt-6 text-center sm:pt-10">
-        <h1 className="type-heading-sm mx-auto" style={{ color: "var(--color-apple-ink)" }}>
-          Library.
+      <section className="pt-6 sm:pt-10">
+        <h1 className="type-heading-sm" style={{ color: "var(--color-apple-ink)" }}>
+          {total === 0 ? "Your shelf is waiting." : "Your papers."}
         </h1>
-        <p className="mx-auto mt-3 max-w-xl" style={{ fontSize: 19, color: "var(--color-graphite)" }}>
-          Every paper you&rsquo;ve uploaded, searchable in one place. Open any row to read it.
+        <p className="mt-3 max-w-xl" style={{ fontSize: 19, color: "var(--color-graphite)" }}>
+          {total === 0
+            ? "Everything you upload lands here. Start with one."
+            : "Everything in one place. Click a row to actually read it."}
         </p>
         <div className="mt-5">
           <button onClick={() => setUploadOpen((v) => !v)} className="primary-button">
-            {uploadOpen ? "Close" : "Upload a paper +"}
+            {uploadOpen ? "Close" : total === 0 ? "Put the first one here +" : "Add another +"}
           </button>
         </div>
       </section>
@@ -99,7 +101,7 @@ export default function DocumentsPage() {
             id="doc-search"
             value={search}
             onChange={(e) => { setSearch(e.target.value); resetPage(); }}
-            placeholder="Search by title or filename"
+            placeholder="Type a bit of the title…"
             autoComplete="off"
             className="w-full bg-transparent text-[17px] outline-none"
             style={{ color: "var(--color-apple-ink)" }}
@@ -142,12 +144,12 @@ export default function DocumentsPage() {
           </div>
         ) : list.length === 0 ? (
           <div className="py-10 text-center">
-            <p style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>{search ? "No matches." : "Nothing here yet."}</p>
+            <p style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>{search ? "Couldn't find that one." : "Nothing filed yet."}</p>
             <p className="mx-auto mt-2 max-w-md" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
-              {search ? `Nothing matches “${search}”. Try fewer words.` : "Upload your first paper to start your library."}
+              {search ? `Nothing with “${search}” in it. Fewer words usually works better.` : "Drop in the PDF that's been sitting open in a tab for a week."}
             </p>
             {!search && (
-              <button onClick={() => setUploadOpen(true)} className="primary-button mt-5">Upload a paper</button>
+              <button onClick={() => setUploadOpen(true)} className="primary-button mt-5">Add a paper</button>
             )}
           </div>
         ) : (
@@ -182,7 +184,7 @@ export default function DocumentsPage() {
       )}
 
       <p className="mt-5 text-center" style={{ fontSize: 12, color: "var(--color-slate)" }}>
-        Open a row to read, rename, or delete. Deleting asks first and can&rsquo;t be undone.
+        Click a row to read it. Deleting asks first, and there is no undo, so careful.
       </p>
     </div>
   );

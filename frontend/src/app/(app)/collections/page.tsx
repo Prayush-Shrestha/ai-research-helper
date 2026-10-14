@@ -28,11 +28,11 @@ export default function CollectionsPage() {
     <div>
       <section className="pt-6 text-center sm:pt-10">
         <h1 className="type-heading-sm mx-auto" style={{ color: "var(--color-apple-ink)" }}>
-          Collections.
+          Piles that make sense to you.
         </h1>
         <p className="mx-auto mt-3 max-w-xl" style={{ fontSize: 19, color: "var(--color-graphite)" }}>
-          Group papers that belong together — by topic, course, or project.
-          Kept on this device.
+          Put papers that go together in one place. Sort by topic or course or
+          just whatever logic works for you. They stay saved on this device.
         </p>
       </section>
 
@@ -55,9 +55,9 @@ export default function CollectionsPage() {
       <section aria-label="Your collections" className="mt-5">
         {collections.length === 0 ? (
           <div className="gallery-card py-10 text-center">
-            <p style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>No collections yet.</p>
+            <p style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>Nothing grouped up yet.</p>
             <p className="mx-auto mt-2 max-w-md" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
-              Name one above, then tick the papers that belong in it.
+              Give one a name above and start ticking off the papers that belong in it.
             </p>
           </div>
         ) : (
@@ -91,7 +91,7 @@ export default function CollectionsPage() {
                           {c.description && <p className="mt-0.5" style={{ fontSize: 15, color: "var(--color-graphite)" }}>{c.description}</p>}
                         </>
                       )}
-                      <p className="mt-1" style={{ fontSize: 12, color: "var(--color-slate)" }}>
+                      <p className="mt-1" style={{ fontSize: 13, color: "var(--color-slate)" }}>
                         {docs.length} {docs.length === 1 ? "paper" : "papers"}
                       </p>
                     </div>
@@ -117,11 +117,11 @@ export default function CollectionsPage() {
                     <div className="mt-4" style={{ borderTop: "1px solid var(--color-line)", paddingTop: 8 }}>
                       {allDocuments.length === 0 ? (
                         <p style={{ fontSize: 17, color: "var(--color-graphite)" }}>
-                          Your library is empty. <Link href="/documents" style={{ color: "var(--color-link-blue)" }}>Upload a paper first →</Link>
+                          Your shelf is empty right now. <Link href="/documents" style={{ color: "var(--color-link-blue)" }}>Upload a paper first →</Link>
                         </p>
                       ) : (
                         <>
-                        <p style={{ fontSize: 12, color: "var(--color-slate)" }}>
+                        <p style={{ fontSize: 13, color: "var(--color-slate)" }}>
                           Showing {Math.min(allDocuments.length, 20)} of {allDocuments.length} papers
                         </p>
                         <ul>
@@ -152,7 +152,7 @@ export default function CollectionsPage() {
                       )}
                       {docs.length > 0 && (
                         <div className="mt-3">
-                          <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>IN THIS COLLECTION</p>
+                          <p style={{ fontSize: 13, color: "var(--color-slate)" }}>In this collection</p>
                           <ul className="mt-1.5 space-y-1">
                             {docs.map((d) => (
                               <li key={d.id}>

@@ -100,7 +100,7 @@ export function AIResponse({
   return (
     <article aria-live="polite" className="gallery-card page-enter mt-5">
       <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>
-        ANSWER · {query.slice(0, 90)}{query.length > 90 ? "…" : ""}
+        Answer to {query.slice(0, 90)}{query.length > 90 ? "…" : ""}
       </p>
       {scope && (
         <p className="mt-0.5" style={{ fontSize: 12, color: "var(--color-slate)" }}>

@@ -59,15 +59,14 @@ export function UploadPanel({
   if (!open) return null;
 
   return (
-    <section aria-label="Upload a paper" className="gallery-card page-enter">
+    <section aria-label="Add a paper" className="gallery-card page-enter">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>UPLOAD</p>
           <h3 className="mt-1" style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 24, fontWeight: 600, letterSpacing: "-0.009em", color: "var(--color-apple-ink)" }}>
-            Add a paper to your library.
+            Drop a paper in.
           </h3>
           <p className="mt-1.5" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
-            PDF or DOCX, up to 25 MB. Checked automatically on upload.
+            PDF or Word, up to 15 MB. I check the file before it lands.
           </p>
         </div>
         <button onClick={onClose} aria-label="Close upload panel" className="shrink-0 p-1" style={{ fontSize: 15, color: "var(--color-link-blue)" }}>
@@ -107,11 +106,11 @@ export function UploadPanel({
             }}
           >
             <p style={{ fontSize: 19, fontWeight: 600, color: "var(--color-apple-ink)" }}>
-              {drag ? "Drop it — we'll take it from here." : "Drag a file here"}
+              {drag ? "Let go, I've got it." : "Drag it here"}
             </p>
             <p style={{ fontSize: 17, color: "var(--color-graphite)" }}>or</p>
-            <span className="primary-button mt-1" style={{ pointerEvents: "none", fontSize: 15 }}>Choose file</span>
-            <p className="mt-2" style={{ fontSize: 12, color: "var(--color-slate)" }}>PDF / DOCX · Max 25 MB</p>
+            <span className="primary-button mt-1" style={{ pointerEvents: "none", fontSize: 15 }}>Pick from your files</span>
+            <p className="mt-2" style={{ fontSize: 12, color: "var(--color-slate)" }}>PDF or Word, max 15 MB</p>
             <input ref={inputRef} type="file" accept=".pdf,.docx" className="sr-only" aria-label="Select document file" onChange={(e) => { void handleFile(e.target.files?.[0]); }} />
           </div>
         ) : (

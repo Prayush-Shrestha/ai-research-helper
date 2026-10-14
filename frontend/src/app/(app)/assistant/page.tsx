@@ -39,7 +39,7 @@ export default function AssistantPage() {
 
   const selected = useMemo(() => allDocuments.filter((d) => selectedIds.includes(d.id)), [allDocuments, selectedIds]);
   const scopeDocs = selected.length > 0 ? selected : allDocuments.slice(0, 3);
-  const scopeLabel = selected.length > 0 ? `${selected.length} selected` : allDocuments.length > 3 ? "first 3 of your library (pick up to 5 to widen scope)" : allDocuments.length > 0 ? "whole library" : "no papers yet";
+  const scopeLabel = selected.length > 0 ? `${selected.length} you ticked` : allDocuments.length > 3 ? "the first 3 (tick up to 5 to change that)" : allDocuments.length > 0 ? "everything you have" : "nothing, because the shelf is empty";
 
   const insights = useMemo(() => {
     if (scopeDocs.length === 0) return null;
@@ -68,13 +68,13 @@ export default function AssistantPage() {
 
   return (
     <div>
-      <section className="pt-6 text-center sm:pt-10">
-        <h1 className="type-heading-sm mx-auto" style={{ color: "var(--color-apple-ink)" }}>
-          Ask your papers.
+      <section className="pt-6 sm:pt-10">
+        <h1 className="type-heading-sm" style={{ color: "var(--color-apple-ink)" }}>
+          Poke at your papers.
         </h1>
-        <p className="mx-auto mt-3 max-w-xl" style={{ fontSize: 19, color: "var(--color-graphite)" }}>
-          Pick up to five papers, ask in plain words, and get answers that quote the page.
-          Currently asking {scopeLabel}.
+        <p className="mt-3 max-w-xl" style={{ fontSize: 19, color: "var(--color-graphite)" }}>
+          Tick a few papers on the left, then ask like you would a friend.
+          Right now looking at {scopeLabel}.
         </p>
         <div className="mt-3 flex justify-center gap-5">
           <button onClick={() => setLeftOpen((v) => !v)} style={{ fontSize: 15, color: "var(--color-link-blue)" }} aria-expanded={leftOpen}>
@@ -89,14 +89,14 @@ export default function AssistantPage() {
       <div className="mt-8 grid gap-5 lg:grid-cols-[260px_1fr] xl:grid-cols-[260px_1fr_280px]">
         {leftOpen && (
           <aside aria-label="Choose papers" className="gallery-card page-enter !p-5 lg:sticky lg:top-[64px] lg:self-start">
-            <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>PAPERS · UP TO 5 ({selectedIds.length}/5)</p>
+            <p style={{ fontSize: 13, color: "var(--color-slate)" }}>Which papers? ({selectedIds.length}/5)</p>
             <div className="mt-2">
               {loading ? (
-                <div className="py-3"><PageLoading label="Loading papers" /></div>
+                <div className="py-3"><PageLoading label="Finding your papers" /></div>
               ) : allDocuments.length === 0 ? (
                 <div className="py-3">
-                  <p style={{ fontSize: 17, color: "var(--color-graphite)" }}>No papers yet.</p>
-                  <Link href="/documents" className="primary-button mt-3" style={{ padding: "8px 20px", fontSize: 15 }}>Upload one</Link>
+                  <p style={{ fontSize: 17, color: "var(--color-graphite)" }}>Shelf&rsquo;s empty, so there&rsquo;s nothing to ask yet.</p>
+                  <Link href="/documents" className="primary-button mt-3" style={{ padding: "8px 20px", fontSize: 15 }}>Add one first</Link>
                 </div>
               ) : (
                 allDocuments.slice(0, 12).map((d) => {
@@ -138,14 +138,14 @@ export default function AssistantPage() {
           <CommandInput onAsk={handleAsk} />
           <div>
             {history.length === 0 ? (
-              <div className="gallery-card mt-5 text-center">
-                <p style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>Ask your first question.</p>
-                <p className="mx-auto mt-2 max-w-md" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
-                  Try “Summarise this paper” or “What method is used?”
-                  {allDocuments.length === 0 ? " First upload a paper so answers have something to quote." : ""}
+              <div className="gallery-card mt-5">
+                <p style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>Go on, ask something.</p>
+                <p className="mt-2 max-w-md" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
+                  “What is this actually about?” is a perfectly good first question.
+                  {allDocuments.length === 0 ? " You'll need a paper first, though, or I have nothing to read." : ""}
                 </p>
                 {allDocuments.length === 0 && (
-                  <Link href="/documents" className="primary-button mt-4">Go to library</Link>
+                  <Link href="/documents" className="primary-button mt-4">To the library</Link>
                 )}
               </div>
             ) : (
@@ -160,9 +160,9 @@ export default function AssistantPage() {
 
           <div className="gallery-card mt-5 grid gap-4 sm:grid-cols-3" aria-label="How answers work">
             {[
-              ["Quoted", "Every claim comes from your files. Nothing invented."],
-              ["Scoped", "Ask the whole library or just the papers you pick."],
-              ["Checkable", "Open the reader to verify any line."],
+              ["It quotes", "If the answer isn't in your files, it says so."],
+              ["You pick the scope", "The ticked papers, or the first few if you tick nothing."],
+              ["You can check", "Open the paper and find the line yourself. Please do."],
             ].map(([k, v]) => (
               <div key={k}>
                 <p style={{ fontSize: 15, fontWeight: 600, color: "var(--color-apple-ink)" }}>{k}</p>
@@ -174,9 +174,9 @@ export default function AssistantPage() {
 
         {rightOpen && (
           <aside aria-label="Key points" className="gallery-card page-enter !p-5 lg:sticky lg:top-[64px] lg:self-start">
-            <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>KEY POINTS</p>
+            <p style={{ fontSize: 13, color: "var(--color-slate)" }}>The gist</p>
             {!insights ? (
-              <p className="mt-2" style={{ fontSize: 17, color: "var(--color-graphite)" }}>Upload a paper and its key points will appear here.</p>
+              <p className="mt-2" style={{ fontSize: 17, color: "var(--color-graphite)" }}>Add a paper and I&rsquo;ll pull out what it seems to be about.</p>
             ) : (
               <div className="mt-2 space-y-3">
                 <div>

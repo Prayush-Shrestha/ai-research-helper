@@ -38,12 +38,12 @@ export default function NotesPage() {
 
   return (
     <div>
-      <section className="pt-6 text-center sm:pt-10">
-        <h1 className="type-heading-sm mx-auto" style={{ color: "var(--color-apple-ink)" }}>
-          Notes.
+      <section className="pt-6 sm:pt-10">
+        <h1 className="type-heading-sm" style={{ color: "var(--color-apple-ink)" }}>
+          Margin scribbles, kept.
         </h1>
-        <p className="mx-auto mt-3 max-w-xl" style={{ fontSize: 19, color: "var(--color-graphite)" }}>
-          Short thoughts, pinned to the paper they came from. Kept on this device.
+        <p className="mt-3 max-w-xl" style={{ fontSize: 19, color: "var(--color-graphite)" }}>
+          The half-thoughts you have while reading. Attach the paper if you want, or don&rsquo;t.
         </p>
       </section>
 
@@ -51,8 +51,8 @@ export default function NotesPage() {
         <form onSubmit={handleCreate} className="grid gap-4">
           <div className="grid gap-4 sm:grid-cols-[1fr_280px]">
             <div>
-              <label htmlFor="note-title" className="mb-1.5 block text-[17px]" style={{ color: "var(--color-apple-ink)" }}>Title</label>
-              <input id="note-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="What is this about?" className="field-input" />
+              <label htmlFor="note-title" className="mb-1.5 block text-[17px]" style={{ color: "var(--color-apple-ink)" }}>Give it a name</label>
+              <input id="note-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. why the method section bugs me" className="field-input" />
             </div>
             <div>
               <label htmlFor="note-doc" className="mb-1.5 block text-[17px]" style={{ color: "var(--color-apple-ink)" }}>Paper <span style={{ color: "var(--color-slate)" }}>(optional)</span></label>
@@ -72,7 +72,7 @@ export default function NotesPage() {
           </div>
           <div>
             <label htmlFor="note-body" className="mb-1.5 block text-[17px]" style={{ color: "var(--color-apple-ink)" }}>Note</label>
-            <textarea id="note-body" value={body} onChange={(e) => setBody(e.target.value)} placeholder="The finding, doubt, or follow-up — in your own words…" rows={3} className="field-input" />
+            <textarea id="note-body" value={body} onChange={(e) => setBody(e.target.value)} placeholder="What stuck with you? Write it like you'd tell a friend…" rows={3} className="field-input" />
           </div>
           <div>
             <button type="submit" disabled={!body.trim()} className="primary-button">
@@ -90,7 +90,7 @@ export default function NotesPage() {
             id="notes-search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search notes"
+            placeholder="Dig through old notes…"
             autoComplete="off"
             className="w-full bg-transparent text-[17px] outline-none"
             style={{ color: "var(--color-apple-ink)" }}
@@ -102,9 +102,9 @@ export default function NotesPage() {
       <section aria-label="Your notes" className="mt-5">
         {filtered.length === 0 ? (
           <div className="gallery-card py-10 text-center">
-            <p style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>{search ? "No matches." : "No notes yet."}</p>
+            <p style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>{search ? "Nothing with those words." : "Blank page. For now."}</p>
             <p className="mx-auto mt-2 max-w-md" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
-              {search ? "Try different words." : "Write your first note above — attach the paper if it has one."}
+              {search ? "Happens a lot. Try one distinctive word instead of three vague ones." : "Write something small above. It doesn't have to be clever, just yours."}
             </p>
           </div>
         ) : (

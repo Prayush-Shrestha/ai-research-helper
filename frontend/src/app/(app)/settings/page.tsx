@@ -62,8 +62,8 @@ export default function SettingsPage() {
   return (
     <div style={{ maxWidth: 720 }} className="mx-auto">
       <section className="pt-6 text-center sm:pt-10">
-        <h1 className="type-heading-sm mx-auto" style={{ color: "var(--color-apple-ink)" }}>Settings.</h1>
-        <p className="mx-auto mt-3 max-w-md" style={{ fontSize: 19, color: "var(--color-graphite)" }}>Your name, your session, your data.</p>
+        <h1 className="type-heading-sm mx-auto" style={{ color: "var(--color-apple-ink)" }}>The boring but necessary page.</h1>
+        <p className="mx-auto mt-3 max-w-md" style={{ fontSize: 19, color: "var(--color-graphite)" }}>Just the basics so your account feels like yours.</p>
       </section>
 
       <section aria-label="Settings" className="gallery-card mt-8 !p-5 sm:!p-6">
@@ -88,7 +88,7 @@ export default function SettingsPage() {
                   }}
                 >
                   <span className="block" style={{ fontSize: 17, fontWeight: active ? 600 : 400, color: "var(--color-apple-ink)" }}>{m.label}</span>
-                  <span className="block" style={{ fontSize: 12, color: "var(--color-slate)" }}>{m.hint}</span>
+                  <span className="block" style={{ fontSize: 13, color: "var(--color-slate)" }}>{m.hint}</span>
                 </button>
               );
             })}
@@ -138,7 +138,7 @@ export default function SettingsPage() {
           <button onClick={logout} className="ghost-pill shrink-0" style={{ fontSize: 15 }}>Sign out</button>
         } />
       </section>
-      <p className="mt-5 text-center" style={{ fontSize: 12, color: "var(--color-slate)" }}>Server: {process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000/api/v1"}</p>
+      <p className="mt-5 text-center" style={{ fontSize: 13, color: "var(--color-slate)" }}>Server: {process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000/api/v1"}</p>
     </div>
   );
 }

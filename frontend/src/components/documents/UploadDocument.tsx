@@ -53,7 +53,7 @@ export function UploadDocument({ open, onClose, onUpload }: UploadDocumentProps)
   }
 
   return (
-    <Modal open={open} onClose={handleClose} title="Upload document" description="PDF or DOCX, up to 25 MB. Uses multipart/form-data → POST /documents/upload.">
+    <Modal open={open} onClose={handleClose} title="Upload document" description="PDF or DOCX, up to 15 MB. Uses multipart/form-data → POST /documents/upload.">
       <div
         role="button"
         tabIndex={0}

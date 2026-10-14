@@ -19,10 +19,10 @@ export default function HistoryPage() {
     <div>
       <section className="pt-6 text-center sm:pt-10">
         <h1 className="type-heading-sm mx-auto" style={{ color: "var(--color-apple-ink)" }}>
-          History.
+          Where you&rsquo;ve been.
         </h1>
         <p className="mx-auto mt-3 max-w-xl" style={{ fontSize: 19, color: "var(--color-graphite)" }}>
-          Everything you&rsquo;ve done, newest first — so you can pick up where you left off.
+          Everything you&rsquo;ve done, newest first, so it&rsquo;s easy to pick up where you left off.
         </p>
       </section>
 
@@ -43,9 +43,9 @@ export default function HistoryPage() {
       <section aria-label="Your history" className="gallery-card mt-5 !p-4 sm:!p-5">
         {entries.length === 0 ? (
           <div className="py-8 text-center">
-            <p style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>Nothing here yet.</p>
+            <p style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>Your trail hasn&rsquo;t started yet.</p>
             <p className="mx-auto mt-2 max-w-md" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
-              Upload a paper, open it, or ask a question — your trail starts on its own.
+              Open a paper or ask something and I&rsquo;ll start keeping track here.
             </p>
             <Link href="/documents" className="primary-button mt-5">Open library</Link>
           </div>
@@ -62,7 +62,7 @@ export default function HistoryPage() {
                   ) : (
                     <p className="truncate" style={{ fontSize: 17, color: "var(--color-apple-ink)" }}>{e.label}</p>
                   )}
-                  <p className="truncate" style={{ fontSize: 12, color: "var(--color-slate)" }}>{e.detail} · {formatDate(e.created_at)}</p>
+                  <p className="truncate" style={{ fontSize: 13, color: "var(--color-slate)" }}>{e.detail} · {formatDate(e.created_at)}</p>
                 </div>
               </li>
             ))}

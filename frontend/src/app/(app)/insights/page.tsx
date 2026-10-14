@@ -19,19 +19,18 @@ export default function InsightsPage() {
     <div>
       <section className="pt-6 text-center sm:pt-10">
         <h1 className="type-heading-sm mx-auto" style={{ color: "var(--color-apple-ink)" }}>
-          Summaries.
+          What&rsquo;s actually on your shelf.
         </h1>
         <p className="mx-auto mt-3 max-w-xl" style={{ fontSize: 19, color: "var(--color-graphite)" }}>
-          Counted from your actual files — what you have, and the words you use most.
-          Nothing invented.
+          I counted what&rsquo;s really in your files, like what you have and the words that pop up most.
         </p>
       </section>
 
       <section aria-label="Your library at a glance" className="gallery-card mt-8">
         {allDocuments.length === 0 ? (
           <div className="py-8 text-center">
-            <p style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>Nothing to summarise yet.</p>
-            <p className="mx-auto mt-2 max-w-md" style={{ fontSize: 17, color: "var(--color-graphite)" }}>Upload papers and their summary will appear here.</p>
+            <p style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>No summary to show yet.</p>
+            <p className="mx-auto mt-2 max-w-md" style={{ fontSize: 17, color: "var(--color-graphite)" }}>Once you upload a few papers I&rsquo;ll put the overview here.</p>
             <Link href="/documents" className="primary-button mt-5">Open library</Link>
           </div>
         ) : (
@@ -51,7 +50,7 @@ export default function InsightsPage() {
             <div className="py-3">
               <p style={{ fontSize: 19, fontWeight: 600, color: "var(--color-apple-ink)" }}>Honest limits</p>
               <p className="mt-1" style={{ fontSize: 15, color: "var(--color-graphite)" }}>
-                These counts come straight from your library. Full-text topic analysis arrives with AI indexing (Phase 2).
+                These numbers come straight from your library. Deeper topic analysis shows up once AI indexing lands.
               </p>
             </div>
           </>
@@ -59,7 +58,7 @@ export default function InsightsPage() {
       </section>
 
       <section className="gallery-card mt-5" aria-label="Shared words">
-        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>SHARED WORDS — FROM YOUR TITLES</p>
+        <p style={{ fontSize: 13, color: "var(--color-slate)" }}>Words your titles share</p>
         <div className="mt-3 flex flex-wrap gap-2">
           {terms.length === 0 ? (
             <span style={{ fontSize: 17, color: "var(--color-slate)" }}>—</span>

@@ -32,7 +32,7 @@ const COLS = [
   },
 ];
 
-/** Gallery footer — small slate type on fog, links grouped quietly. */
+/** Footer — small type, grouped quietly. Written like a person, not a template. */
 export function Footer() {
   return (
     <footer style={{ background: "var(--color-fog-canvas)", marginTop: 120 }}>
@@ -43,8 +43,8 @@ export function Footer() {
         <div className="grid gap-8 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
             <Wordmark />
-            <p className="mt-3 max-w-xs" style={{ fontSize: 12, lineHeight: 1.33, letterSpacing: "-0.022em", color: "var(--color-slate)" }}>
-              A quiet workspace for difficult papers. Upload, ask, cite — in one place.
+            <p className="mt-3 max-w-xs" style={{ fontSize: 13, lineHeight: 1.5, color: "var(--color-slate)" }}>
+              Made for late-night reading. One shelf for papers, notes, and citations.
             </p>
           </div>
           {COLS.map((col) => (
@@ -63,8 +63,8 @@ export function Footer() {
           ))}
         </div>
         <div className="mt-8 flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between" style={{ borderTop: "1px solid var(--color-line)", paddingTop: 16 }}>
-          <p style={{ fontSize: 12, color: "var(--color-slate)" }}>© 2026 Lumina. Your files stay yours.</p>
-          <p className="mono-meta" style={{ fontSize: 12, color: "var(--color-slate)" }}>Set in DM Serif Display, Inter and IBM Plex Mono.</p>
+          <p style={{ fontSize: 12, color: "var(--color-slate)" }}>© 2026 Lumina. Built while procrastinating on actual reading.</p>
+          <p style={{ fontSize: 12, color: "var(--color-slate)" }}>Your files stay yours, always.</p>
         </div>
       </div>
     </footer>

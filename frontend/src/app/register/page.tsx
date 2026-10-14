@@ -58,7 +58,7 @@ export default function RegisterPage() {
       <main className="mx-auto px-5 sm:px-8" style={{ maxWidth: 560 }}>
         <section className="pt-10 text-center sm:pt-16">
           <h1 style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 44, fontWeight: 600, letterSpacing: "-0.009em", lineHeight: 1.1, color: "var(--color-apple-ink)" }}>Create your account.</h1>
-          <p className="mt-3" style={{ fontSize: 19, color: "var(--color-graphite)" }}>Free. Your library is ready in a minute.</p>
+          <p className="mt-3" style={{ fontSize: 19, color: "var(--color-graphite)" }}>Free to start, and your library is ready in about a minute.</p>
 
           <div className="gallery-card mt-8 text-left">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>

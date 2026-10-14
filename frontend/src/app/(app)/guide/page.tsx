@@ -4,27 +4,27 @@ const STEPS = [
   {
     n: "1",
     title: "Create your account",
-    body: "Tap Start research and enter your name, email, and a password (6+ characters). Your library is ready immediately — no setup, no waiting.",
+    body: "Tap Start research, then enter your name, email, and a password (6+ characters). Your library is ready immediately — no setup, no waiting.",
   },
   {
     n: "2",
     title: "Upload your first paper",
-    body: "Open the Library and tap “Upload a paper”. Pick a PDF or DOCX (up to 25 MB). The text is extracted automatically and the paper appears at the top.",
+    body: "Head to the Library and tap “Upload a paper”. Pick a PDF or DOCX (up to 15 MB). The text is extracted automatically and the paper appears at the top.",
   },
   {
     n: "3",
     title: "Read it",
-    body: "Tap any row to open the reader: contents on the left, clean text on the right. Search within the paper, rename it inline, or print it.",
+    body: "Tap any row to open the reader, with contents on the left and clean text on the right. Search within the paper, rename it inline, or print it.",
   },
   {
     n: "4",
     title: "Ask it questions",
-    body: "Open the Assistant, pick the paper (or a few), and ask — “summarise this”, “what method is used?”, “what are the limitations?” Answers quote the file.",
+    body: "Open the Assistant, pick a paper or a few, and try asking “summarise this” or “what method is used?” Answers quote the file.",
   },
   {
     n: "5",
     title: "Keep what matters",
-    body: "Pin notes to their source paper, group papers into collections, and generate APA, IEEE or BibTeX citations in the Toolkit. History remembers the rest.",
+    body: "Keep notes pinned to the paper they came from, group papers into collections, and build citations in the Toolkit. History remembers the rest.",
   },
 ];
 
@@ -52,7 +52,7 @@ export default function GuidePage() {
 
       <section className="gallery-card mt-10 grid gap-6 lg:grid-cols-2" aria-label="What this app is">
         <div>
-          <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>WHAT IT IS</p>
+          <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>What it is</p>
           <p className="mt-2" style={{ fontSize: 17, color: "var(--color-iron)", lineHeight: 1.6 }}>
             A private shelf for your papers. Upload PDFs, read them cleanly,
             ask questions that quote the page, and keep notes and citations together.
@@ -63,7 +63,7 @@ export default function GuidePage() {
           </p>
         </div>
         <div style={{ background: "var(--color-fog-canvas)", borderRadius: 18, padding: 20 }}>
-          <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>WHERE THINGS LIVE</p>
+          <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>Where things live</p>
           <ul className="mt-2.5 space-y-2" style={{ fontSize: 15, color: "var(--color-iron)", lineHeight: 1.55 }}>
             <li>· <strong style={{ color: "var(--color-apple-ink)" }}>Library</strong> — every paper, searchable.</li>
             <li>· <strong style={{ color: "var(--color-apple-ink)" }}>Assistant</strong> — questions and summaries.</li>
@@ -122,7 +122,7 @@ export default function GuidePage() {
       </section>
 
       <section className="gallery-card mb-4 mt-8 text-center">
-        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>READY WHEN YOU ARE</p>
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>Ready when you are</p>
         <p className="mx-auto mt-2" style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 32, fontWeight: 600, maxWidth: 560, lineHeight: 1.15, color: "var(--color-apple-ink)" }}>
           Upload one paper. That&rsquo;s the whole trick.
         </p>

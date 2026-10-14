@@ -65,8 +65,8 @@ export default function PublishPage() {
           Get published.
         </h1>
         <p className="mx-auto mt-4 max-w-xl" style={{ fontSize: 21, color: "var(--color-graphite)" }}>
-          One published line changes how committees read you. These venues welcome
-          students and first-time authors.
+          Having one paper out makes an application read differently. The venues
+          below are friendly to students and first-time authors.
         </p>
       </section>
 
@@ -121,7 +121,7 @@ export default function PublishPage() {
       <section aria-label="Venues" className="gallery-card mt-5 !p-4 sm:!p-5">
         {list.length === 0 && (
           <div className="py-10 text-center">
-            <p style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>No matches.</p>
+            <p style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>Nothing matched that search.</p>
             <p className="mt-2" style={{ fontSize: 17, color: "var(--color-graphite)" }}>Try a different field or venue name.</p>
           </div>
         )}
@@ -158,7 +158,7 @@ export default function PublishPage() {
       </p>
 
       <section className="gallery-card mb-4 mt-8 text-center">
-        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>PICKED A VENUE?</p>
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>Picked a venue?</p>
         <p className="mt-2" style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 32, fontWeight: 600, color: "var(--color-apple-ink)" }}>
           Work backwards from its deadline.
         </p>

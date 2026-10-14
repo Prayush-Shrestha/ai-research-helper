@@ -119,27 +119,29 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <section className="pt-6 text-center sm:pt-10">
-        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>
-          {docCount} {docCount === 1 ? "paper" : "papers"} in your library
+      <section className="pt-6 sm:pt-10">
+        <p style={{ fontSize: 13, color: "var(--color-slate)" }}>
+          {docCount === 0 ? "A fresh shelf" : `${docCount} ${docCount === 1 ? "paper" : "papers"} so far`}
         </p>
-        <h1 className="type-heading-sm mx-auto mt-2" style={{ color: "var(--color-apple-ink)", maxWidth: 640 }}>
-          Good to see you, {firstName}.
+        <h1 className="type-heading-sm mt-2" style={{ color: "var(--color-apple-ink)", maxWidth: 640 }}>
+          {docCount === 0 ? `Hey ${firstName}, let's put something here.` : `Hey ${firstName}, back to it.`}
         </h1>
-        <p className="mx-auto mt-3 max-w-xl" style={{ fontSize: 19, color: "var(--color-graphite)" }}>
-          Search your papers, upload the next one, or carry on where you left off.
+        <p className="mt-3 max-w-xl" style={{ fontSize: 19, color: "var(--color-graphite)" }}>
+          {docCount === 0
+            ? "Upload your first paper below. Everything else fills in after that."
+            : "Search below, add the next paper, or pick up the last one you opened."}
         </p>
-        <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
           <button onClick={() => setUploadOpen((v) => !v)} className="primary-button">
-            {uploadOpen ? "Close" : "Upload a paper"}
+            {uploadOpen ? "Close" : docCount === 0 ? "Add your first paper" : "Add a paper"}
           </button>
           <Link href="/documents" className="ghost-pill">
-            Open library
+            Go to library
           </Link>
         </div>
       </section>
 
-      <section aria-label="Search your papers" className="mx-auto mt-8" style={{ maxWidth: 680 }}>
+      <section aria-label="Search your papers" className="mt-8" style={{ maxWidth: 680 }}>
         <div className="flex items-center gap-3 px-5 py-3" style={{ background: "var(--color-pure-white)", borderRadius: 12, border: "1px solid var(--color-line)" }}>
           <span aria-hidden style={{ color: "var(--color-slate)", fontSize: 17 }}>⌕</span>
           <label htmlFor="dash-search" className="sr-only">Search your papers</label>
@@ -147,7 +149,7 @@ export default function DashboardPage() {
             id="dash-search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search your papers"
+            placeholder="What was that paper called…"
             autoComplete="off"
             className="w-full bg-transparent text-[17px] outline-none"
             style={{ color: "var(--color-apple-ink)" }}
@@ -159,7 +161,7 @@ export default function DashboardPage() {
         {search.trim() && (
           <div className="gallery-card mt-4 !p-4" aria-live="polite">
             {filtered.length === 0 ? (
-              <p className="px-2 py-3" style={{ fontSize: 17, color: "var(--color-graphite)" }}>No papers match “{search}”.</p>
+              <p className="px-2 py-3" style={{ fontSize: 17, color: "var(--color-graphite)" }}>Couldn&rsquo;t find anything for “{search}”. Try a shorter bit of the title.</p>
             ) : (
               filtered.map((d) => (
                 <DocumentRow key={d.id} doc={d} />
@@ -181,29 +183,29 @@ export default function DashboardPage() {
 
       <section aria-label="At a glance" className="mt-8 grid gap-5 sm:grid-cols-3">
         {[
-          ["Papers", String(docCount)],
-          ["PDF", String(stats?.counts.pdf_count ?? "—")],
-          ["Notes", String(stats?.counts.total_notes ?? notes.length)],
+          ["Papers on the shelf", String(docCount)],
+          ["PDFs", String(stats?.counts.pdf_count ?? "—")],
+          ["Notes scribbled", String(stats?.counts.total_notes ?? notes.length)],
         ].map(([label, value]) => (
           <div key={label} className="gallery-card text-center">
             <p style={{ fontSize: 32, fontWeight: 600, color: "var(--color-apple-ink)" }}>{value}</p>
-            <p className="mt-1" style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>{label.toUpperCase()}</p>
+            <p className="mt-1" style={{ fontSize: 13, color: "var(--color-slate)" }}>{label}</p>
           </div>
         ))}
       </section>
 
       <section aria-label="Recently opened" className="gallery-card mt-5">
-        <PanelHead title="Recently opened" href="/documents" link="See all" />
+        <PanelHead title="Last touched" href="/documents" link="Library" />
         <div className="mt-2">
           {loading ? (
-            <NucleusLoader label="Loading your library" />
+            <NucleusLoader label="Pulling your shelf" />
           ) : recent.length === 0 ? (
-            <div className="py-8 text-center">
-              <p style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>Your shelf is empty.</p>
-              <p className="mx-auto mt-2 max-w-md" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
-                Upload your first paper — PDF or DOCX, up to 15 MB — and it will appear here.
+            <div className="py-8">
+              <p style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>Nothing here yet, and that&rsquo;s fine.</p>
+              <p className="mt-2 max-w-md" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
+                Most people start with whatever they were supposed to read last week. PDF or Word, up to 15 MB.
               </p>
-              <button onClick={() => setUploadOpen(true)} className="primary-button mt-5">Upload a paper</button>
+              <button onClick={() => setUploadOpen(true)} className="primary-button mt-5">Add your first paper</button>
             </div>
           ) : (
             recent.map((d) => (
@@ -215,11 +217,11 @@ export default function DashboardPage() {
 
       <section className="mt-5 grid gap-5 lg:grid-cols-3" aria-label="Workspace overview">
         <div className="gallery-card">
-          <PanelHead title="Collections" href="/collections" link="Open" />
+          <PanelHead title="Collections" href="/collections" link="All" />
           <div className="mt-2">
             {collections.length === 0 ? (
               <p className="py-3" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
-                No collections yet. Group papers that belong together.
+                You haven&rsquo;t grouped anything yet. Handy once you have five or six papers.
               </p>
             ) : (
               collections.slice(0, 4).map((c) => (
@@ -233,11 +235,11 @@ export default function DashboardPage() {
         </div>
 
         <div className="gallery-card">
-          <PanelHead title="Recent questions" href="/assistant" link="Open" />
+          <PanelHead title="Recent questions" href="/assistant" link="Assistant" />
           <div className="mt-2">
             {conversations.length === 0 ? (
               <p className="py-3" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
-                No questions yet. Ask your first one in the Assistant.
+                Nothing asked yet. It picks up once you try the assistant.
               </p>
             ) : (
               conversations.map((m) => (
@@ -251,11 +253,11 @@ export default function DashboardPage() {
         </div>
 
         <div className="gallery-card">
-          <PanelHead title="Saved notes" href="/notes" link="Open" />
+          <PanelHead title="Saved notes" href="/notes" link="Notes" />
           <div className="mt-2">
             {notes.length === 0 ? (
               <p className="py-3" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
-                No notes yet. Pin observations to their source paper.
+                No notes so far. They show up here after you write one.
               </p>
             ) : (
               notes.slice(0, 4).map((n) => (
@@ -272,11 +274,11 @@ export default function DashboardPage() {
       </section>
 
       <section aria-label="Activity" className="gallery-card mt-5">
-        <PanelHead title="Activity" href="/history" link="Full history" />
+        <PanelHead title="What you've done" href="/history" link="History" />
         <div className="mt-2">
           {entries.length === 0 ? (
             <p className="py-3" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
-              Uploads, readings, questions and notes will appear here.
+              Quiet for now. Upload something and this starts filling in on its own.
             </p>
           ) : (
             entries.slice(0, 6).map((e) => (

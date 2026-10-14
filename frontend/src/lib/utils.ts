@@ -45,7 +45,7 @@ export function timeGreeting(name?: string): string {
 }
 
 export const ACCEPTED_EXTENSIONS = [".pdf", ".docx"] as const;
-export const MAX_FILE_SIZE_BYTES = 25 * 1024 * 1024; // 25 MB
+export const MAX_FILE_SIZE_BYTES = 15 * 1024 * 1024; // 15 MB
 
 export function validateResearchFile(file: File): string | null {
   const lower = file.name.toLowerCase();

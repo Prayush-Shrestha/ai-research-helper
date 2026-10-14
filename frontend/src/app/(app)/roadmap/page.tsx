@@ -35,8 +35,8 @@ export default function RoadmapPage() {
           Idea to admit.
         </h1>
         <p className="mx-auto mt-4 max-w-xl" style={{ fontSize: 21, color: "var(--color-graphite)" }}>
-          Six stages from a blank page to a paper on your application.
-          Tick tasks off — progress saves on this device.
+          Six small stages from a blank page to a paper you can list on an application.
+          Tick tasks off as you go; progress saves on this device.
         </p>
         <div className="mx-auto mt-6 flex max-w-md items-center gap-3">
           <div className="h-[8px] w-full overflow-hidden" style={{ background: "var(--color-ash)", borderRadius: 99 }}>
@@ -132,9 +132,9 @@ export default function RoadmapPage() {
       </section>
 
       <section className="gallery-card mb-4 mt-8 text-center">
-        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>START TODAY</p>
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>Start today</p>
         <p className="mx-auto mt-2" style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 32, fontWeight: 600, maxWidth: 560, lineHeight: 1.15, color: "var(--color-apple-ink)" }}>
-          Upload one paper. That&rsquo;s stage two, begun.
+          Upload one paper and you&rsquo;ve started stage two.
         </p>
         <div className="mt-5 flex flex-wrap justify-center gap-3">
           <Link href="/documents" className="primary-button">
