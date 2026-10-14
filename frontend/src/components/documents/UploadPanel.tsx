@@ -97,11 +97,9 @@ export function UploadPanel({
               setDrag(false);
               void handleFile(e.dataTransfer.files?.[0]);
             }}
-            className="flex min-h-[180px] cursor-pointer flex-col items-center justify-center gap-2 px-6 py-8 text-center"
+            className="liquid-dropzone flex min-h-[180px] cursor-pointer flex-col items-center justify-center gap-2 px-6 py-8 text-center"
             style={{
-              border: `2px dashed ${drag ? "var(--color-electric-blue)" : "var(--color-line)"}`,
-              borderRadius: 28,
-              background: drag ? "rgba(0,113,227,0.06)" : "var(--color-fog-canvas)",
+              border: `1.5px dashed ${drag ? "var(--color-electric-blue)" : "color-mix(in srgb, var(--color-electric-blue) 30%, transparent)"}`,
               transition: "border-color .2s ease, background .2s ease",
             }}
           >
@@ -114,7 +112,7 @@ export function UploadPanel({
             <input ref={inputRef} type="file" accept=".pdf,.docx" className="sr-only" aria-label="Select document file" onChange={(e) => { void handleFile(e.target.files?.[0]); }} />
           </div>
         ) : (
-          <div className="py-4" role="status" aria-live="polite" style={{ background: "var(--color-fog-canvas)", borderRadius: 28, padding: 24 }}>
+          <div className="liquid-search py-4" role="status" aria-live="polite" style={{ padding: 24 }}>
             <div className="flex items-center justify-between gap-3">
               <p className="truncate" style={{ fontSize: 17, fontWeight: 500, color: "var(--color-apple-ink)" }}>
                 {selected ? selected.name : "Working on your file…"}

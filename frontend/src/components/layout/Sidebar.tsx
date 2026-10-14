@@ -104,11 +104,11 @@ export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle:
       className="liquid-sidebar hidden shrink-0 flex-col lg:flex"
       style={{
         width: collapsed ? 76 : 248,
-        minHeight: "calc(100vh - var(--nav-h))",
+        minHeight: "calc(100vh - var(--nav-h) - var(--nav-float) * 2)",
         position: "sticky",
-        top: "var(--nav-h)",
+        top: "calc(var(--nav-h) + var(--nav-float) * 2)",
         alignSelf: "flex-start",
-        maxHeight: "calc(100vh - var(--nav-h))",
+        maxHeight: "calc(100vh - var(--nav-h) - var(--nav-float) * 2)",
         overflowY: "auto",
         transition: "width 200ms ease",
       }}

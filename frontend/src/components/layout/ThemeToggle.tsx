@@ -10,7 +10,7 @@ import type { ThemeChoice } from "@/context/ThemeContext";
  */
 export function ThemeToggle({ tone = "light" }: { tone?: "light" | "dark" }) {
   const { resolved, toggle } = useTheme();
-  const onDarkBar = tone === "dark";
+  void tone;
 
   return (
     <button
@@ -18,8 +18,8 @@ export function ThemeToggle({ tone = "light" }: { tone?: "light" | "dark" }) {
       onClick={toggle}
       aria-label={resolved === "dark" ? "Switch to light mode" : "Switch to dark mode"}
       title={resolved === "dark" ? "Light mode" : "Dark mode"}
-      className="flex h-9 w-9 items-center justify-center rounded-full"
-      style={{ color: onDarkBar ? "#f5f5f7" : "var(--color-apple-ink)" }}
+      className="liquid-link flex h-9 w-9 items-center justify-center"
+      style={{ color: "var(--color-apple-ink)" }}
     >
       {resolved === "dark" ? <Sun size={17} aria-hidden /> : <Moon size={17} aria-hidden />}
     </button>

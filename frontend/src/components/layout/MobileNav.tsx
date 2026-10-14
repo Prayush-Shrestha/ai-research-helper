@@ -38,31 +38,31 @@ export function MobileNav() {
   }, [pathname]);
 
   return (
-    <>
-      <header className="liquid-bar flex h-14 items-center justify-between px-4 lg:hidden" style={{ top: "var(--nav-h)" }}>
+    <div className="liquid-bar lg:hidden" style={{ paddingTop: 10 }}>
+      <div className="liquid-pill" style={{ paddingLeft: 14 }}>
         <span className="flex items-center gap-2">
           <LogoMark size={24} />
           <span style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 17, fontWeight: 600, color: "var(--color-apple-ink)" }}>Lumina</span>
         </span>
-        <span className="flex items-center">
+        <span className="flex items-center gap-1">
           <ThemeToggle tone="light" />
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-label={open ? "Close menu" : "Open menu"}
-            className="p-2"
+            className="liquid-link flex h-9 w-9 items-center justify-center"
             style={{ color: "var(--color-apple-ink)" }}
           >
             {open ? <X size={20} aria-hidden /> : <Menu size={20} aria-hidden />}
           </button>
         </span>
-      </header>
+      </div>
 
       {open && (
         <div className="fixed inset-0 z-40 lg:hidden" role="dialog" aria-modal="true" aria-label="Workspace menu">
-          <div className="absolute inset-0 animate-fade-in" style={{ background: "rgba(29,29,31,0.4)" }} onClick={() => setOpen(false)} />
-          <nav aria-label="Mobile workspace" className="gallery-card absolute inset-x-3 top-[calc(var(--nav-h)+56px)] max-h-[70vh] overflow-y-auto px-4 pb-4 pt-2 animate-slide-up" style={{ borderRadius: 20 }}>
+          <div className="liquid-scrim absolute inset-0 animate-fade-in" onClick={() => setOpen(false)} />
+          <nav aria-label="Mobile workspace" className="liquid-dialog absolute inset-x-3 max-h-[70vh] overflow-y-auto px-4 pb-4 pt-2 animate-slide-up" style={{ top: "calc(var(--nav-h) + var(--nav-float) * 2 + 8px)" }}>
             <p className="px-2 pb-1 pt-3" style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>Workspace</p>
             {LINKS.map((l) => {
               const active = pathname === l.href || (l.href === "/documents" && pathname.startsWith("/documents"));
@@ -92,6 +92,6 @@ export function MobileNav() {
           </nav>
         </div>
       )}
-    </>
+    </div>
   );
 }

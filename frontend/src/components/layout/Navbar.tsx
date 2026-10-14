@@ -34,10 +34,7 @@ export function Navbar() {
 
   return (
     <div className="liquid-bar">
-      <header
-        className="mx-auto flex items-center justify-between px-4 sm:px-5"
-        style={{ maxWidth: 1120, height: "var(--nav-h)" }}
-      >
+      <div className="liquid-pill">
         <Link
           href={user ? "/dashboard" : "/"}
           aria-label="Lumina home"
@@ -120,10 +117,10 @@ export function Navbar() {
             <span aria-hidden style={{ display: "block", width: 18, height: 1.5, background: "currentColor", borderRadius: 2 }} />
           </button>
         </div>
-      </header>
+      </div>
 
       {open && (
-        <nav aria-label="Primary mobile" className="liquid-drawer animate-slide-up px-5 pb-6 md:hidden">
+        <nav aria-label="Primary mobile" className="liquid-dialog animate-slide-up mx-auto mt-2 max-w-[1120px] px-5 pb-6 md:hidden">
           <div className="flex flex-col">
             {(isLanding ? LINKS.map((l) => ({ href: l.href, label: l.label })) : [
               { href: "/dashboard", label: "Workspace" },
