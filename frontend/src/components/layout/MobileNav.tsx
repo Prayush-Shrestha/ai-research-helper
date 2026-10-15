@@ -45,7 +45,7 @@ export function MobileNav() {
           <span style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 17, fontWeight: 600, color: "var(--color-apple-ink)" }}>Lumina</span>
         </span>
         <span className="flex items-center gap-1">
-          <ThemeToggle tone="light" />
+          <ThemeToggle compact />
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
@@ -74,7 +74,7 @@ export function MobileNav() {
                   aria-current={active ? "page" : undefined}
                   className="block px-3 py-2.5 text-[17px]"
                   style={active
-                    ? { color: "var(--color-electric-blue)", fontWeight: 600, background: "rgba(157,231,193,0.12)", border: "1px solid rgba(157,231,193,0.35)", borderRadius: 14, boxShadow: "var(--liquid-glow-mint)" }
+                    ? { color: "var(--color-apple-ink)", fontWeight: 600, background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.25)", borderRadius: 14, boxShadow: "0 4px 16px rgba(0,0,0,0.3)" }
                     : { color: "var(--color-apple-ink)", fontWeight: 400, border: "1px solid transparent", borderRadius: 14 }}
                 >
                   {l.label}

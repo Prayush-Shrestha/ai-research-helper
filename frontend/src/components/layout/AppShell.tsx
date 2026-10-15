@@ -32,8 +32,8 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="relative flex min-w-0 flex-1 flex-col">
         {/* ambient page orbs */}
         <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="orb" style={{ width: 480, height: 320, left: "-8%", top: "2%", background: "radial-gradient(circle, rgba(157,231,193,0.12), transparent 65%)" }} />
-          <div className="orb" style={{ width: 560, height: 380, right: "-10%", top: "22%", background: "radial-gradient(circle, rgba(138,180,248,0.1), transparent 65%)" }} />
+          <div className="orb" style={{ width: 480, height: 320, left: "-8%", top: "2%", background: "radial-gradient(circle, rgba(255,255,255,0.12), transparent 65%)" }} />
+          <div className="orb" style={{ width: 560, height: 380, right: "-10%", top: "22%", background: "radial-gradient(circle, rgba(255,255,255,0.1), transparent 65%)" }} />
         </div>
         <MobileNav />
         <main className="page-enter relative mx-auto w-full flex-1 px-4 py-6 sm:px-8 sm:py-8" style={{ maxWidth: "var(--page-max-width)", zIndex: 1 }}>

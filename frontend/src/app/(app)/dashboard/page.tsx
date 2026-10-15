@@ -120,8 +120,8 @@ export default function DashboardPage() {
   return (
     <div>
       <section className="rise rise-1 relative pt-6 sm:pt-10">
-        <div aria-hidden className="orb" style={{ width: 340, height: 340, top: -120, left: -120, background: "radial-gradient(circle, rgba(157,231,193,0.16), transparent 65%)" }} />
-        <div aria-hidden className="orb" style={{ width: 300, height: 300, top: -100, right: -100, background: "radial-gradient(circle, rgba(138,180,248,0.14), transparent 65%)" }} />
+        <div aria-hidden className="orb" style={{ width: 340, height: 340, top: -120, left: -120, background: "radial-gradient(circle, rgba(255,255,255,0.16), transparent 65%)" }} />
+        <div aria-hidden className="orb" style={{ width: 300, height: 300, top: -100, right: -100, background: "radial-gradient(circle, rgba(255,255,255,0.14), transparent 65%)" }} />
         <div className="relative">
         <span className="eyebrow"><span className="dot" />Workspace</span>
         <p className="mt-4" style={{ fontSize: 13, color: "var(--color-slate)" }}>

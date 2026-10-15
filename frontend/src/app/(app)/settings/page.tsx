@@ -62,8 +62,8 @@ export default function SettingsPage() {
   return (
     <div style={{ maxWidth: 720 }} className="page-shell mx-auto">
       <section className="relative pt-6 text-center sm:pt-10">
-        <span className="orb" aria-hidden style={{ width: 400, height: 400, top: -140, left: "4%", background: "radial-gradient(circle, rgba(157,231,193,0.15), transparent 65%)" }} />
-        <span className="orb" aria-hidden style={{ width: 420, height: 420, top: -150, right: "4%", background: "radial-gradient(circle, rgba(138,180,248,0.13), transparent 65%)" }} />
+        <span className="orb" aria-hidden style={{ width: 400, height: 400, top: -140, left: "4%", background: "radial-gradient(circle, rgba(255,255,255,0.15), transparent 65%)" }} />
+        <span className="orb" aria-hidden style={{ width: 420, height: 420, top: -150, right: "4%", background: "radial-gradient(circle, rgba(255,255,255,0.13), transparent 65%)" }} />
         <div className="relative rise rise-1">
           <span className="eyebrow"><span className="dot" />Settings</span>
           <h1 className="type-heading-sm mx-auto mt-4" style={{ color: "var(--color-apple-ink)", fontWeight: 600, letterSpacing: "-0.03em" }}>The boring but necessary page.</h1>
@@ -88,9 +88,9 @@ export default function SettingsPage() {
                   className="px-3 py-2.5 text-center"
                   style={{
                     borderRadius: 16,
-                    border: active ? "1px solid rgba(157,231,193,0.55)" : "1px solid transparent",
-                    background: active ? "rgba(157,231,193,0.14)" : "transparent",
-                    boxShadow: active ? "0 4px 20px rgba(157,231,193,0.18), inset 0 1px 0 rgba(255,255,255,0.12)" : undefined,
+                    border: active ? "1px solid rgba(255,255,255,0.55)" : "1px solid transparent",
+                    background: active ? "rgba(255,255,255,0.14)" : "transparent",
+                    boxShadow: active ? "0 4px 20px rgba(255,255,255,0.18), inset 0 1px 0 rgba(255,255,255,0.12)" : undefined,
                   }}
                 >
                   <span className="block" style={{ fontSize: 17, fontWeight: active ? 600 : 400, color: active ? "var(--color-electric-blue)" : "var(--color-apple-ink)" }}>{m.label}</span>

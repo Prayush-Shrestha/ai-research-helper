@@ -19,9 +19,9 @@ function FileGlyph({ type }: { type: string }) {
         fontSize: 11,
         fontWeight: 750,
         letterSpacing: "0.04em",
-        color: isPdf ? "#FFB4A2" : "#9DE7C1",
-        background: isPdf ? "rgba(255,155,138,0.1)" : "rgba(157,231,193,0.1)",
-        border: `1px solid ${isPdf ? "rgba(255,155,138,0.25)" : "rgba(157,231,193,0.25)"}`,
+        color: isPdf ? "#FFB4A2" : "#F5F5F7",
+        background: isPdf ? "rgba(255,155,138,0.1)" : "rgba(255,255,255,0.1)",
+        border: `1px solid ${isPdf ? "rgba(255,155,138,0.25)" : "rgba(255,255,255,0.25)"}`,
       }}
     >
       {isPdf ? "PDF" : "DOC"}
@@ -52,7 +52,7 @@ export function DocumentRow({ doc }: { doc: ResearchDocument; index?: number }) 
         </span>
         <span className="mt-1.5 flex gap-1.5 sm:hidden">
           <span className="tag-pill">{doc.file_type}</span>
-          <span className="tag-pill" style={failed || processing || needsOcr ? { background: "rgba(157,231,193,0.12)", color: "var(--color-electric-blue)", borderColor: "rgba(157,231,193,0.3)" } : undefined}>{label}</span>
+          <span className="tag-pill" style={failed || processing || needsOcr ? { background: "rgba(255,255,255,0.12)", color: "var(--color-electric-blue)", borderColor: "rgba(255,255,255,0.3)" } : undefined}>{label}</span>
         </span>
       </span>
       <span className="hidden shrink-0 items-center gap-1.5 sm:flex" style={{ fontSize: 12.5, fontWeight: 550, color: failed || processing || needsOcr ? "var(--color-electric-blue)" : "var(--color-slate)" }}>

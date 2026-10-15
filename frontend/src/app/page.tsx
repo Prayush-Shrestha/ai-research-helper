@@ -47,7 +47,7 @@ const PREVIEW_DOCS: ResearchDocument[] = [
 function ProductPreview() {
   return (
     <div className="relative">
-      <div aria-hidden className="orb" style={{ width: 420, height: 300, right: "-6%", top: "-12%", background: "radial-gradient(circle, rgba(157,231,193,0.18), transparent 65%)", filter: "blur(60px)" }} />
+      <div aria-hidden className="orb" style={{ width: 420, height: 300, right: "-6%", top: "-12%", background: "radial-gradient(circle, rgba(255,255,255,0.18), transparent 65%)", filter: "blur(60px)" }} />
       <div
         aria-label="Illustrated preview of the Lumina workspace"
         className="gallery-card relative overflow-hidden !p-0"
@@ -56,7 +56,7 @@ function ProductPreview() {
         <div className="flex items-center gap-1.5 px-5 pt-4">
           <span style={{ width: 10, height: 10, borderRadius: 99, background: "rgba(255,255,255,0.16)" }} />
           <span style={{ width: 10, height: 10, borderRadius: 99, background: "rgba(255,255,255,0.16)" }} />
-          <span style={{ width: 10, height: 10, borderRadius: 99, background: "var(--color-electric-blue)", boxShadow: "0 0 12px rgba(157,231,193,0.6)" }} />
+          <span style={{ width: 10, height: 10, borderRadius: 99, background: "var(--color-electric-blue)", boxShadow: "0 0 12px rgba(255,255,255,0.6)" }} />
           <span className="ml-2 tag-pill !text-[11px]">lumina · workspace</span>
         </div>
         <div className="grid md:grid-cols-[172px_1fr]">
@@ -69,8 +69,8 @@ function ProductPreview() {
                   style={{
                     fontSize: 13,
                     borderRadius: 12,
-                    background: i === 1 ? "rgba(157,231,193,0.12)" : "transparent",
-                    border: i === 1 ? "1px solid rgba(157,231,193,0.3)" : "1px solid transparent",
+                    background: i === 1 ? "rgba(255,255,255,0.12)" : "transparent",
+                    border: i === 1 ? "1px solid rgba(255,255,255,0.3)" : "1px solid transparent",
                     color: i === 1 ? "var(--color-apple-ink)" : "var(--color-graphite)",
                     fontWeight: i === 1 ? 600 : 450,
                   }}
@@ -79,7 +79,7 @@ function ProductPreview() {
                 </p>
               ))}
             </div>
-            <div className="mt-4 rounded-2xl p-3" style={{ background: "rgba(157,231,193,0.08)", border: "1px solid rgba(157,231,193,0.2)" }}>
+            <div className="mt-4 rounded-2xl p-3" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.2)" }}>
               <p style={{ fontSize: 12, fontWeight: 650, color: "var(--color-apple-ink)" }}>✦ 2 papers ready</p>
               <p style={{ fontSize: 11.5, color: "var(--color-graphite)" }}>Text extracted · linked</p>
             </div>
@@ -129,8 +129,8 @@ export default function LandingPage() {
 
       <main className="relative mx-auto px-5 sm:px-8" style={{ maxWidth: 1180 }}>
         <div aria-hidden className="pointer-events-none absolute inset-0 overflow-visible">
-          <div className="orb float-slow" style={{ width: 620, height: 420, left: "-12%", top: "4%", background: "radial-gradient(circle, rgba(157,231,193,0.13), transparent 65%)" }} />
-          <div className="orb" style={{ width: 560, height: 380, right: "-10%", top: "30%", background: "radial-gradient(circle, rgba(138,180,248,0.1), transparent 65%)" }} />
+          <div className="orb float-slow" style={{ width: 620, height: 420, left: "-12%", top: "4%", background: "radial-gradient(circle, rgba(255,255,255,0.13), transparent 65%)" }} />
+          <div className="orb" style={{ width: 560, height: 380, right: "-10%", top: "30%", background: "radial-gradient(circle, rgba(255,255,255,0.1), transparent 65%)" }} />
         </div>
 
         {/* ——— HERO ——— */}
@@ -138,7 +138,7 @@ export default function LandingPage() {
           <div className="rise rise-1">
             <span className="eyebrow"><span className="dot" /> Built for students drowning in PDFs</span>
             <h1 id="hero-title" className="font-editorial mt-5" style={{ fontSize: "clamp(46px,6vw,74px)", lineHeight: 1.02, color: "var(--color-apple-ink)" }}>
-              A desk for<br />your <span style={{ background: "linear-gradient(120deg, var(--color-electric-blue), #8AB4F8)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}>papers.</span>
+              A desk for<br />your <span style={{ background: "linear-gradient(120deg, #FFFFFF, #A1A1A6)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}>papers.</span>
             </h1>
             <p className="hero-sub mt-5 max-w-md">
               I started Lumina because my downloads folder was a mess of
@@ -226,7 +226,7 @@ export default function LandingPage() {
         {/* ——— AI NOTE ——— */}
         <section className="relative mx-auto mt-16" aria-label="About future AI features" style={{ maxWidth: 960, zIndex: 1 }}>
           <div className="gallery-card relative overflow-hidden">
-            <div aria-hidden className="orb" style={{ width: 380, height: 240, right: "-5%", top: "-30%", background: "radial-gradient(circle, rgba(196,181,253,0.16), transparent 65%)" }} />
+            <div aria-hidden className="orb" style={{ width: 380, height: 240, right: "-5%", top: "-30%", background: "radial-gradient(circle, rgba(255,255,255,0.16), transparent 65%)" }} />
             <span className="tag-pill crimson">✦ A note on AI</span>
             <h2 className="mt-3" style={{ fontSize: 24, fontWeight: 650, letterSpacing: "-0.02em", color: "var(--color-apple-ink)" }}>
               Question answering is next. It will quote or stay quiet.
@@ -243,7 +243,7 @@ export default function LandingPage() {
         {/* ——— FINAL CTA ——— */}
         <section className="relative mx-auto mt-16 text-center" aria-label="Get started" style={{ maxWidth: 720, marginBottom: 24, zIndex: 1 }}>
           <div className="gallery-card !p-12" style={{ borderRadius: 32 }}>
-            <div aria-hidden className="orb" style={{ width: 500, height: 300, left: "50%", top: "-40%", transform: "translateX(-50%)", background: "radial-gradient(circle, rgba(157,231,193,0.16), transparent 65%)" }} />
+            <div aria-hidden className="orb" style={{ width: 500, height: 300, left: "50%", top: "-40%", transform: "translateX(-50%)", background: "radial-gradient(circle, rgba(255,255,255,0.16), transparent 65%)" }} />
             <h2 className="font-editorial relative" style={{ fontSize: "clamp(34px,5vw,54px)", lineHeight: 1.05, color: "var(--color-apple-ink)" }}>
               Got one PDF lying around?
             </h2>

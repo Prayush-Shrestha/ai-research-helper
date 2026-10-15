@@ -31,8 +31,8 @@ export default function RoadmapPage() {
   return (
     <div className="page-shell page-enter">
       <section className="relative overflow-hidden pt-6 text-center sm:pt-10">
-        <span aria-hidden className="orb rise rise-1" style={{ width: 420, height: 420, left: "-8%", top: "-140px", background: "radial-gradient(circle, rgba(157,231,193,0.16), transparent 65%)" }} />
-        <span aria-hidden className="orb rise rise-2" style={{ width: 480, height: 480, right: "-10%", top: "-100px", background: "radial-gradient(circle, rgba(138,180,248,0.13), transparent 65%)" }} />
+        <span aria-hidden className="orb rise rise-1" style={{ width: 420, height: 420, left: "-8%", top: "-140px", background: "radial-gradient(circle, rgba(255,255,255,0.16), transparent 65%)" }} />
+        <span aria-hidden className="orb rise rise-2" style={{ width: 480, height: 480, right: "-10%", top: "-100px", background: "radial-gradient(circle, rgba(255,255,255,0.13), transparent 65%)" }} />
         <div className="relative" style={{ zIndex: 1 }}>
           <p className="eyebrow rise rise-1"><span className="dot" aria-hidden /> Roadmap · Idea to admit</p>
           <h1 className="type-heading rise rise-2 mx-auto mt-4" style={{ color: "var(--color-apple-ink)", fontWeight: 600, letterSpacing: "-0.03em" }}>
@@ -91,7 +91,7 @@ export default function RoadmapPage() {
                         onClick={() => toggle(id)}
                         aria-pressed={on}
                         className="liquid-search flex w-full items-start gap-3 px-3 py-2.5 text-left"
-                        style={{ borderRadius: 18, ...(on ? { background: "rgba(157,231,193,0.07)" } : undefined) }}
+                        style={{ borderRadius: 18, ...(on ? { background: "rgba(255,255,255,0.07)" } : undefined) }}
                       >
                         <span
                           aria-hidden
@@ -100,8 +100,8 @@ export default function RoadmapPage() {
                             fontSize: 13,
                             fontWeight: 700,
                             borderRadius: 999,
-                            border: on ? "1px solid rgba(157,231,193,0.5)" : "1.5px solid var(--liquid-border)",
-                            background: on ? "rgba(157,231,193,0.16)" : "transparent",
+                            border: on ? "1px solid rgba(255,255,255,0.5)" : "1.5px solid var(--liquid-border)",
+                            background: on ? "rgba(255,255,255,0.16)" : "transparent",
                             color: on ? "var(--color-electric-blue)" : "var(--color-slate)",
                             boxShadow: on ? "var(--liquid-glow-mint)" : undefined,
                           }}

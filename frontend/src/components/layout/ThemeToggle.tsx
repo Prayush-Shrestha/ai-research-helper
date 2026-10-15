@@ -5,45 +5,47 @@ import { useTheme } from "@/hooks/useTheme";
 import type { ThemeChoice } from "@/context/ThemeContext";
 
 /**
- * Sun/moon flip. On the dark nav band it renders in fog-white;
- * on light surfaces it renders in ink. The resolved theme decides the icon.
+ * BIG visible theme toggle — Moon-nav edition.
+ * 52px pill, icon + label, high-contrast border. Impossible to miss.
  */
-export function ThemeToggle({ tone = "light" }: { tone?: "light" | "dark" }) {
+export function ThemeToggle({ compact = false }: { compact?: boolean; tone?: string }) {
   const { resolved, toggle } = useTheme();
-  void tone;
+  const isDark = resolved === "dark";
 
   return (
     <button
       type="button"
       onClick={toggle}
-      aria-label={resolved === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-      title={resolved === "dark" ? "Light mode" : "Dark mode"}
-      className="liquid-link flex h-9 w-9 items-center justify-center"
-      style={{ color: "var(--color-apple-ink)" }}
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      title={isDark ? "Light mode — big toggle" : "Dark mode — big toggle"}
+      className="theme-big"
+      style={compact ? { height: 44, padding: "0 16px", fontSize: 14 } : undefined}
     >
-      {resolved === "dark" ? <Sun size={17} aria-hidden /> : <Moon size={17} aria-hidden />}
+      {isDark ? <Sun size={compact ? 18 : 21} aria-hidden strokeWidth={2.2} /> : <Moon size={compact ? 18 : 21} aria-hidden strokeWidth={2.2} />}
+      <span>{isDark ? "Light" : "Dark"}</span>
     </button>
   );
 }
 
-/** Labelled Light / Dark / System row for menus and drawers — glass segmented, mint active. */
-export function ThemeRow({ onNavigate, dark = false }: { onNavigate?: () => void; dark?: boolean }) {
+/** BIG segmented Light / Dark / Auto — for drawers and settings. */
+export function ThemeRow({ onNavigate }: { onNavigate?: () => void; dark?: boolean }) {
   const { theme, setTheme } = useTheme();
-  const options: Array<{ value: ThemeChoice; label: string }> = [
-    { value: "light", label: "Light" },
-    { value: "dark", label: "Dark" },
-    { value: "system", label: "Auto" },
+  const options: Array<{ value: ThemeChoice; label: string; icon: React.ReactNode }> = [
+    { value: "light", label: "Light", icon: <Sun size={18} aria-hidden strokeWidth={2.2} /> },
+    { value: "dark", label: "Dark", icon: <Moon size={18} aria-hidden strokeWidth={2.2} /> },
+    { value: "system", label: "Auto", icon: <span aria-hidden style={{ fontSize: 16, fontWeight: 700 }}>A</span> },
   ];
-  void dark;
   return (
     <div
-      className="liquid-search mt-4 flex items-center justify-between px-4 py-2"
-      style={{ borderRadius: 999 }}
+      className="mt-5 flex flex-col gap-3 rounded-[24px] p-4"
+      style={{ border: "1.5px solid var(--liquid-border)", background: "rgba(127,127,133,0.08)", backdropFilter: "blur(16px)" }}
       role="group"
-      aria-label="Appearance"
+      aria-label="Appearance — pick Light, Dark, or Auto"
     >
-      <span className="tech-label" style={{ color: "var(--color-slate)" }}>Appearance</span>
-      <div className="flex gap-1">
+      <span style={{ fontSize: 15, fontWeight: 700, letterSpacing: "0.04em", textTransform: "uppercase", color: "var(--color-slate)" }}>
+        Appearance
+      </span>
+      <div className="theme-segment" style={{ alignSelf: "flex-start" }}>
         {options.map((o) => {
           const active = theme === o.value;
           return (
@@ -55,14 +57,16 @@ export function ThemeRow({ onNavigate, dark = false }: { onNavigate?: () => void
                 onNavigate?.();
               }}
               aria-pressed={active}
-              className={active ? "tag-pill crimson" : "tag-pill"}
-              style={{ cursor: "pointer", border: active ? undefined : "1px solid transparent", background: active ? undefined : "transparent" }}
             >
+              {o.icon}
               {o.label}
             </button>
           );
         })}
       </div>
+      <p style={{ fontSize: 13.5, color: "var(--color-slate)" }}>
+        Auto follows your device. Light is paper, Dark is midnight.
+      </p>
     </div>
   );
 }

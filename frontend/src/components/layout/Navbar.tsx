@@ -4,155 +4,134 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { LogoMark } from "@/components/layout/Logo";
 import { ThemeToggle, ThemeRow } from "@/components/layout/ThemeToggle";
 
-const LINKS = [
+const LANDING_LINKS = [
   { href: "#product", label: "Product" },
   { href: "#features", label: "Features" },
-  { href: "#workflow", label: "How It Works" },
+  { href: "#workflow", label: "Workflow" },
+  { href: "/guide", label: "Guide" },
+  { href: "/documents", label: "Library" },
 ];
 
+const APP_LINKS = [
+  { href: "/dashboard", label: "Workspace" },
+  { href: "/documents", label: "Library" },
+  { href: "/assistant", label: "Assistant" },
+  { href: "/guide", label: "Guide" },
+];
+
+function SparkMark({ size = 30 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" aria-hidden>
+      <path
+        d="M16 5.5 C17.2 11.8 19.2 13.8 25.5 15 C19.2 16.2 17.2 18.2 16 24.5 C14.8 18.2 12.8 16.2 6.5 15 C12.8 13.8 14.8 11.8 16 5.5 Z"
+        fill="var(--btn-ink)"
+      />
+      <circle cx="23" cy="8.5" r="2.6" fill="var(--btn-ink)" opacity="0.55" />
+    </svg>
+  );
+}
+
 /**
- * Liquid glass nav — full-width translucent bar with blur, shine, and depth.
- * Inner content stays capped; the glass itself runs edge to edge.
+ * Moon-reference nav: white logo box · center pill · solid CTA + BIG theme toggle.
+ * No green anywhere — ink and paper only.
  */
 export function Navbar() {
   const pathname = usePathname();
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
 
-  // Close the mobile drawer on navigation (e.g. browser back/forward).
   useEffect(() => {
-    void (async () => {
-      await Promise.resolve();
-      setOpen(false);
-    })();
+    setOpen(false);
   }, [pathname]);
 
   const isLanding = pathname === "/";
+  const links = isLanding ? LANDING_LINKS : APP_LINKS;
+  const ctaHref = user ? "/dashboard" : "/register";
+  const ctaLabel = user ? "Open Workspace" : "Start a Project";
 
   return (
-    <div className="liquid-bar">
-      <div className="liquid-pill">
-        <Link
-          href={user ? "/dashboard" : "/"}
-          aria-label="Lumina home"
-          className="group flex items-center gap-2"
-          style={{ fontFamily: "var(--font-sf-pro-text)", fontSize: 17, fontWeight: 600, letterSpacing: "-0.019em", color: "var(--color-apple-ink)" }}
-        >
-          <span style={{ filter: "drop-shadow(0 0 10px rgba(157,231,193,0.45))", display: "inline-flex" }}>
-            <LogoMark size={22} />
+    <div className="mt-bar">
+      <div className="mt-inner">
+        {/* left — logo box like reference */}
+        <Link href={user ? "/dashboard" : "/"} aria-label="Lumina home" className="mt-brand">
+          <span className="mt-logo-box">
+            <SparkMark size={30} />
           </span>
-          Lumina
+          <span className="mt-brand-name">Lumina</span>
         </Link>
 
-        {isLanding ? (
-          <nav aria-label="Primary" className="hidden items-center gap-1.5 md:flex">
-            {LINKS.map((l) => (
+        {/* center — floating pill */}
+        <nav aria-label="Primary" className="mt-center">
+          {links.map((l) => {
+            const active = !isLanding && (pathname === l.href || (l.href === "/documents" && pathname.startsWith("/documents")));
+            return (
               <Link
-                key={l.href}
+                key={l.href + l.label}
                 href={l.href}
-                className="liquid-link"
-                style={{ fontSize: 13, fontWeight: 500, color: "var(--color-graphite)" }}
+                aria-current={active ? "page" : undefined}
+                className={active ? "mt-link mt-link-active" : "mt-link"}
               >
                 {l.label}
               </Link>
-            ))}
-            <ThemeToggle tone="dark" />
-            {user ? (
-              <Link href="/dashboard" className="primary-button liquid-cta ml-1" style={{ fontSize: 13, padding: "7px 16px" }}>
-                Open
-              </Link>
-            ) : (
-              <>
-                <Link href="/login" className="liquid-link" style={{ fontSize: 13, fontWeight: 500, color: "var(--color-apple-ink)" }}>
-                  Sign in
-                </Link>
-                <Link href="/register" className="primary-button liquid-cta" style={{ fontSize: 13, padding: "7px 16px" }}>
-                  Get started
-                </Link>
-              </>
-            )}
-          </nav>
-        ) : (
-          <nav aria-label="Primary" className="hidden items-center gap-1.5 md:flex">
-            {[
-              ["/dashboard", "Workspace"],
-              ["/documents", "Library"],
-              ["/assistant", "Assistant"],
-              ["/guide", "Guide"],
-            ].map(([href, label]) => {
-              const active = pathname === href;
-              return (
-                <Link
-                  key={href}
-                  href={href}
-                  aria-current={active ? "page" : undefined}
-                  className={active ? "liquid-link liquid-link-active" : "liquid-link"}
-                  style={{ fontSize: 13, fontWeight: active ? 600 : 500, color: active ? "var(--color-apple-ink)" : "var(--color-graphite)" }}
-                >
-                  {label}
-                </Link>
-              );
-            })}
-            <ThemeToggle tone="dark" />
-          </nav>
-        )}
+            );
+          })}
+        </nav>
 
-        <div className="flex items-center gap-1 md:hidden">
-          <ThemeToggle tone="dark" />
-          {!isLanding && user && (
-            <Link href="/documents" className="primary-button liquid-cta" style={{ fontSize: 12, fontWeight: 600, padding: "6px 14px" }}>
-              New
+        {/* right — BIG toggle + solid CTA */}
+        <div className="mt-right">
+          <span className="hidden sm:inline-flex">
+            <ThemeToggle />
+          </span>
+          {isLanding && !user && (
+            <Link href="/login" className="hidden px-2 text-[16px] font-medium lg:inline" style={{ color: "var(--color-graphite)" }}>
+              Sign in
             </Link>
           )}
+          <Link href={ctaHref} className="mt-cta hidden sm:inline-flex">
+            {ctaLabel}
+          </Link>
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-label={open ? "Close menu" : "Open menu"}
-            className="liquid-link flex h-9 w-9 flex-col items-center justify-center gap-1.5"
-            style={{ color: "var(--color-apple-ink)" }}
+            className="theme-big !px-4 sm:hidden"
+            style={{ height: 46 }}
           >
-            <span aria-hidden style={{ display: "block", width: 18, height: 1.5, background: "currentColor", borderRadius: 2 }} />
-            <span aria-hidden style={{ display: "block", width: 18, height: 1.5, background: "currentColor", borderRadius: 2 }} />
+            <span aria-hidden style={{ display: "block", width: 20, height: 2, background: "currentColor", borderRadius: 2, boxShadow: "0 -6px 0 currentColor, 0 6px 0 currentColor" }} />
           </button>
         </div>
       </div>
 
+      {/* mobile drawer */}
       {open && (
-        <nav aria-label="Primary mobile" className="liquid-dialog animate-slide-up mx-auto mt-2 max-w-[1120px] px-5 pb-6 shadow-2xl md:hidden">
-          <p className="tech-label px-0 pb-1 pt-4" style={{ color: "var(--color-electric-blue)" }}>Menu</p>
+        <nav aria-label="Primary mobile" className="liquid-dialog animate-slide-up mx-auto mt-3 max-w-[1320px] px-5 pb-6 shadow-2xl">
           <div className="flex flex-col">
-            {(isLanding ? LINKS.map((l) => ({ href: l.href, label: l.label })) : [
-              { href: "/dashboard", label: "Workspace" },
-              { href: "/documents", label: "Library" },
-              { href: "/assistant", label: "Assistant" },
-              { href: "/collections", label: "Collections" },
-              { href: "/notes", label: "Notes" },
-              { href: "/guide", label: "Guide" },
-            ]).map((l) => (
+            {links.map((l) => (
               <Link
-                key={l.href}
+                key={l.href + l.label}
                 href={l.href}
                 onClick={() => setOpen(false)}
-                className="py-3.5 transition-colors"
-                style={{ fontSize: 17, color: "var(--color-apple-ink)", borderBottom: "1px solid var(--liquid-border-soft)" }}
+                className="py-3.5"
+                style={{ fontSize: 19, fontWeight: 550, color: "var(--color-apple-ink)", borderBottom: "1px solid var(--liquid-border-soft)" }}
               >
                 {l.label}
               </Link>
             ))}
-            {user ? (
-              <Link href="/documents" onClick={() => setOpen(false)} className="primary-button liquid-cta mt-4 py-2.5 text-center" style={{ fontSize: 17 }}>
-                New research
-              </Link>
-            ) : (
-              <Link href="/register" onClick={() => setOpen(false)} className="primary-button liquid-cta mt-4 py-2.5 text-center" style={{ fontSize: 17 }}>
-                Get started
+            <Link href={ctaHref} onClick={() => setOpen(false)} className="mt-cta mt-4 justify-center" style={{ width: "100%" }}>
+              {ctaLabel}
+            </Link>
+            {!user && (
+              <Link href="/login" onClick={() => setOpen(false)} className="mt-3 text-center" style={{ fontSize: 16, color: "var(--color-graphite)" }}>
+                Sign in
               </Link>
             )}
-            <ThemeRow dark onNavigate={() => setOpen(false)} />
+            <div className="mt-2 flex justify-center">
+              <ThemeToggle />
+            </div>
+            <ThemeRow onNavigate={() => setOpen(false)} />
           </div>
         </nav>
       )}

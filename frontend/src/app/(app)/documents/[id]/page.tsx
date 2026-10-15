@@ -172,7 +172,7 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ id: s
 
       <section className="relative mt-4 rise rise-1">
         <span className="orb" aria-hidden style={{ width: 420, height: 420, top: -120, left: -120, background: "radial-gradient(circle, rgba(157,231,193,0.14), transparent 65%)" }} />
-        <span className="orb" aria-hidden style={{ width: 440, height: 440, top: -140, right: -120, background: "radial-gradient(circle, rgba(138,180,248,0.12), transparent 65%)" }} />
+        <span className="orb" aria-hidden style={{ width: 440, height: 440, top: -140, right: -120, background: "radial-gradient(circle, rgba(255,255,255,0.12), transparent 65%)" }} />
         <div className="gallery-card relative">
           <div className="flex flex-wrap gap-2">
             <span className="eyebrow" style={{ fontSize: 11 }}><span className="dot" />{doc.file_type}</span>

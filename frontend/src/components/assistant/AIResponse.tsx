@@ -54,7 +54,7 @@ function renderMarkdown(body: string) {
     if (/^>\s?/.test(l)) {
       flushLists(`q${idx}`);
       blocks.push(
-        <blockquote key={idx} className="mt-3 rounded-r-2xl py-2 pl-4 pr-3 text-[15.5px]" style={{ borderLeft: "2px solid var(--color-electric-blue)", background: "rgba(157,231,193,0.07)", color: "var(--color-iron)", lineHeight: 1.65 }}>
+        <blockquote key={idx} className="mt-3 rounded-r-2xl py-2 pl-4 pr-3 text-[15.5px]" style={{ borderLeft: "2px solid var(--color-electric-blue)", background: "rgba(255,255,255,0.07)", color: "var(--color-iron)", lineHeight: 1.65 }}>
           {inline(l.replace(/^>\s?/, ""))}
         </blockquote>
       );
@@ -97,7 +97,7 @@ export function AIResponse({
   return (
     <article aria-live="polite" className="gallery-card page-enter mt-4 !p-6">
       <div className="flex items-center gap-2.5">
-        <span aria-hidden className="flex h-7 w-7 items-center justify-center" style={{ borderRadius: 99, background: "linear-gradient(180deg, var(--color-electric-blue), #6FCF9A)", color: "#06110C", fontSize: 13, fontWeight: 700 }}>✦</span>
+        <span aria-hidden className="flex h-7 w-7 items-center justify-center" style={{ borderRadius: 99, background: "linear-gradient(180deg, var(--color-electric-blue), #A1A1A6)", color: "#06110C", fontSize: 13, fontWeight: 700 }}>✦</span>
         <p style={{ fontSize: 12.5, fontWeight: 600, color: "var(--color-slate)" }}>
           Answer · {query.slice(0, 80)}{query.length > 80 ? "…" : ""}
         </p>
@@ -147,7 +147,7 @@ export function AIResponse({
 export function UserPrompt({ query }: { query: string }) {
   return (
     <div className="mt-5 flex justify-end">
-      <p className="max-w-[82%] px-5 py-3 text-[15.5px]" style={{ background: "linear-gradient(180deg, #C9F5DC, var(--color-electric-blue))", color: "#06110C", fontWeight: 550, borderRadius: 20, borderBottomRightRadius: 6, lineHeight: 1.55, boxShadow: "0 8px 24px rgba(157,231,193,0.22)" }}>
+      <p className="max-w-[82%] px-5 py-3 text-[15.5px]" style={{ background: "linear-gradient(180deg, #FFFFFF, var(--color-electric-blue))", color: "#06110C", fontWeight: 550, borderRadius: 20, borderBottomRightRadius: 6, lineHeight: 1.55, boxShadow: "0 8px 24px rgba(255,255,255,0.22)" }}>
         {query}
       </p>
     </div>

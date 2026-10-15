@@ -31,7 +31,7 @@ export function QuickActions({ onUpload }: { onUpload: () => void }) {
             <>
               <span
                 className="flex h-9 w-9 items-center justify-center"
-                style={{ borderRadius: 12, background: "rgba(157,231,193,0.12)", color: "var(--color-electric-blue)", border: "1px solid rgba(157,231,193,0.35)", boxShadow: "var(--liquid-glow-mint)" }}
+                style={{ borderRadius: 12, background: "rgba(255,255,255,0.12)", color: "var(--color-electric-blue)", border: "1px solid rgba(255,255,255,0.35)", boxShadow: "var(--liquid-glow-mint)" }}
               >
                 {a.icon}
               </span>

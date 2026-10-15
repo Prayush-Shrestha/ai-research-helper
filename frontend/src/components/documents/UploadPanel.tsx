@@ -101,7 +101,7 @@ export function UploadPanel({
             className="liquid-dropzone flex min-h-[180px] cursor-pointer flex-col items-center justify-center gap-2 px-6 py-8 text-center"
             style={{
               border: `1.5px dashed ${drag ? "var(--color-electric-blue)" : "color-mix(in srgb, var(--color-electric-blue) 30%, transparent)"}`,
-              background: drag ? "rgba(157,231,193,0.08)" : undefined,
+              background: drag ? "rgba(255,255,255,0.08)" : undefined,
               transition: "border-color .2s ease, background .2s ease",
             }}
           >
@@ -127,10 +127,10 @@ export function UploadPanel({
               </p>
             )}
             <div className="progress-sheen mt-4 h-[8px] w-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)", borderRadius: 99 }}>
-              <div style={{ width: `${progress}%`, height: "100%", background: "rgba(157,231,193,0.9)", borderRadius: 99, transition: "width .3s ease", boxShadow: "0 0 16px rgba(157,231,193,0.5)" }} />
+              <div style={{ width: `${progress}%`, height: "100%", background: "var(--color-electric-blue)", borderRadius: 99, transition: "width .3s ease" }} />
             </div>
             <p className="mt-3" style={{ fontSize: 15, color: "var(--color-graphite)" }}>
-              <span className="pulse-dot mr-2 inline-block" style={{ width: 7, height: 7, borderRadius: 99, background: "rgba(157,231,193,0.9)", verticalAlign: "1px", boxShadow: "0 0 10px rgba(157,231,193,0.7)" }} />
+              <span className="pulse-dot mr-2 inline-block" style={{ width: 7, height: 7, borderRadius: 99, background: "var(--color-electric-blue)", verticalAlign: "1px" }} />
               {phase}…
             </p>
           </div>

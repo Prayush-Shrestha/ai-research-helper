@@ -31,10 +31,10 @@ export function ResearchNucleus({
       <svg viewBox="0 0 640 520" className="h-auto w-full float-slow" aria-hidden style={{ filter: "drop-shadow(0 18px 50px rgba(0,0,0,0.4))" }}>
         <defs>
           <linearGradient id="vitrine-ring" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#9DE7C1" stopOpacity="0.5" />
-            <stop offset="45%" stopColor="#9DE7C1" stopOpacity="0.22" />
-            <stop offset="75%" stopColor="#B8F1D4" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#9DE7C1" stopOpacity="0.12" />
+            <stop offset="0%" stopColor="#F5F5F7" stopOpacity="0.5" />
+            <stop offset="45%" stopColor="#F5F5F7" stopOpacity="0.22" />
+            <stop offset="75%" stopColor="#E8E8ED" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#F5F5F7" stopOpacity="0.12" />
           </linearGradient>
         </defs>
         {/* iridescent light-ring — atmospheric imagery only */}
@@ -58,7 +58,7 @@ export function ResearchNucleus({
           <line x1="268" y1="228" x2="372" y2="228" stroke="var(--color-apple-ink)" strokeWidth="3" strokeLinecap="round" />
           <line x1="268" y1="244" x2="356" y2="244" stroke="var(--color-slate)" strokeWidth="2.5" strokeLinecap="round" />
           <line x1="268" y1="258" x2="344" y2="258" stroke="var(--color-slate)" strokeWidth="2.5" strokeLinecap="round" opacity="0.7" />
-          <rect x="268" y="276" width="72" height="26" rx="13" fill="var(--color-electric-blue)" style={{ filter: "drop-shadow(0 4px 14px rgba(157,231,193,0.4))" }} />
+          <rect x="268" y="276" width="72" height="26" rx="13" fill="var(--color-electric-blue)" style={{ filter: "drop-shadow(0 4px 14px rgba(255,255,255,0.4))" }} />
           <text x="280" y="293" fill="#ffffff" fontSize="12" fontWeight="600">Ask ✓</text>
           <text x="268" y="324" fill="var(--color-slate)" fontSize="11">Cf. Doc. 014 →</text>
         </g>

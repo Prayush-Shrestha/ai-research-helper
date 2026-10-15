@@ -44,7 +44,7 @@ function CopyButton({ text }: { text: string }) {
         fontSize: 13,
         padding: "6px 16px",
         ...(done
-          ? { background: "rgba(157,231,193,0.16)", color: "var(--color-electric-blue)", borderColor: "rgba(157,231,193,0.45)" }
+          ? { background: "rgba(255,255,255,0.16)", color: "var(--color-electric-blue)", borderColor: "rgba(255,255,255,0.45)" }
           : undefined),
       }}
     >
@@ -210,8 +210,8 @@ function StructureChecklist() {
                     fontSize: 14,
                     fontWeight: 700,
                     borderRadius: 999,
-                    border: done ? "1px solid rgba(157,231,193,0.5)" : "1.5px solid var(--liquid-border)",
-                    background: done ? "rgba(157,231,193,0.16)" : "transparent",
+                    border: done ? "1px solid rgba(255,255,255,0.5)" : "1.5px solid var(--liquid-border)",
+                    background: done ? "rgba(255,255,255,0.16)" : "transparent",
                     color: done ? "var(--color-electric-blue)" : "var(--color-slate)",
                     boxShadow: done ? "var(--liquid-glow-mint)" : undefined,
                   }}
@@ -239,8 +239,8 @@ export default function ToolkitPage() {
   return (
     <div className="page-shell page-enter">
       <section className="relative overflow-hidden pt-6 text-center sm:pt-10">
-        <span aria-hidden className="orb rise rise-1" style={{ width: 420, height: 420, left: "-8%", top: "-140px", background: "radial-gradient(circle, rgba(157,231,193,0.16), transparent 65%)" }} />
-        <span aria-hidden className="orb rise rise-2" style={{ width: 480, height: 480, right: "-10%", top: "-100px", background: "radial-gradient(circle, rgba(196,181,253,0.12), transparent 65%)" }} />
+        <span aria-hidden className="orb rise rise-1" style={{ width: 420, height: 420, left: "-8%", top: "-140px", background: "radial-gradient(circle, rgba(255,255,255,0.16), transparent 65%)" }} />
+        <span aria-hidden className="orb rise rise-2" style={{ width: 480, height: 480, right: "-10%", top: "-100px", background: "radial-gradient(circle, rgba(255,255,255,0.12), transparent 65%)" }} />
         <div className="relative" style={{ zIndex: 1 }}>
           <p className="eyebrow rise rise-1"><span className="dot" aria-hidden /> Toolkit · Write it right</p>
           <h1 className="type-heading rise rise-2 mx-auto mt-4" style={{ color: "var(--color-apple-ink)", fontWeight: 600, letterSpacing: "-0.03em" }}>

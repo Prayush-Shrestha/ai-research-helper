@@ -69,8 +69,8 @@ export default function AssistantPage() {
   return (
     <div className="page-shell">
       <section className="relative pt-6 sm:pt-10">
-        <span className="orb" aria-hidden style={{ width: 420, height: 420, top: -140, left: -120, background: "radial-gradient(circle, rgba(157,231,193,0.16), transparent 65%)" }} />
-        <span className="orb" aria-hidden style={{ width: 460, height: 460, top: -160, right: -140, background: "radial-gradient(circle, rgba(138,180,248,0.14), transparent 65%)" }} />
+        <span className="orb" aria-hidden style={{ width: 420, height: 420, top: -140, left: -120, background: "radial-gradient(circle, rgba(255,255,255,0.16), transparent 65%)" }} />
+        <span className="orb" aria-hidden style={{ width: 460, height: 460, top: -160, right: -140, background: "radial-gradient(circle, rgba(255,255,255,0.14), transparent 65%)" }} />
         <div className="relative rise rise-1">
           <span className="eyebrow"><span className="dot" />Assistant</span>
           <h1 className="type-heading-sm mt-4" style={{ color: "var(--color-apple-ink)", fontWeight: 600, letterSpacing: "-0.03em" }}>
@@ -118,7 +118,7 @@ export default function AssistantPage() {
                       <span
                         aria-hidden
                         className="flex h-6 w-6 shrink-0 items-center justify-center"
-                        style={{ borderRadius: 999, border: on ? "1px solid rgba(157,231,193,0.5)" : "1.5px solid var(--color-line)", background: on ? "rgba(157,231,193,0.9)" : "transparent", color: "var(--color-fog-canvas)", fontSize: 13, fontWeight: 700, boxShadow: on ? "0 4px 16px rgba(157,231,193,0.35)" : undefined }}
+                        style={{ borderRadius: 999, border: on ? "1px solid rgba(255,255,255,0.5)" : "1.5px solid var(--color-line)", background: on ? "rgba(255,255,255,0.9)" : "transparent", color: "var(--color-fog-canvas)", fontSize: 13, fontWeight: 700, boxShadow: on ? "0 4px 16px rgba(255,255,255,0.35)" : undefined }}
                       >
                         {on ? "✓" : ""}
                       </span>

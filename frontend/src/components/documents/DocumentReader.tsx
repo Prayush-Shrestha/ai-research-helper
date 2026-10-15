@@ -98,7 +98,7 @@ export function DocumentReader({ text }: { text: string }) {
             const q = query.trim().toLowerCase();
             const highlight = q && p.toLowerCase().includes(q);
             return (
-              <p key={i} id={`reader-p-${i}`} style={{ fontSize: 17, lineHeight: 1.65, color: "var(--color-iron)", background: highlight ? "rgba(157,231,193,0.16)" : undefined, borderRadius: 8, padding: highlight ? "2px 6px" : undefined }}>
+              <p key={i} id={`reader-p-${i}`} style={{ fontSize: 17, lineHeight: 1.65, color: "var(--color-iron)", background: highlight ? "rgba(255,255,255,0.16)" : undefined, borderRadius: 8, padding: highlight ? "2px 6px" : undefined }}>
                 {p}
               </p>
             );

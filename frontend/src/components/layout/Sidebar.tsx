@@ -50,7 +50,7 @@ export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle:
     const active = item.href ? isActive(item.href) : false;
     const content = (
       <>
-        <span style={{ color: active ? "var(--color-electric-blue)" : "var(--color-graphite)", display: "flex", filter: active ? "drop-shadow(0 0 8px rgba(157,231,193,0.5))" : undefined }}>{item.icon}</span>
+        <span style={{ color: active ? "var(--color-electric-blue)" : "var(--color-graphite)", display: "flex", filter: active ? "drop-shadow(0 0 8px rgba(255,255,255,0.5))" : undefined }}>{item.icon}</span>
         {!collapsed && <span className="truncate">{item.label}</span>}
       </>
     );
@@ -130,7 +130,7 @@ export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle:
         >
           {collapsed ? <PanelLeftOpen size={16} aria-hidden /> : <PanelLeftClose size={16} aria-hidden />}
         </button>
-        {!collapsed && <ThemeToggle tone="light" />}
+        {!collapsed && <ThemeToggle compact />}
       </div>
 
       <nav className="flex-1 px-3 pb-4" aria-label="Primary">
@@ -141,7 +141,7 @@ export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle:
         {!collapsed && (
           <>
             <div aria-hidden className="mx-3 my-4 h-px" style={{ background: "var(--liquid-border)" }} />
-            <div className="mx-1 rounded-2xl px-3.5 py-3.5" style={{ background: "rgba(157,231,193,0.07)", border: "1px solid rgba(157,231,193,0.18)" }}>
+            <div className="mx-1 rounded-2xl px-3.5 py-3.5" style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.18)" }}>
               <p style={{ fontSize: 13, fontWeight: 650, color: "var(--color-apple-ink)" }}>Explore more</p>
               <div className="mt-2 grid grid-cols-2 gap-1.5 text-[13.5px]" style={{ color: "var(--color-iron)" }}>
                 <Link href="/knowledge" className="liquid-link justify-center !px-2">Knowledge</Link>
@@ -159,7 +159,7 @@ export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle:
       {!collapsed && (
         <div className="p-3">
           <div className="flex items-center gap-2.5 rounded-2xl px-3 py-2.5" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--liquid-border)", backdropFilter: "blur(12px)" }}>
-            <span aria-hidden className="flex h-9 w-9 shrink-0 items-center justify-center text-[15px] font-semibold" style={{ background: "linear-gradient(180deg, var(--color-electric-blue), #6FCF9A)", color: "#06110C", borderRadius: 999, boxShadow: "0 4px 14px rgba(157,231,193,0.35)" }}>
+            <span aria-hidden className="flex h-9 w-9 shrink-0 items-center justify-center text-[15px] font-semibold" style={{ background: "linear-gradient(180deg, var(--color-electric-blue), #A1A1A6)", color: "#06110C", borderRadius: 999, boxShadow: "0 4px 14px rgba(255,255,255,0.35)" }}>
               {(user?.name?.trim().charAt(0).toUpperCase() || "R")}
             </span>
             <div className="min-w-0 flex-1 leading-tight">

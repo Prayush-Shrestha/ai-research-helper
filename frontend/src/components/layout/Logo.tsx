@@ -14,7 +14,7 @@ export function LogoMark({ size = 30, className }: { size?: number; className?: 
         background: "linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.02)), var(--color-apple-ink)",
         position: "relative",
         flexShrink: 0,
-        boxShadow: "0 6px 18px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.35), 0 0 18px rgba(157,231,193,0.18)",
+        boxShadow: "0 6px 18px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.35), 0 0 18px rgba(255,255,255,0.18)",
         border: "1px solid rgba(255,255,255,0.22)",
       }}
     >

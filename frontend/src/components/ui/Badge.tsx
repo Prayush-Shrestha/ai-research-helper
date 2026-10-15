@@ -14,7 +14,7 @@ export function StatusBadge({ status }: { status: DocumentStatus }) {
   const isProcessing = status === "processing" || status === "pending";
   const isOcr = status === "requires_ocr";
   return (
-    <span className={cx("tag-pill", isFailed && "crimson")} style={isProcessing || isOcr ? { background: "rgba(157,231,193,0.1)", color: "var(--color-electric-blue)" } : undefined}>
+    <span className={cx("tag-pill", isFailed && "crimson")} style={isProcessing || isOcr ? { background: "rgba(255,255,255,0.1)", color: "var(--color-electric-blue)" } : undefined}>
       {isProcessing && (
         <span aria-hidden className="pulse-dot inline-block" style={{ width: 6, height: 6, borderRadius: 99, background: "currentColor" }} />
       )}

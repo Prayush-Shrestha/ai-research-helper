@@ -18,8 +18,8 @@ export default function InsightsPage() {
   return (
     <div className="page-shell">
       <section className="relative pt-6 text-center sm:pt-10">
-        <span className="orb" aria-hidden style={{ width: 420, height: 420, top: -140, left: "8%", background: "radial-gradient(circle, rgba(157,231,193,0.15), transparent 65%)" }} />
-        <span className="orb" aria-hidden style={{ width: 460, height: 460, top: -160, right: "8%", background: "radial-gradient(circle, rgba(138,180,248,0.13), transparent 65%)" }} />
+        <span className="orb" aria-hidden style={{ width: 420, height: 420, top: -140, left: "8%", background: "radial-gradient(circle, rgba(255,255,255,0.15), transparent 65%)" }} />
+        <span className="orb" aria-hidden style={{ width: 460, height: 460, top: -160, right: "8%", background: "radial-gradient(circle, rgba(255,255,255,0.13), transparent 65%)" }} />
         <div className="relative rise rise-1">
           <span className="eyebrow"><span className="dot" />Insights</span>
           <h1 className="type-heading-sm mx-auto mt-4" style={{ color: "var(--color-apple-ink)", fontWeight: 600, letterSpacing: "-0.03em" }}>
