@@ -67,29 +67,34 @@ export default function AssistantPage() {
   }
 
   return (
-    <div>
-      <section className="pt-6 sm:pt-10">
-        <h1 className="type-heading-sm" style={{ color: "var(--color-apple-ink)" }}>
-          Poke at your papers.
-        </h1>
-        <p className="mt-3 max-w-xl" style={{ fontSize: 19, color: "var(--color-graphite)" }}>
-          Tick a few papers on the left, then ask like you would a friend.
-          Right now looking at {scopeLabel}.
-        </p>
-        <div className="mt-3 flex justify-center gap-5">
-          <button onClick={() => setLeftOpen((v) => !v)} style={{ fontSize: 15, color: "var(--color-link-blue)" }} aria-expanded={leftOpen}>
-            {leftOpen ? "Hide papers" : "Show papers"}
-          </button>
-          <button onClick={() => setRightOpen((v) => !v)} style={{ fontSize: 15, color: "var(--color-link-blue)" }} aria-expanded={rightOpen}>
-            {rightOpen ? "Hide key points" : "Show key points"}
-          </button>
+    <div className="page-shell">
+      <section className="relative pt-6 sm:pt-10">
+        <span className="orb" aria-hidden style={{ width: 420, height: 420, top: -140, left: -120, background: "radial-gradient(circle, rgba(157,231,193,0.16), transparent 65%)" }} />
+        <span className="orb" aria-hidden style={{ width: 460, height: 460, top: -160, right: -140, background: "radial-gradient(circle, rgba(138,180,248,0.14), transparent 65%)" }} />
+        <div className="relative rise rise-1">
+          <span className="eyebrow"><span className="dot" />Assistant</span>
+          <h1 className="type-heading-sm mt-4" style={{ color: "var(--color-apple-ink)", fontWeight: 600, letterSpacing: "-0.03em" }}>
+            Poke at your papers.
+          </h1>
+          <p className="hero-sub mt-3 max-w-xl">
+            Tick a few papers on the left, then ask like you would a friend.
+            Right now looking at {scopeLabel}.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <button onClick={() => setLeftOpen((v) => !v)} className="ghost-pill" style={{ fontSize: 14, padding: "8px 18px" }} aria-expanded={leftOpen} aria-pressed={leftOpen}>
+              {leftOpen ? "Hide papers" : "Show papers"}
+            </button>
+            <button onClick={() => setRightOpen((v) => !v)} className="ghost-pill" style={{ fontSize: 14, padding: "8px 18px" }} aria-expanded={rightOpen} aria-pressed={rightOpen}>
+              {rightOpen ? "Hide key points" : "Show key points"}
+            </button>
+          </div>
         </div>
       </section>
 
-      <div className="mt-8 grid gap-5 lg:grid-cols-[260px_1fr] xl:grid-cols-[260px_1fr_280px]">
+      <div className="relative mt-8 grid gap-5 lg:grid-cols-[260px_1fr] xl:grid-cols-[260px_1fr_280px]">
         {leftOpen && (
-          <aside aria-label="Choose papers" className="gallery-card page-enter !p-5 lg:sticky lg:top-[64px] lg:self-start">
-            <p style={{ fontSize: 13, color: "var(--color-slate)" }}>Which papers? ({selectedIds.length}/5)</p>
+          <aside aria-label="Choose papers" className="gallery-card rise rise-2 !p-5 lg:sticky lg:top-[64px] lg:self-start">
+            <p className="micro-label">Which papers? ({selectedIds.length}/5)</p>
             <div className="mt-2">
               {loading ? (
                 <div className="py-3"><PageLoading label="Finding your papers" /></div>
@@ -113,7 +118,7 @@ export default function AssistantPage() {
                       <span
                         aria-hidden
                         className="flex h-6 w-6 shrink-0 items-center justify-center"
-                        style={{ borderRadius: 999, border: on ? "none" : "1.5px solid var(--color-line)", background: on ? "var(--color-electric-blue)" : "transparent", color: "var(--color-fog-canvas)", fontSize: 13, fontWeight: 600 }}
+                        style={{ borderRadius: 999, border: on ? "1px solid rgba(157,231,193,0.5)" : "1.5px solid var(--color-line)", background: on ? "rgba(157,231,193,0.9)" : "transparent", color: "var(--color-fog-canvas)", fontSize: 13, fontWeight: 700, boxShadow: on ? "0 4px 16px rgba(157,231,193,0.35)" : undefined }}
                       >
                         {on ? "✓" : ""}
                       </span>
@@ -127,19 +132,19 @@ export default function AssistantPage() {
               )}
             </div>
             {selectedIds.length > 0 && (
-              <button onClick={() => setSelectedIds([])} className="mt-3" style={{ fontSize: 15, color: "var(--color-link-blue)" }}>
+              <button onClick={() => setSelectedIds([])} className="secondary-button mt-3" style={{ fontSize: 15 }}>
                 Clear selection
               </button>
             )}
           </aside>
         )}
 
-        <section aria-label="Conversation">
+        <section aria-label="Conversation" className="rise rise-3">
           <CommandInput onAsk={handleAsk} />
           <div>
             {history.length === 0 ? (
               <div className="gallery-card mt-5">
-                <p style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>Go on, ask something.</p>
+                <p style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)", letterSpacing: "-0.02em" }}>Go on, ask something.</p>
                 <p className="mt-2 max-w-md" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
                   “What is this actually about?” is a perfectly good first question.
                   {allDocuments.length === 0 ? " You'll need a paper first, though, or I have nothing to read." : ""}
@@ -158,13 +163,13 @@ export default function AssistantPage() {
             )}
           </div>
 
-          <div className="gallery-card mt-5 grid gap-4 sm:grid-cols-3" aria-label="How answers work">
+          <div className="mt-5 grid gap-4 sm:grid-cols-3" aria-label="How answers work">
             {[
               ["It quotes", "If the answer isn't in your files, it says so."],
               ["You pick the scope", "The ticked papers, or the first few if you tick nothing."],
               ["You can check", "Open the paper and find the line yourself. Please do."],
-            ].map(([k, v]) => (
-              <div key={k}>
+            ].map(([k, v], i) => (
+              <div key={k} className={`glass-stat rise rise-${4 + i}`}>
                 <p style={{ fontSize: 15, fontWeight: 600, color: "var(--color-apple-ink)" }}>{k}</p>
                 <p className="mt-1" style={{ fontSize: 15, color: "var(--color-graphite)", lineHeight: 1.5 }}>{v}</p>
               </div>
@@ -173,8 +178,8 @@ export default function AssistantPage() {
         </section>
 
         {rightOpen && (
-          <aside aria-label="Key points" className="gallery-card page-enter !p-5 lg:sticky lg:top-[64px] lg:self-start">
-            <p style={{ fontSize: 13, color: "var(--color-slate)" }}>The gist</p>
+          <aside aria-label="Key points" className="gallery-card rise rise-4 !p-5 lg:sticky lg:top-[64px] lg:self-start">
+            <p className="micro-label">The gist</p>
             {!insights ? (
               <p className="mt-2" style={{ fontSize: 17, color: "var(--color-graphite)" }}>Add a paper and I&rsquo;ll pull out what it seems to be about.</p>
             ) : (
@@ -196,7 +201,7 @@ export default function AssistantPage() {
                     ))}
                   </div>
                 </div>
-                <Link href="/documents" style={{ fontSize: 15, color: "var(--color-link-blue)" }}>
+                <Link href="/documents" className="secondary-button" style={{ fontSize: 15 }}>
                   Open reader →
                 </Link>
               </div>

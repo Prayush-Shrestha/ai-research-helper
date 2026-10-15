@@ -160,82 +160,91 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ id: s
   }
 
   return (
-    <div>
-      <nav aria-label="Back" className="flex items-center justify-between pt-2">
-        <Link href="/documents" style={{ fontSize: 17, color: "var(--color-link-blue)" }}>
+    <div className="page-shell">
+      <nav aria-label="Back" className="relative flex items-center justify-between pt-2 rise rise-1">
+        <Link href="/documents" className="ghost-pill" style={{ fontSize: 14, padding: "8px 18px", textDecoration: "none" }}>
           ← Library
         </Link>
-        <button onClick={() => setInsightsOpen((v) => !v)} className="lg:hidden" style={{ fontSize: 15, color: "var(--color-link-blue)" }} aria-expanded={insightsOpen}>
+        <button onClick={() => setInsightsOpen((v) => !v)} className="ghost-pill lg:hidden" style={{ fontSize: 14, padding: "8px 18px" }} aria-expanded={insightsOpen} aria-pressed={insightsOpen}>
           {insightsOpen ? "Hide key points" : "Show key points"}
         </button>
       </nav>
 
-      <section className="gallery-card mt-4">
-        <p className="mono-meta" style={{ fontSize: 12, fontWeight: 500, color: "var(--color-slate)" }}>{doc.file_type} · {doc.page_count ?? "—"} PAGES · {formatBytes(doc.file_size).toUpperCase()}</p>
-        {renaming ? (
-          <form
-            className="mt-3 flex max-w-xl flex-col gap-3 sm:flex-row sm:items-center"
-            onSubmit={(e) => {
-              e.preventDefault();
-              void handleRename();
-            }}
-          >
-            <label htmlFor="rename" className="sr-only">Paper title</label>
-            <input
-              id="rename" value={title} onChange={(e) => setTitle(e.target.value)} autoFocus
-              className="field-input w-full !text-[19px]"
-              style={{ fontWeight: 600 }}
-            />
-            <div className="flex shrink-0 gap-2">
-              <button type="submit" disabled={busy} className="primary-button" style={{ padding: "8px 22px", fontSize: 15 }}>Save</button>
-              <button type="button" onClick={() => { setRenaming(false); setTitle(doc.title); }} className="secondary-button" style={{ fontSize: 15 }}>Cancel</button>
-            </div>
-          </form>
-        ) : (
-          <h1 className="mt-2" style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: "clamp(28px,4vw,44px)", fontWeight: 600, letterSpacing: "-0.009em", lineHeight: 1.1, color: "var(--color-apple-ink)", maxWidth: 900 }}>
-            {doc.title}
-          </h1>
-        )}
-        <p className="mt-2" style={{ fontSize: 15, color: doc.extraction_status === "failed" ? "var(--color-alert)" : "var(--color-graphite)" }}>
-          {statusLabel(doc.extraction_status)} · Filed {friendlyDate(doc.updated_at)}
-        </p>
-        {doc.extraction_error && (
-          <p className="mt-1" style={{ fontSize: 15, color: "var(--color-graphite)" }}>
-            {doc.extraction_error}
+      <section className="relative mt-4 rise rise-1">
+        <span className="orb" aria-hidden style={{ width: 420, height: 420, top: -120, left: -120, background: "radial-gradient(circle, rgba(157,231,193,0.14), transparent 65%)" }} />
+        <span className="orb" aria-hidden style={{ width: 440, height: 440, top: -140, right: -120, background: "radial-gradient(circle, rgba(138,180,248,0.12), transparent 65%)" }} />
+        <div className="gallery-card relative">
+          <div className="flex flex-wrap gap-2">
+            <span className="eyebrow" style={{ fontSize: 11 }}><span className="dot" />{doc.file_type}</span>
+            <span className="tag-pill">{doc.page_count ?? "—"} pages</span>
+            <span className="tag-pill">{formatBytes(doc.file_size).toUpperCase()}</span>
+            <span className={`tag-pill${doc.extraction_status === "failed" ? " crimson" : ""}`}>{statusLabel(doc.extraction_status)}</span>
+          </div>
+          {renaming ? (
+            <form
+              className="mt-4 flex max-w-xl flex-col gap-3 sm:flex-row sm:items-center"
+              onSubmit={(e) => {
+                e.preventDefault();
+                void handleRename();
+              }}
+            >
+              <label htmlFor="rename" className="sr-only">Paper title</label>
+              <input
+                id="rename" value={title} onChange={(e) => setTitle(e.target.value)} autoFocus
+                className="field-input w-full !text-[19px]"
+                style={{ fontWeight: 600 }}
+              />
+              <div className="flex shrink-0 gap-2">
+                <button type="submit" disabled={busy} className="primary-button" style={{ padding: "8px 22px", fontSize: 15 }}>Save</button>
+                <button type="button" onClick={() => { setRenaming(false); setTitle(doc.title); }} className="secondary-button" style={{ fontSize: 15 }}>Cancel</button>
+              </div>
+            </form>
+          ) : (
+            <h1 className="mt-3" style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: "clamp(28px,4vw,44px)", fontWeight: 600, letterSpacing: "-0.03em", lineHeight: 1.1, color: "var(--color-apple-ink)", maxWidth: 900 }}>
+              {doc.title}
+            </h1>
+          )}
+          <p className="hero-sub mt-2" style={{ fontSize: 15 }}>
+            {statusLabel(doc.extraction_status)} · Filed {friendlyDate(doc.updated_at)}
           </p>
-        )}
-        {(doc.extraction_status === "failed" || doc.extraction_status === "requires_ocr") && (
-          <div className="mt-2">
-            <button onClick={() => void handleRetry()} disabled={busy} style={{ fontSize: 15, color: "var(--color-link-blue)" }}>
-              {busy ? "Retrying…" : "Retry extraction"}
+          {doc.extraction_error && (
+            <p className="mt-1" style={{ fontSize: 15, color: "var(--color-graphite)" }}>
+              {doc.extraction_error}
+            </p>
+          )}
+          {(doc.extraction_status === "failed" || doc.extraction_status === "requires_ocr") && (
+            <div className="mt-2">
+              <button onClick={() => void handleRetry()} disabled={busy} className="ghost-pill" style={{ fontSize: 14, padding: "8px 18px" }}>
+                {busy ? "Retrying…" : "Retry extraction"}
+              </button>
+            </div>
+          )}
+          {renameError && (
+            <p role="alert" className="mt-2" style={{ fontSize: 15, color: "var(--color-alert)" }}>
+              {renameError}
+            </p>
+          )}
+          <div className="mt-4 flex flex-wrap items-center gap-3" aria-label="Paper actions">
+            <button onClick={() => setRenaming(true)} className="ghost-pill" style={{ fontSize: 14, padding: "8px 18px" }}>Rename</button>
+            <a href={downloadUrl(doc.id)} download={doc.original_filename} className="ghost-pill" style={{ fontSize: 14, padding: "8px 18px", textDecoration: "none" }}>Download</a>
+            <button onClick={handleDelete} disabled={busy} className="ghost-pill" style={{ fontSize: 14, padding: "8px 18px", color: "var(--color-alert)" }}>Delete</button>
+            <button onClick={() => setInsightsOpen((v) => !v)} className="ghost-pill hidden lg:inline-flex" style={{ fontSize: 14, padding: "8px 18px" }} aria-expanded={insightsOpen} aria-pressed={insightsOpen}>
+              {insightsOpen ? "Hide key points" : "Show key points"}
             </button>
           </div>
-        )}
-        {renameError && (
-          <p role="alert" className="mt-2" style={{ fontSize: 15, color: "var(--color-alert)" }}>
-            {renameError}
-          </p>
-        )}
-        <div className="mt-4 flex flex-wrap items-center gap-5" aria-label="Paper actions">
-          <button onClick={() => setRenaming(true)} style={{ fontSize: 17, color: "var(--color-link-blue)" }}>Rename</button>
-          <a href={downloadUrl(doc.id)} download={doc.original_filename} style={{ fontSize: 17, color: "var(--color-link-blue)" }}>Download</a>
-          <button onClick={handleDelete} disabled={busy} style={{ fontSize: 17, color: "var(--color-alert)" }}>Delete</button>
-          <button onClick={() => setInsightsOpen((v) => !v)} className="hidden lg:block" style={{ fontSize: 15, color: "var(--color-slate)" }} aria-expanded={insightsOpen}>
-            {insightsOpen ? "Hide key points" : "Show key points"}
-          </button>
         </div>
       </section>
 
-      <div className="mt-5">
+      <div className="mt-5 rise rise-2">
         <DocumentReader text={text} />
       </div>
 
       <div className="mt-5 grid gap-5 lg:grid-cols-2">
         {insightsOpen && (
-          <aside aria-label="Key points" className="gallery-card page-enter">
-            <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>KEY POINTS — FROM YOUR FILE</p>
+          <aside aria-label="Key points" className="gallery-card page-enter rise rise-3">
+            <p className="micro-label">Key points — from your file</p>
             <div className="mt-3 space-y-4">
-              <div>
+              <div className="glass-stat">
                 <p style={{ fontSize: 17, fontWeight: 600, color: "var(--color-apple-ink)" }}>In short</p>
                 <p className="mt-1" style={{ fontSize: 17, color: "var(--color-iron)", lineHeight: 1.6 }}>{summary || "No summary line found — start at the first section instead."}</p>
               </div>
@@ -271,8 +280,8 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ id: s
           </aside>
         )}
 
-        <aside aria-label="Your note" className="gallery-card">
-          <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>YOUR NOTE ON THIS PAPER</p>
+        <aside aria-label="Your note" className="gallery-card rise rise-4">
+          <p className="micro-label">Your note on this paper</p>
           <label htmlFor="doc-note" className="sr-only">Write a note on this paper</label>
           <textarea
             id="doc-note"
@@ -290,12 +299,12 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ id: s
               {noteError}
             </p>
           )}
-          <p className="mt-2" style={{ fontSize: 12, color: "var(--color-slate)" }}>Pinned to this paper, saved to your library.</p>
+          <p className="footnote mt-2">Pinned to this paper, saved to your library.</p>
         </aside>
       </div>
 
-      <section aria-label="Ask about this paper" className="gallery-card mt-5">
-        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>ASK ABOUT THIS PAPER · ANSWERS QUOTE YOUR FILE</p>
+      <section aria-label="Ask about this paper" className="gallery-card mt-5 rise rise-5">
+        <p className="micro-label">Ask about this paper · answers quote your file</p>
         <div className="mt-3">
           <CommandInput onAsk={handleAsk} />
         </div>

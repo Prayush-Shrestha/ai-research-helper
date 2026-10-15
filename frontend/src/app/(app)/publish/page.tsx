@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type CSSProperties } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { VENUES, daysUntil, formatDeadline, type Venue } from "@/lib/student";
 
@@ -18,7 +18,10 @@ function Countdown({ v }: { v: Venue }) {
   const days = daysUntil(v.deadline);
   const urgent = days <= 45 && days >= 0;
   return (
-    <span className="tag-pill" style={urgent ? { background: "rgba(215,0,21,0.08)", color: "var(--color-alert)" } : undefined}>
+    <span
+      className={urgent ? "tag-pill crimson" : "tag-pill"}
+      style={urgent ? { background: "rgba(255,155,138,0.12)", borderColor: "rgba(255,155,138,0.4)", color: "var(--color-alert)" } : undefined}
+    >
       {days < 0 ? "Passed · see next edition" : days === 0 ? "Due today" : `${days} days left · ${formatDeadline(v.deadline)}`}
     </span>
   );
@@ -50,24 +53,25 @@ export default function PublishPage() {
     return out;
   }, [search, filter, sort]);
 
-  const chip = (active: boolean): CSSProperties => ({
-    border: "none",
-    background: active ? "var(--color-apple-ink)" : "var(--color-ash)",
-    color: active ? "var(--color-fog-canvas)" : "var(--color-apple-ink)",
-    borderRadius: 999,
-    fontSize: 15,
-  });
-
   return (
-    <div>
-      <section className="pt-6 text-center sm:pt-10">
-        <h1 className="type-heading mx-auto" style={{ color: "var(--color-apple-ink)" }}>
-          Get published.
-        </h1>
-        <p className="mx-auto mt-4 max-w-xl" style={{ fontSize: 21, color: "var(--color-graphite)" }}>
-          Having one paper out makes an application read differently. The venues
-          below are friendly to students and first-time authors.
-        </p>
+    <div className="page-shell page-enter">
+      <section className="relative overflow-hidden pt-6 text-center sm:pt-10">
+        <span aria-hidden className="orb rise rise-1" style={{ width: 420, height: 420, left: "-8%", top: "-140px", background: "radial-gradient(circle, rgba(157,231,193,0.16), transparent 65%)" }} />
+        <span aria-hidden className="orb rise rise-2" style={{ width: 480, height: 480, right: "-10%", top: "-100px", background: "radial-gradient(circle, rgba(138,180,248,0.13), transparent 65%)" }} />
+        <div className="relative" style={{ zIndex: 1 }}>
+          <p className="eyebrow rise rise-1"><span className="dot" aria-hidden /> Publish · Student venues</p>
+          <h1 className="type-heading rise rise-2 mx-auto mt-4" style={{ color: "var(--color-apple-ink)", fontWeight: 600, letterSpacing: "-0.03em" }}>
+            Get published.
+          </h1>
+          <p className="hero-sub rise rise-3 mx-auto mt-4 max-w-xl">
+            Having one paper out makes an application read differently. The venues
+            below are friendly to students and first-time authors.
+          </p>
+          <div className="rise rise-4 mt-6 flex flex-wrap justify-center gap-3">
+            <a href="#venues" className="primary-button">Browse venues</a>
+            <Link href="/roadmap" className="ghost-pill">Work backwards</Link>
+          </div>
+        </div>
       </section>
 
       <section className="mx-auto mt-8 grid gap-5 sm:grid-cols-3" style={{ maxWidth: 1024 }} aria-label="Why publish">
@@ -75,15 +79,15 @@ export default function PublishPage() {
           ["Proof, not promises", "A paper says you can finish research. Grades say you can pass exams."],
           ["Short counts", "Workshops and 2–4 page tracks accept student work. No full paper needed."],
           ["Rolling has no gate", "Rolling-review journals let you submit the month your draft is ready."],
-        ].map(([k, v]) => (
-          <div key={k} className="gallery-card">
+        ].map(([k, v], i) => (
+          <div key={k} className={`glass-stat rise rise-${i + 1}`}>
             <p style={{ fontSize: 19, fontWeight: 600, letterSpacing: "-0.015em", color: "var(--color-apple-ink)" }}>{k}</p>
             <p className="mt-1.5" style={{ fontSize: 17, color: "var(--color-graphite)" }}>{v}</p>
           </div>
         ))}
       </section>
 
-      <section aria-label="Find a venue" className="mx-auto mt-8" style={{ maxWidth: 680 }}>
+      <section aria-label="Find a venue" className="rise rise-3 mx-auto mt-8" style={{ maxWidth: 680 }}>
         <div className="liquid-search flex items-center gap-3 px-5 py-3">
           <span aria-hidden style={{ color: "var(--color-slate)", fontSize: 17 }}>⌕</span>
           <label htmlFor="venue-search" className="sr-only">Search venues</label>
@@ -97,39 +101,50 @@ export default function PublishPage() {
             style={{ color: "var(--color-apple-ink)" }}
           />
           {search && (
-            <button onClick={() => setSearch("")} aria-label="Clear search" style={{ fontSize: 15, color: "var(--color-link-blue)" }}>Clear</button>
+            <button onClick={() => setSearch("")} aria-label="Clear search" className="secondary-button" style={{ fontSize: 15 }}>Clear</button>
           )}
         </div>
         <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
           {(["ALL", "Conference", "Journal"] as Filter[]).map((f) => (
-            <button key={f} onClick={() => setFilter(f)} aria-pressed={filter === f} className="px-4 py-1.5" style={chip(filter === f)}>
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              aria-pressed={filter === f}
+              className={filter === f ? "tag-pill crimson" : "tag-pill"}
+              style={{ cursor: "pointer", padding: "7px 16px", fontSize: 14 }}
+            >
               {f === "ALL" ? "All" : f === "Conference" ? "Conferences" : "Journals"}
             </button>
           ))}
-          <span aria-hidden style={{ color: "var(--color-line)", margin: "0 4px" }}>|</span>
+          <span aria-hidden style={{ color: "var(--liquid-border)", margin: "0 4px" }}>|</span>
           {(["deadline", "acceptance"] as Sort[]).map((s) => (
-            <button key={s} onClick={() => setSort(s)} aria-pressed={sort === s} className="px-4 py-1.5" style={chip(sort === s)}>
+            <button
+              key={s}
+              onClick={() => setSort(s)}
+              aria-pressed={sort === s}
+              className={sort === s ? "tag-pill crimson" : "tag-pill"}
+              style={{ cursor: "pointer", padding: "7px 16px", fontSize: 14 }}
+            >
               {s === "deadline" ? "By deadline" : "Easiest first"}
             </button>
           ))}
         </div>
-        <p className="mt-3 text-center" style={{ fontSize: 12, color: "var(--color-slate)" }}>
+        <p className="tech-label mt-3 text-center" style={{ color: "var(--color-slate)" }}>
           {list.length} venues
         </p>
       </section>
 
-      <section aria-label="Venues" className="gallery-card mt-5 !p-4 sm:!p-5">
+      <section id="venues" aria-label="Venues" className="mt-5 grid scroll-mt-24 gap-5">
         {list.length === 0 && (
-          <div className="py-10 text-center">
+          <div className="gallery-card rise rise-1 py-10 text-center">
             <p style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>Nothing matched that search.</p>
             <p className="mt-2" style={{ fontSize: 17, color: "var(--color-graphite)" }}>Try a different field or venue name.</p>
           </div>
         )}
-        {list.map((v) => (
+        {list.map((v, i) => (
           <article
             key={v.id}
-            className="grid gap-2 py-5 sm:grid-cols-[1fr_220px] sm:items-start"
-            style={{ borderBottom: "1px solid var(--color-line)" }}
+            className={`gallery-card hover-lift rise rise-${(i % 6) + 1} grid gap-2 sm:grid-cols-[1fr_220px] sm:items-start`}
           >
             <div>
               <div className="flex flex-wrap items-center gap-2.5">
@@ -145,7 +160,7 @@ export default function PublishPage() {
             </div>
             <div className="sm:text-right">
               <Countdown v={v} />
-              <p className="mt-2" style={{ fontSize: 12, color: "var(--color-slate)" }}>
+              <p className="footnote mt-2">
                 {v.deadline ? "Submission deadline" : "No deadline"}
               </p>
             </div>
@@ -153,13 +168,13 @@ export default function PublishPage() {
         ))}
       </section>
 
-      <p className="mt-4 text-center" style={{ fontSize: 12, color: "var(--color-slate)" }}>
+      <p className="footnote rise rise-2 mt-4 text-center">
         Dates are indicative for planning — always confirm on the official venue site.
       </p>
 
-      <section className="gallery-card mb-4 mt-8 text-center">
-        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>Picked a venue?</p>
-        <p className="mt-2" style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 32, fontWeight: 600, color: "var(--color-apple-ink)" }}>
+      <section className="gallery-card rise rise-4 mb-4 mt-8 text-center">
+        <p className="eyebrow"><span className="dot" aria-hidden /> Picked a venue?</p>
+        <p className="mt-3" style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 32, fontWeight: 600, letterSpacing: "-0.03em", color: "var(--color-apple-ink)" }}>
           Work backwards from its deadline.
         </p>
         <div className="mt-5 flex flex-wrap justify-center gap-3">

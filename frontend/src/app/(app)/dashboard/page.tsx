@@ -18,8 +18,8 @@ import type { DashboardData } from "@/types/document";
 function PanelHead({ title, href, link }: { title: string; href: string; link: string }) {
   return (
     <div className="flex items-baseline justify-between">
-      <h2 style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 21, fontWeight: 600, letterSpacing: "-0.012em", color: "var(--color-apple-ink)" }}>{title}</h2>
-      <Link href={href} style={{ fontSize: 17, color: "var(--color-link-blue)" }}>{link} →</Link>
+      <h2 style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 17, fontWeight: 650, letterSpacing: "-0.012em", color: "var(--color-apple-ink)" }}>{title}</h2>
+      <Link href={href} style={{ fontSize: 15, color: "var(--color-link-blue)" }}>{link} →</Link>
     </div>
   );
 }
@@ -119,14 +119,18 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <section className="pt-6 sm:pt-10">
-        <p style={{ fontSize: 13, color: "var(--color-slate)" }}>
+      <section className="rise rise-1 relative pt-6 sm:pt-10">
+        <div aria-hidden className="orb" style={{ width: 340, height: 340, top: -120, left: -120, background: "radial-gradient(circle, rgba(157,231,193,0.16), transparent 65%)" }} />
+        <div aria-hidden className="orb" style={{ width: 300, height: 300, top: -100, right: -100, background: "radial-gradient(circle, rgba(138,180,248,0.14), transparent 65%)" }} />
+        <div className="relative">
+        <span className="eyebrow"><span className="dot" />Workspace</span>
+        <p className="mt-4" style={{ fontSize: 13, color: "var(--color-slate)" }}>
           {docCount === 0 ? "A fresh shelf" : `${docCount} ${docCount === 1 ? "paper" : "papers"} so far`}
         </p>
-        <h1 className="type-heading-sm mt-2" style={{ color: "var(--color-apple-ink)", maxWidth: 640 }}>
+        <h1 className="mt-2" style={{ fontWeight: 600, letterSpacing: "-0.03em", fontSize: 28, lineHeight: 1.2, color: "var(--color-apple-ink)", maxWidth: 640 }}>
           {docCount === 0 ? `Hey ${firstName}, let's put something here.` : `Hey ${firstName}, back to it.`}
         </h1>
-        <p className="mt-3 max-w-xl" style={{ fontSize: 19, color: "var(--color-graphite)" }}>
+        <p className="hero-sub mt-3 max-w-xl">
           {docCount === 0
             ? "Upload your first paper below. Everything else fills in after that."
             : "Search below, add the next paper, or pick up the last one you opened."}
@@ -139,11 +143,12 @@ export default function DashboardPage() {
             Go to library
           </Link>
         </div>
+        </div>
       </section>
 
-      <section aria-label="Search your papers" className="mt-8" style={{ maxWidth: 680 }}>
-        <div className="liquid-search flex items-center gap-3 px-5 py-3">
-          <span aria-hidden style={{ color: "var(--color-slate)", fontSize: 17 }}>⌕</span>
+      <section aria-label="Search your papers" className="rise rise-2 mt-8" style={{ maxWidth: 680 }}>
+        <div className="liquid-search flex items-center gap-3 rounded-[999px] px-5 py-3">
+          <span aria-hidden style={{ color: "var(--color-electric-blue)", fontSize: 17 }}>✦</span>
           <label htmlFor="dash-search" className="sr-only">Search your papers</label>
           <input
             id="dash-search"
@@ -159,7 +164,7 @@ export default function DashboardPage() {
           )}
         </div>
         {search.trim() && (
-          <div className="gallery-card mt-4 !p-4" aria-live="polite">
+          <div className="gallery-card mt-4 !p-5" aria-live="polite">
             {filtered.length === 0 ? (
               <p className="px-2 py-3" style={{ fontSize: 17, color: "var(--color-graphite)" }}>Couldn&rsquo;t find anything for “{search}”. Try a shorter bit of the title.</p>
             ) : (
@@ -181,28 +186,29 @@ export default function DashboardPage() {
         </p>
       )}
 
-      <section aria-label="At a glance" className="mt-8 grid gap-5 sm:grid-cols-3">
+      <section aria-label="At a glance" className="rise rise-3 mt-8 grid gap-5 sm:grid-cols-3">
         {[
           ["Papers on the shelf", String(docCount)],
           ["PDFs", String(stats?.counts.pdf_count ?? "—")],
           ["Notes scribbled", String(stats?.counts.total_notes ?? notes.length)],
         ].map(([label, value]) => (
-          <div key={label} className="gallery-card text-center">
+          <div key={label} className="glass-stat text-center">
             <p style={{ fontSize: 32, fontWeight: 600, color: "var(--color-apple-ink)" }}>{value}</p>
             <p className="mt-1" style={{ fontSize: 13, color: "var(--color-slate)" }}>{label}</p>
           </div>
         ))}
       </section>
 
-      <section aria-label="Recently opened" className="gallery-card mt-5">
+      <section aria-label="Recently opened" className="gallery-card hover-lift rise rise-3 mt-5 !p-5 sm:!p-6">
         <PanelHead title="Last touched" href="/documents" link="Library" />
         <div className="mt-2">
           {loading ? (
             <NucleusLoader label="Pulling your shelf" />
           ) : recent.length === 0 ? (
-            <div className="py-8">
-              <p style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>Nothing here yet, and that&rsquo;s fine.</p>
-              <p className="mt-2 max-w-md" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
+            <div className="py-8 text-center">
+              <span className="tag-pill">Fresh start</span>
+              <p className="mt-3" style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>Nothing here yet, and that&rsquo;s fine.</p>
+              <p className="mx-auto mt-2 max-w-md" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
                 Most people start with whatever they were supposed to read last week. PDF or Word, up to 15 MB.
               </p>
               <button onClick={() => setUploadOpen(true)} className="primary-button mt-5">Add your first paper</button>
@@ -215,8 +221,8 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <section className="mt-5 grid gap-5 lg:grid-cols-3" aria-label="Workspace overview">
-        <div className="gallery-card">
+      <section className="rise rise-4 mt-5 grid gap-5 lg:grid-cols-3" aria-label="Workspace overview">
+        <div className="gallery-card hover-lift !p-5 sm:!p-6">
           <PanelHead title="Collections" href="/collections" link="All" />
           <div className="mt-2">
             {collections.length === 0 ? (
@@ -234,7 +240,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="gallery-card">
+        <div className="gallery-card hover-lift !p-5 sm:!p-6">
           <PanelHead title="Recent questions" href="/assistant" link="Assistant" />
           <div className="mt-2">
             {conversations.length === 0 ? (
@@ -252,7 +258,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="gallery-card">
+        <div className="gallery-card hover-lift !p-5 sm:!p-6">
           <PanelHead title="Saved notes" href="/notes" link="Notes" />
           <div className="mt-2">
             {notes.length === 0 ? (
@@ -273,7 +279,7 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <section aria-label="Activity" className="gallery-card mt-5">
+      <section aria-label="Activity" className="gallery-card hover-lift rise rise-5 mt-5 !p-5 sm:!p-6">
         <PanelHead title="What you've done" href="/history" link="History" />
         <div className="mt-2">
           {entries.length === 0 ? (

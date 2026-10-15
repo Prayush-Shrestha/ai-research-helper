@@ -1,14 +1,22 @@
 /**
- * Lumina brand mark — lab edition.
- * Ink disc with a four-pointed spark (clarity) and one mint accent dot.
- * Flat, monochrome + one mint. No shadows.
+ * Lumina brand — liquid edition.
+ * Frosted ink disc, mint spark glow, soft inner light.
  */
 export function LogoMark({ size = 30, className }: { size?: number; className?: string }) {
   return (
     <span
       aria-hidden
       className={`inline-flex items-center justify-center ${className ?? ""}`}
-      style={{ width: size, height: size, borderRadius: 9999, background: "var(--color-apple-ink)", position: "relative", flexShrink: 0 }}
+      style={{
+        width: size,
+        height: size,
+        borderRadius: 9999,
+        background: "linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.02)), var(--color-apple-ink)",
+        position: "relative",
+        flexShrink: 0,
+        boxShadow: "0 6px 18px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.35), 0 0 18px rgba(157,231,193,0.18)",
+        border: "1px solid rgba(255,255,255,0.22)",
+      }}
     >
       <svg width={Math.round(size * 0.68)} height={Math.round(size * 0.68)} viewBox="0 0 32 32" fill="none" aria-hidden>
         <path
@@ -27,7 +35,7 @@ export function Wordmark({ compact = false, tone = "auto" }: { compact?: boolean
     <span className="flex items-center gap-2.5">
       <LogoMark size={compact ? 26 : 30} />
       <span
-        style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 19, fontWeight: 600, letterSpacing: "-0.015em", color: dark ? "#f5f5f7" : "var(--color-apple-ink)" }}
+        style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 19, fontWeight: 650, letterSpacing: "-0.02em", color: dark ? "#f5f5f7" : "var(--color-apple-ink)" }}
       >
         Lumina
       </span>

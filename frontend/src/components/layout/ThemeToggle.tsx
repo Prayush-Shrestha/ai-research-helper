@@ -26,7 +26,7 @@ export function ThemeToggle({ tone = "light" }: { tone?: "light" | "dark" }) {
   );
 }
 
-/** Labelled Light / Dark / System row for menus and drawers. */
+/** Labelled Light / Dark / System row for menus and drawers — glass segmented, mint active. */
 export function ThemeRow({ onNavigate, dark = false }: { onNavigate?: () => void; dark?: boolean }) {
   const { theme, setTheme } = useTheme();
   const options: Array<{ value: ThemeChoice; label: string }> = [
@@ -34,16 +34,15 @@ export function ThemeRow({ onNavigate, dark = false }: { onNavigate?: () => void
     { value: "dark", label: "Dark" },
     { value: "system", label: "Auto" },
   ];
-  const text = dark ? "#f5f5f7" : "var(--color-apple-ink)";
-  const muted = dark ? "rgba(245,245,247,0.6)" : "var(--color-slate)";
+  void dark;
   return (
     <div
-      className="mt-4 flex items-center justify-between rounded-full px-4 py-2"
-      style={dark ? { background: "rgba(245,245,247,0.1)" } : { background: "var(--color-fog-canvas)" }}
+      className="liquid-search mt-4 flex items-center justify-between px-4 py-2"
+      style={{ borderRadius: 999 }}
       role="group"
       aria-label="Appearance"
     >
-      <span style={{ fontSize: 15, color: muted }}>Appearance</span>
+      <span className="tech-label" style={{ color: "var(--color-slate)" }}>Appearance</span>
       <div className="flex gap-1">
         {options.map((o) => {
           const active = theme === o.value;
@@ -56,13 +55,8 @@ export function ThemeRow({ onNavigate, dark = false }: { onNavigate?: () => void
                 onNavigate?.();
               }}
               aria-pressed={active}
-              className="rounded-full px-3 py-1"
-              style={{
-                fontSize: 15,
-                fontWeight: active ? 600 : 400,
-                background: active ? (dark ? "#f5f5f7" : "var(--color-apple-ink)") : "transparent",
-                color: active ? (dark ? "#1d1d1f" : "var(--color-fog-canvas)") : text,
-              }}
+              className={active ? "tag-pill crimson" : "tag-pill"}
+              style={{ cursor: "pointer", border: active ? undefined : "1px solid transparent", background: active ? undefined : "transparent" }}
             >
               {o.label}
             </button>

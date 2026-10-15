@@ -28,7 +28,7 @@ export function DocumentReader({ text }: { text: string }) {
   return (
     <div className="grid gap-5 lg:grid-cols-[260px_1fr]">
       <aside aria-label="Contents" className="gallery-card !p-5">
-        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>CONTENTS</p>
+        <p className="micro-label">Contents</p>
         <div className="mt-3">
           <label htmlFor="reader-search" className="sr-only">Search in this paper</label>
           <input
@@ -38,7 +38,6 @@ export function DocumentReader({ text }: { text: string }) {
             placeholder="Find a word…"
             autoComplete="off"
             className="field-input !rounded-full !px-4 !py-2.5 !text-[15px]"
-            style={{ background: "var(--color-fog-canvas)" }}
           />
         </div>
         {filtered ? (
@@ -76,13 +75,13 @@ export function DocumentReader({ text }: { text: string }) {
             ))}
           </ol>
         )}
-        <p className="mt-4" style={{ fontSize: 12, color: "var(--color-slate)" }}>
+        <p className="footnote mt-4">
           Extracted from your file, pages kept. Check any line against the original.
         </p>
       </aside>
 
       <article className="gallery-card reader-scroll max-h-[78vh] overflow-y-auto">
-        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>READING VIEW</p>
+        <p className="micro-label">Reading view</p>
         <div className="mt-4 max-w-[66ch] space-y-5">
           {paragraphs.length === 0 && (
             <p style={{ fontSize: 17, color: "var(--color-graphite)" }}>No text came out of this file. Try uploading it again.</p>
@@ -91,7 +90,7 @@ export function DocumentReader({ text }: { text: string }) {
             const isHeading = /^\d\.\s[A-Z]/.test(p.slice(0, 24)) && p.length < 140;
             if (isHeading) {
               return (
-                <h3 key={i} id={`reader-p-${i}`} style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 21, fontWeight: 600, letterSpacing: "-0.012em", color: "var(--color-apple-ink)", paddingTop: 8 }}>
+                <h3 key={i} id={`reader-p-${i}`} style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 21, fontWeight: 600, letterSpacing: "-0.02em", color: "var(--color-apple-ink)", paddingTop: 8 }}>
                   {p}
                 </h3>
               );
@@ -99,13 +98,13 @@ export function DocumentReader({ text }: { text: string }) {
             const q = query.trim().toLowerCase();
             const highlight = q && p.toLowerCase().includes(q);
             return (
-              <p key={i} id={`reader-p-${i}`} style={{ fontSize: 17, lineHeight: 1.65, color: "var(--color-iron)", background: highlight ? "rgba(0,113,227,0.1)" : undefined, borderRadius: 8 }}>
+              <p key={i} id={`reader-p-${i}`} style={{ fontSize: 17, lineHeight: 1.65, color: "var(--color-iron)", background: highlight ? "rgba(157,231,193,0.16)" : undefined, borderRadius: 8, padding: highlight ? "2px 6px" : undefined }}>
                 {p}
               </p>
             );
           })}
         </div>
-        <p className="mt-8" style={{ fontSize: 12, color: "var(--color-slate)", borderTop: "1px solid var(--color-line)", paddingTop: 12 }}>
+        <p className="footnote mt-8" style={{ borderTop: "1px solid var(--color-line)", paddingTop: 12 }}>
           End of extracted text · ∎
         </p>
       </article>

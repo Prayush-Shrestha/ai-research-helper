@@ -28,31 +28,47 @@ const STEPS = [
   },
 ];
 
+const TROUBLE = [
+  ["Sent back to login?", "Your session expired or was cleared. Sign in again — your papers stay put."],
+  ["Upload won't go through?", "Check it's a PDF or DOCX under 15 MB, then try again."],
+  ["Library is empty?", "You haven't uploaded yet. Upload one paper to get started."],
+  ["No text in the reader?", "Some scanned PDFs have no selectable text — the paper will say it needs OCR."],
+  ["Want a fresh start?", "Delete papers from the library; deleting a paper also removes its notes."],
+  ["Which files work?", "PDF and DOCX. Anything else is turned away at upload."],
+] as Array<[string, string]>;
+
 export default function GuidePage() {
   return (
-    <div>
-      <section className="pt-6 text-center sm:pt-10">
-        <h1 className="type-heading mx-auto" style={{ color: "var(--color-apple-ink)" }}>
-          Five minutes,
-          <br />
-          then file something.
-        </h1>
-        <p className="mx-auto mt-4 max-w-xl" style={{ fontSize: 21, color: "var(--color-graphite)" }}>
-          New here? This page shows where everything lives and what to tap first.
-        </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <Link href="/register" className="primary-button">
-            Create account
-          </Link>
-          <Link href="/documents" className="ghost-pill">
-            Skip to library
-          </Link>
+    <div className="page-shell page-enter">
+      {/* hero */}
+      <section className="relative overflow-hidden pt-6 text-center sm:pt-10">
+        <span aria-hidden className="orb rise rise-1" style={{ width: 420, height: 420, left: "-8%", top: "-140px", background: "radial-gradient(circle, rgba(157,231,193,0.16), transparent 65%)" }} />
+        <span aria-hidden className="orb rise rise-2" style={{ width: 480, height: 480, right: "-10%", top: "-100px", background: "radial-gradient(circle, rgba(138,180,248,0.13), transparent 65%)" }} />
+        <div className="relative" style={{ zIndex: 1 }}>
+          <p className="eyebrow rise rise-1"><span className="dot" aria-hidden /> Guide · Start here</p>
+          <h1 className="type-heading rise rise-2 mx-auto mt-4" style={{ color: "var(--color-apple-ink)", fontWeight: 600, letterSpacing: "-0.03em" }}>
+            Five minutes,
+            <br />
+            then file something.
+          </h1>
+          <p className="hero-sub rise rise-3 mx-auto mt-4 max-w-xl">
+            New here? This page shows where everything lives and what to tap first.
+          </p>
+          <div className="rise rise-4 mt-6 flex flex-wrap justify-center gap-3">
+            <Link href="/register" className="primary-button">
+              Create account
+            </Link>
+            <Link href="/documents" className="ghost-pill">
+              Skip to library
+            </Link>
+          </div>
         </div>
       </section>
 
-      <section className="gallery-card mt-10 grid gap-6 lg:grid-cols-2" aria-label="What this app is">
+      {/* what / where */}
+      <section className="gallery-card rise rise-2 mt-10 grid gap-6 lg:grid-cols-2" aria-label="What this app is">
         <div>
-          <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>What it is</p>
+          <p className="tech-label" style={{ color: "var(--color-electric-blue)" }}>What it is</p>
           <p className="mt-2" style={{ fontSize: 17, color: "var(--color-iron)", lineHeight: 1.6 }}>
             A private shelf for your papers. Upload PDFs, read them cleanly,
             ask questions that quote the page, and keep notes and citations together.
@@ -62,8 +78,8 @@ export default function GuidePage() {
             to verify a line word for word.
           </p>
         </div>
-        <div style={{ background: "var(--color-fog-canvas)", borderRadius: 18, padding: 20 }}>
-          <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>Where things live</p>
+        <div className="liquid-search" style={{ borderRadius: 18, padding: 20 }}>
+          <p className="tech-label" style={{ color: "var(--color-electric-blue)" }}>Where things live</p>
           <ul className="mt-2.5 space-y-2" style={{ fontSize: 15, color: "var(--color-iron)", lineHeight: 1.55 }}>
             <li>· <strong style={{ color: "var(--color-apple-ink)" }}>Library</strong> — every paper, searchable.</li>
             <li>· <strong style={{ color: "var(--color-apple-ink)" }}>Assistant</strong> — questions and summaries.</li>
@@ -73,19 +89,20 @@ export default function GuidePage() {
         </div>
       </section>
 
-      <section className="mt-8" aria-label="First steps">
-        <h2 className="type-heading-sm" style={{ color: "var(--color-apple-ink)" }}>First time? Do this in order.</h2>
+      {/* steps */}
+      <section className="rise rise-3 mt-8" aria-label="First steps">
+        <h2 className="type-heading-sm" style={{ color: "var(--color-apple-ink)", fontWeight: 600, letterSpacing: "-0.03em" }}>First time? Do this in order.</h2>
         <div className="gallery-card mt-4 !p-4 sm:!p-5">
-          {STEPS.map((s) => (
+          {STEPS.map((s, i) => (
             <div
               key={s.n}
-              className="flex gap-4 py-4"
-              style={{ borderBottom: "1px solid var(--color-line)" }}
+              className={`flex gap-4 py-4 ${i === STEPS.length - 1 ? "" : ""}`}
+              style={i === STEPS.length - 1 ? undefined : { borderBottom: "1px solid var(--liquid-border-soft)" }}
             >
               <span
                 aria-hidden
                 className="flex h-8 w-8 shrink-0 items-center justify-center"
-                style={{ borderRadius: 999, background: "var(--color-apple-ink)", color: "var(--color-fog-canvas)", fontSize: 15, fontWeight: 600 }}
+                style={{ borderRadius: 999, background: "var(--color-electric-blue)", color: "#06110C", fontSize: 15, fontWeight: 700, boxShadow: "var(--liquid-glow-mint), inset 0 1px 0 rgba(255,255,255,0.5)" }}
               >
                 {s.n}
               </span>
@@ -102,18 +119,12 @@ export default function GuidePage() {
         </div>
       </section>
 
-      <section className="mt-8" aria-label="Troubleshooting">
-        <h2 className="type-heading-sm" style={{ color: "var(--color-apple-ink)" }}>If something looks off.</h2>
+      {/* troubleshooting */}
+      <section className="rise rise-4 mt-8" aria-label="Troubleshooting">
+        <h2 className="type-heading-sm" style={{ color: "var(--color-apple-ink)", fontWeight: 600, letterSpacing: "-0.03em" }}>If something looks off.</h2>
         <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {[
-            ["Sent back to login?", "Your session expired or was cleared. Sign in again — your papers stay put."],
-            ["Upload won't go through?", "Check it's a PDF or DOCX under 15 MB, then try again."],
-            ["Library is empty?", "You haven't uploaded yet. Upload one paper to get started."],
-            ["No text in the reader?", "Some scanned PDFs have no selectable text — the paper will say it needs OCR."],
-            ["Want a fresh start?", "Delete papers from the library; deleting a paper also removes its notes."],
-            ["Which files work?", "PDF and DOCX. Anything else is turned away at upload."],
-          ].map(([q, a]) => (
-            <div key={q} className="gallery-card">
+          {TROUBLE.map(([q, a], i) => (
+            <div key={q} className={`glass-stat rise rise-${(i % 6) + 1}`}>
               <p style={{ fontSize: 17, fontWeight: 600, color: "var(--color-apple-ink)" }}>{q}</p>
               <p className="mt-1" style={{ fontSize: 15, color: "var(--color-graphite)", lineHeight: 1.55 }}>{a}</p>
             </div>
@@ -121,16 +132,17 @@ export default function GuidePage() {
         </div>
       </section>
 
-      <section className="gallery-card mb-4 mt-8 text-center">
-        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>Ready when you are</p>
-        <p className="mx-auto mt-2" style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 32, fontWeight: 600, maxWidth: 560, lineHeight: 1.15, color: "var(--color-apple-ink)" }}>
+      {/* closing CTA */}
+      <section className="gallery-card rise rise-5 mb-4 mt-8 text-center">
+        <p className="eyebrow"><span className="dot" aria-hidden /> Ready when you are</p>
+        <p className="mx-auto mt-3" style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 32, fontWeight: 600, letterSpacing: "-0.03em", maxWidth: 560, lineHeight: 1.15, color: "var(--color-apple-ink)" }}>
           Upload one paper. That&rsquo;s the whole trick.
         </p>
         <div className="mt-5 flex flex-wrap justify-center gap-3">
           <Link href="/documents" className="primary-button">
             Open my library
           </Link>
-          <Link href="/dashboard" className="secondary-button">
+          <Link href="/dashboard" className="ghost-pill">
             Back to dashboard
           </Link>
         </div>

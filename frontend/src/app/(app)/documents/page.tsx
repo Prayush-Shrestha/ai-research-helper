@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type CSSProperties } from "react";
+import { useState } from "react";
 import { useDocuments } from "@/hooks/useDocuments";
 import { DocumentRow } from "@/components/documents/DocumentRow";
 import { UploadPanel } from "@/components/documents/UploadPanel";
@@ -67,35 +67,32 @@ export default function DocumentsPage() {
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
-  const chip = (active: boolean): CSSProperties => ({
-    border: "none",
-    background: active ? "var(--color-apple-ink)" : "var(--color-ash)",
-    color: active ? "var(--color-fog-canvas)" : "var(--color-apple-ink)",
-    borderRadius: 999,
-    fontSize: 15,
-  });
-
   return (
     <div>
-      <section className="pt-6 sm:pt-10">
-        <h1 className="type-heading-sm" style={{ color: "var(--color-apple-ink)" }}>
-          {total === 0 ? "Your shelf is waiting." : "Your papers."}
-        </h1>
-        <p className="mt-3 max-w-xl" style={{ fontSize: 19, color: "var(--color-graphite)" }}>
-          {total === 0
-            ? "Everything you upload lands here. Start with one."
-            : "Everything in one place. Click a row to actually read it."}
-        </p>
-        <div className="mt-5">
+      <section className="rise rise-1 relative pt-6 sm:pt-10">
+        <div aria-hidden className="orb" style={{ width: 340, height: 340, top: -120, left: -120, background: "radial-gradient(circle, rgba(157,231,193,0.16), transparent 65%)" }} />
+        <div aria-hidden className="orb" style={{ width: 300, height: 300, top: -100, right: -100, background: "radial-gradient(circle, rgba(138,180,248,0.14), transparent 65%)" }} />
+        <div className="relative">
+          <span className="eyebrow"><span className="dot" />Library</span>
+          <h1 className="mt-4" style={{ fontWeight: 600, letterSpacing: "-0.03em", fontSize: 28, lineHeight: 1.2, color: "var(--color-apple-ink)" }}>
+            {total === 0 ? "Your shelf is waiting." : "Your papers."}
+          </h1>
+          <p className="hero-sub mt-3 max-w-xl">
+            {total === 0
+              ? "Everything you upload lands here. Start with one."
+              : "Everything in one place. Click a row to actually read it."}
+          </p>
+        <div className="relative mt-5">
           <button onClick={() => setUploadOpen((v) => !v)} className="primary-button">
             {uploadOpen ? "Close" : total === 0 ? "Put the first one here +" : "Add another +"}
           </button>
         </div>
+        </div>
       </section>
 
-      <section aria-label="Find a paper" className="mx-auto mt-8" style={{ maxWidth: 680 }}>
-        <div className="liquid-search flex items-center gap-3 px-5 py-3">
-          <span aria-hidden style={{ color: "var(--color-slate)", fontSize: 17 }}>⌕</span>
+      <section aria-label="Find a paper" className="rise rise-2 mx-auto mt-8" style={{ maxWidth: 680 }}>
+        <div className="liquid-search flex items-center gap-3 rounded-[999px] px-5 py-3">
+          <span aria-hidden style={{ color: "var(--color-electric-blue)", fontSize: 17 }}>✦</span>
           <label htmlFor="doc-search" className="sr-only">Search your papers</label>
           <input
             id="doc-search"
@@ -112,11 +109,11 @@ export default function DocumentsPage() {
         </div>
         <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
           {(["ALL", "PDF", "DOCX"] as Filter[]).map((f) => (
-            <button key={f} onClick={() => { setFilter(f); resetPage(); }} aria-pressed={filter === f} className="px-4 py-1.5" style={chip(filter === f)}>{f === "ALL" ? "All" : f}</button>
+            <button key={f} onClick={() => { setFilter(f); resetPage(); }} aria-pressed={filter === f} className={`tag-pill px-4 py-1.5${filter === f ? " crimson" : ""}`}>{f === "ALL" ? "All" : f}</button>
           ))}
           <span aria-hidden style={{ color: "var(--color-line)", margin: "0 4px" }}>|</span>
           {(["newest", "oldest", "name"] as Sort[]).map((s) => (
-            <button key={s} onClick={() => { setSort(s); resetPage(); }} aria-pressed={sort === s} className="px-4 py-1.5" style={chip(sort === s)}>{s === "newest" ? "Newest" : s === "oldest" ? "Oldest" : "A–Z"}</button>
+            <button key={s} onClick={() => { setSort(s); resetPage(); }} aria-pressed={sort === s} className={`tag-pill px-4 py-1.5${sort === s ? " crimson" : ""}`}>{s === "newest" ? "Newest" : s === "oldest" ? "Oldest" : "A–Z"}</button>
           ))}
         </div>
         <p className="mt-3 text-center" style={{ fontSize: 12, color: "var(--color-slate)" }}>
@@ -131,12 +128,13 @@ export default function DocumentsPage() {
         <UploadPanel open={uploadOpen} onClose={() => setUploadOpen(false)} onUpload={handleUpload} uploading={uploading} progress={progress} phase={phase} />
       </div>
 
-      <section aria-label="Papers" aria-live="polite" className="gallery-card mt-5 !p-4 sm:!p-5">
+      <section aria-label="Papers" aria-live="polite" className="gallery-card rise rise-3 mt-5 !p-5 sm:!p-6">
         {loading ? (
           <PageLoading label="Reading your library" />
         ) : error && list.length === 0 ? (
           <div className="py-10 text-center">
-            <p style={{ fontSize: 17, color: "var(--color-alert)" }}>{error}</p>
+            <span className="tag-pill">Something went wrong</span>
+            <p className="mt-3" style={{ fontSize: 17, color: "var(--color-alert)" }}>{error}</p>
             <div className="mt-4 flex flex-wrap justify-center gap-3">
               <button onClick={() => void refetch()} className="primary-button">Try again</button>
               <button onClick={() => setUploadOpen(true)} className="ghost-pill">Upload instead</button>
@@ -144,7 +142,8 @@ export default function DocumentsPage() {
           </div>
         ) : list.length === 0 ? (
           <div className="py-10 text-center">
-            <p style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>{search ? "Couldn't find that one." : "Nothing filed yet."}</p>
+            <span className="tag-pill">{search ? "No matches" : "Empty shelf"}</span>
+            <p className="mt-3" style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>{search ? "Couldn't find that one." : "Nothing filed yet."}</p>
             <p className="mx-auto mt-2 max-w-md" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
               {search ? `Nothing with “${search}” in it. Fewer words usually works better.` : "Drop in the PDF that's been sitting open in a tab for a week."}
             </p>

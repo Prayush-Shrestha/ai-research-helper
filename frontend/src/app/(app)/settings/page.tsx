@@ -60,18 +60,23 @@ export default function SettingsPage() {
   ];
 
   return (
-    <div style={{ maxWidth: 720 }} className="mx-auto">
-      <section className="pt-6 text-center sm:pt-10">
-        <h1 className="type-heading-sm mx-auto" style={{ color: "var(--color-apple-ink)" }}>The boring but necessary page.</h1>
-        <p className="mx-auto mt-3 max-w-md" style={{ fontSize: 19, color: "var(--color-graphite)" }}>Just the basics so your account feels like yours.</p>
+    <div style={{ maxWidth: 720 }} className="page-shell mx-auto">
+      <section className="relative pt-6 text-center sm:pt-10">
+        <span className="orb" aria-hidden style={{ width: 400, height: 400, top: -140, left: "4%", background: "radial-gradient(circle, rgba(157,231,193,0.15), transparent 65%)" }} />
+        <span className="orb" aria-hidden style={{ width: 420, height: 420, top: -150, right: "4%", background: "radial-gradient(circle, rgba(138,180,248,0.13), transparent 65%)" }} />
+        <div className="relative rise rise-1">
+          <span className="eyebrow"><span className="dot" />Settings</span>
+          <h1 className="type-heading-sm mx-auto mt-4" style={{ color: "var(--color-apple-ink)", fontWeight: 600, letterSpacing: "-0.03em" }}>The boring but necessary page.</h1>
+          <p className="hero-sub mx-auto mt-3 max-w-md">Just the basics so your account feels like yours.</p>
+        </div>
       </section>
 
-      <section aria-label="Settings" className="gallery-card mt-8 !p-5 sm:!p-6">
+      <section aria-label="Settings" className="gallery-card mt-8 rise rise-2 !p-5 sm:!p-6">
         <Row title={user?.name ?? "Researcher"} value={user?.email ?? "—"} />
         <div className="py-5" style={{ borderBottom: "1px solid var(--color-line)" }}>
           <p style={{ fontSize: 17, fontWeight: 500, color: "var(--color-apple-ink)" }}>Appearance</p>
           <p className="mt-0.5" style={{ fontSize: 15, color: "var(--color-graphite)" }}>Light, dark, or follow this device.</p>
-          <div className="mt-3 grid grid-cols-3 gap-2" role="group" aria-label="Appearance">
+          <div className="liquid-search mt-3 grid grid-cols-3 gap-2 !p-2" role="group" aria-label="Appearance">
             {modes.map((m) => {
               const active = theme === m.value;
               return (
@@ -82,12 +87,13 @@ export default function SettingsPage() {
                   aria-pressed={active}
                   className="px-3 py-2.5 text-center"
                   style={{
-                    borderRadius: 18,
-                    border: active ? "2px solid var(--color-electric-blue)" : "1px solid var(--color-line)",
-                    background: active ? "color-mix(in srgb, var(--color-electric-blue) 10%, transparent)" : "transparent",
+                    borderRadius: 16,
+                    border: active ? "1px solid rgba(157,231,193,0.55)" : "1px solid transparent",
+                    background: active ? "rgba(157,231,193,0.14)" : "transparent",
+                    boxShadow: active ? "0 4px 20px rgba(157,231,193,0.18), inset 0 1px 0 rgba(255,255,255,0.12)" : undefined,
                   }}
                 >
-                  <span className="block" style={{ fontSize: 17, fontWeight: active ? 600 : 400, color: "var(--color-apple-ink)" }}>{m.label}</span>
+                  <span className="block" style={{ fontSize: 17, fontWeight: active ? 600 : 400, color: active ? "var(--color-electric-blue)" : "var(--color-apple-ink)" }}>{m.label}</span>
                   <span className="block" style={{ fontSize: 13, color: "var(--color-slate)" }}>{m.hint}</span>
                 </button>
               );
@@ -138,7 +144,7 @@ export default function SettingsPage() {
           <button onClick={logout} className="ghost-pill shrink-0" style={{ fontSize: 15 }}>Sign out</button>
         } />
       </section>
-      <p className="mt-5 text-center" style={{ fontSize: 13, color: "var(--color-slate)" }}>Server: {process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000/api/v1"}</p>
+      <p className="footnote mt-5 text-center rise rise-3">Server: {process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000/api/v1"}</p>
     </div>
   );
 }

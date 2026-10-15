@@ -38,16 +38,21 @@ export default function NotesPage() {
 
   return (
     <div>
-      <section className="pt-6 sm:pt-10">
-        <h1 className="type-heading-sm" style={{ color: "var(--color-apple-ink)" }}>
+      <section className="rise rise-1 relative pt-6 sm:pt-10">
+        <div aria-hidden className="orb" style={{ width: 340, height: 340, top: -120, left: -120, background: "radial-gradient(circle, rgba(157,231,193,0.16), transparent 65%)" }} />
+        <div aria-hidden className="orb" style={{ width: 300, height: 300, top: -100, right: -100, background: "radial-gradient(circle, rgba(138,180,248,0.14), transparent 65%)" }} />
+        <div className="relative">
+        <span className="eyebrow"><span className="dot" />Notes</span>
+        <h1 className="mt-4" style={{ fontWeight: 600, letterSpacing: "-0.03em", fontSize: 28, lineHeight: 1.2, color: "var(--color-apple-ink)" }}>
           Margin scribbles, kept.
         </h1>
-        <p className="mt-3 max-w-xl" style={{ fontSize: 19, color: "var(--color-graphite)" }}>
+        <p className="hero-sub mt-3 max-w-xl">
           The half-thoughts you have while reading. Attach the paper if you want, or don&rsquo;t.
         </p>
+        </div>
       </section>
 
-      <section aria-label="Write a note" className="gallery-card mt-8">
+      <section aria-label="Write a note" className="gallery-card rise rise-2 mt-8 !p-5 sm:!p-6">
         <form onSubmit={handleCreate} className="grid gap-4">
           <div className="grid gap-4 sm:grid-cols-[1fr_280px]">
             <div>
@@ -82,9 +87,9 @@ export default function NotesPage() {
         </form>
       </section>
 
-      <section aria-label="Find a note" className="mx-auto mt-5" style={{ maxWidth: 680 }}>
-        <div className="liquid-search flex items-center gap-3 px-5 py-3">
-          <span aria-hidden style={{ color: "var(--color-slate)", fontSize: 17 }}>⌕</span>
+      <section aria-label="Find a note" className="rise rise-2 mx-auto mt-5" style={{ maxWidth: 680 }}>
+        <div className="liquid-search flex items-center gap-3 rounded-[999px] px-5 py-3">
+          <span aria-hidden style={{ color: "var(--color-electric-blue)", fontSize: 17 }}>✦</span>
           <label htmlFor="notes-search" className="sr-only">Search notes</label>
           <input
             id="notes-search"
@@ -99,10 +104,11 @@ export default function NotesPage() {
         </div>
       </section>
 
-      <section aria-label="Your notes" className="mt-5">
+      <section aria-label="Your notes" className="rise rise-3 mt-5">
         {filtered.length === 0 ? (
           <div className="gallery-card py-10 text-center">
-            <p style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>{search ? "Nothing with those words." : "Blank page. For now."}</p>
+            <span className="tag-pill">{search ? "No matches" : "Blank page"}</span>
+            <p className="mt-3" style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>{search ? "Nothing with those words." : "Blank page. For now."}</p>
             <p className="mx-auto mt-2 max-w-md" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
               {search ? "Happens a lot. Try one distinctive word instead of three vague ones." : "Write something small above. It doesn't have to be clever, just yours."}
             </p>
@@ -110,9 +116,9 @@ export default function NotesPage() {
         ) : (
           <div className="grid gap-5">
             {filtered.map((n) => (
-              <article key={n.id} className="gallery-card">
+              <article key={n.id} className="gallery-card hover-lift !p-5 sm:!p-6">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
-                  <h2 style={{ fontSize: 19, fontWeight: 600, letterSpacing: "-0.015em", color: "var(--color-apple-ink)" }}>{n.title}</h2>
+                  <h2 style={{ fontSize: 17, fontWeight: 650, letterSpacing: "-0.012em", color: "var(--color-apple-ink)" }}>{n.title}</h2>
                   <p style={{ fontSize: 12, color: "var(--color-slate)" }}>{formatDate(n.updated_at)}</p>
                 </div>
                 {editing === n.id ? (

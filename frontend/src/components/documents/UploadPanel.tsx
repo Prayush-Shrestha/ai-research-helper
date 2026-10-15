@@ -59,17 +59,18 @@ export function UploadPanel({
   if (!open) return null;
 
   return (
-    <section aria-label="Add a paper" className="gallery-card page-enter">
+    <section aria-label="Add a paper" className="gallery-card hover-lift page-enter !p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h3 className="mt-1" style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 24, fontWeight: 600, letterSpacing: "-0.009em", color: "var(--color-apple-ink)" }}>
+          <span className="eyebrow" style={{ fontSize: 11 }}><span className="dot" />Upload</span>
+          <h3 className="mt-2" style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 24, fontWeight: 600, letterSpacing: "-0.03em", color: "var(--color-apple-ink)" }}>
             Drop a paper in.
           </h3>
           <p className="mt-1.5" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
             PDF or Word, up to 15 MB. I check the file before it lands.
           </p>
         </div>
-        <button onClick={onClose} aria-label="Close upload panel" className="shrink-0 p-1" style={{ fontSize: 15, color: "var(--color-link-blue)" }}>
+        <button onClick={onClose} aria-label="Close upload panel" className="ghost-pill shrink-0" style={{ fontSize: 14, padding: "8px 18px" }}>
           Close
         </button>
       </div>
@@ -100,19 +101,20 @@ export function UploadPanel({
             className="liquid-dropzone flex min-h-[180px] cursor-pointer flex-col items-center justify-center gap-2 px-6 py-8 text-center"
             style={{
               border: `1.5px dashed ${drag ? "var(--color-electric-blue)" : "color-mix(in srgb, var(--color-electric-blue) 30%, transparent)"}`,
+              background: drag ? "rgba(157,231,193,0.08)" : undefined,
               transition: "border-color .2s ease, background .2s ease",
             }}
           >
-            <p style={{ fontSize: 19, fontWeight: 600, color: "var(--color-apple-ink)" }}>
+            <p style={{ fontSize: 19, fontWeight: 600, color: "var(--color-apple-ink)", letterSpacing: "-0.02em" }}>
               {drag ? "Let go, I've got it." : "Drag it here"}
             </p>
             <p style={{ fontSize: 17, color: "var(--color-graphite)" }}>or</p>
             <span className="primary-button mt-1" style={{ pointerEvents: "none", fontSize: 15 }}>Pick from your files</span>
-            <p className="mt-2" style={{ fontSize: 12, color: "var(--color-slate)" }}>PDF or Word, max 15 MB</p>
+            <p className="footnote mt-2">PDF or Word, max 15 MB</p>
             <input ref={inputRef} type="file" accept=".pdf,.docx" className="sr-only" aria-label="Select document file" onChange={(e) => { void handleFile(e.target.files?.[0]); }} />
           </div>
         ) : (
-          <div className="liquid-search py-4" role="status" aria-live="polite" style={{ padding: 24 }}>
+          <div className="liquid-search rise rise-1" role="status" aria-live="polite" style={{ padding: 24 }}>
             <div className="flex items-center justify-between gap-3">
               <p className="truncate" style={{ fontSize: 17, fontWeight: 500, color: "var(--color-apple-ink)" }}>
                 {selected ? selected.name : "Working on your file…"}
@@ -124,11 +126,11 @@ export function UploadPanel({
                 {formatBytes(selected.size)} · {selected.name.toLowerCase().endsWith(".docx") ? "DOCX" : "PDF"}
               </p>
             )}
-            <div className="progress-sheen mt-4 h-[8px] w-full overflow-hidden" style={{ background: "var(--color-ash)", borderRadius: 99 }}>
-              <div style={{ width: `${progress}%`, height: "100%", background: "var(--color-electric-blue)", borderRadius: 99, transition: "width .3s ease" }} />
+            <div className="progress-sheen mt-4 h-[8px] w-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)", borderRadius: 99 }}>
+              <div style={{ width: `${progress}%`, height: "100%", background: "rgba(157,231,193,0.9)", borderRadius: 99, transition: "width .3s ease", boxShadow: "0 0 16px rgba(157,231,193,0.5)" }} />
             </div>
             <p className="mt-3" style={{ fontSize: 15, color: "var(--color-graphite)" }}>
-              <span className="pulse-dot mr-2 inline-block" style={{ width: 7, height: 7, borderRadius: 99, background: "var(--color-electric-blue)", verticalAlign: "1px" }} />
+              <span className="pulse-dot mr-2 inline-block" style={{ width: 7, height: 7, borderRadius: 99, background: "rgba(157,231,193,0.9)", verticalAlign: "1px", boxShadow: "0 0 10px rgba(157,231,193,0.7)" }} />
               {phase}…
             </p>
           </div>

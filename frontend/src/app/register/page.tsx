@@ -5,14 +5,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Wordmark } from "@/components/layout/Logo";
+import { LogoMark } from "@/components/layout/Logo";
 import { useAuth } from "@/hooks/useAuth";
 import { registerSchema, type RegisterInput } from "@/lib/schemas";
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
   return (
-    <p role="alert" className="mt-1.5" style={{ fontSize: 15, color: "var(--color-alert)" }}>
+    <p role="alert" className="mt-1.5" style={{ fontSize: 13.5, color: "var(--color-alert)" }}>
       {message}
     </p>
   );
@@ -42,28 +42,37 @@ export default function RegisterPage() {
     }
   }
 
-  // Already signed in — don't show the form again.
   useEffect(() => {
     if (!loading && user) router.replace("/dashboard");
   }, [loading, user, router]);
 
   return (
-    <div className="page-enter min-h-screen" style={{ background: "var(--color-fog-canvas)" }}>
-      <header style={{ height: 64 }}>
+    <div className="page-enter relative min-h-screen overflow-hidden">
+      <div aria-hidden className="pointer-events-none absolute inset-0">
+        <div className="orb float-slow" style={{ width: 560, height: 380, left: "50%", top: "-8%", transform: "translateX(-50%)", background: "radial-gradient(circle, rgba(157,231,193,0.15), transparent 65%)" }} />
+        <div className="orb" style={{ width: 480, height: 320, left: "-8%", bottom: "4%", background: "radial-gradient(circle, rgba(196,181,253,0.1), transparent 65%)" }} />
+      </div>
+      <header className="relative" style={{ height: 72 }}>
         <div className="mx-auto flex h-full items-center justify-between px-5 sm:px-8" style={{ maxWidth: "var(--page-max-width)" }}>
-          <Link href="/"><Wordmark /></Link>
-          <Link href="/login" style={{ fontSize: 15, color: "var(--color-link-blue)" }}>Sign in</Link>
+          <Link href="/" className="flex items-center gap-2.5">
+            <LogoMark size={28} />
+            <span style={{ fontSize: 17, fontWeight: 650, letterSpacing: "-0.02em", color: "var(--color-apple-ink)" }}>Lumina</span>
+          </Link>
+          <Link href="/login" className="ghost-pill" style={{ fontSize: 13.5, padding: "8px 18px" }}>Sign in</Link>
         </div>
       </header>
-      <main className="mx-auto px-5 sm:px-8" style={{ maxWidth: 560 }}>
-        <section className="pt-10 text-center sm:pt-16">
-          <h1 style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 44, fontWeight: 600, letterSpacing: "-0.009em", lineHeight: 1.1, color: "var(--color-apple-ink)" }}>Create your account.</h1>
-          <p className="mt-3" style={{ fontSize: 19, color: "var(--color-graphite)" }}>Free to start, and your library is ready in about a minute.</p>
+      <main className="relative mx-auto px-5 pb-16 sm:px-8" style={{ maxWidth: 520 }}>
+        <section className="rise rise-1 pt-8 text-center sm:pt-12">
+          <span className="eyebrow"><span className="dot" /> Free to start</span>
+          <h1 className="mt-4" style={{ fontSize: "clamp(34px,5vw,46px)", fontWeight: 650, letterSpacing: "-0.03em", lineHeight: 1.05, color: "var(--color-apple-ink)" }}>
+            Create your<br />account.
+          </h1>
+          <p className="mt-3" style={{ fontSize: 16, color: "var(--color-graphite)" }}>Your library is ready in about a minute.</p>
 
-          <div className="gallery-card mt-8 text-left">
+          <div className="gallery-card rise rise-2 mt-8 text-left !p-7">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
               <div>
-                <label htmlFor="name" className="mb-1.5 block text-[17px]" style={{ color: "var(--color-apple-ink)" }}>Name</label>
+                <label htmlFor="name" className="mb-1.5 block text-[14px] font-semibold" style={{ color: "var(--color-apple-ink)" }}>Name</label>
                 <input
                   id="name" autoComplete="name"
                   placeholder="Ada Lovelace"
@@ -74,7 +83,7 @@ export default function RegisterPage() {
                 <FieldError message={errors.name?.message} />
               </div>
               <div>
-                <label htmlFor="email" className="mb-1.5 block text-[17px]" style={{ color: "var(--color-apple-ink)" }}>Email</label>
+                <label htmlFor="email" className="mb-1.5 block text-[14px] font-semibold" style={{ color: "var(--color-apple-ink)" }}>Email</label>
                 <input
                   id="email" type="email" autoComplete="email"
                   placeholder="you@university.edu"
@@ -85,7 +94,7 @@ export default function RegisterPage() {
                 <FieldError message={errors.email?.message} />
               </div>
               <div>
-                <label htmlFor="password" className="mb-1.5 block text-[17px]" style={{ color: "var(--color-apple-ink)" }}>Password</label>
+                <label htmlFor="password" className="mb-1.5 block text-[14px] font-semibold" style={{ color: "var(--color-apple-ink)" }}>Password</label>
                 <input
                   id="password" type="password" autoComplete="new-password"
                   placeholder="Minimum 6 characters"
@@ -96,22 +105,27 @@ export default function RegisterPage() {
                 <FieldError message={errors.password?.message} />
               </div>
               {errors.root && (
-                <p role="alert" style={{ fontSize: 15, color: "var(--color-alert)" }}>
+                <p role="alert" className="rounded-2xl px-4 py-3" style={{ fontSize: 14, color: "var(--color-alert)", background: "rgba(255,155,138,0.08)", border: "1px solid rgba(255,155,138,0.25)" }}>
                   {errors.root.message}
                 </p>
               )}
               <button
                 type="submit" disabled={isSubmitting}
                 className="primary-button w-full"
-                style={{ opacity: isSubmitting ? 0.6 : 1 }}
+                style={{ opacity: isSubmitting ? 0.6 : 1, padding: "13px" }}
               >
-                {isSubmitting ? "Creating…" : "Create account"}
+                {isSubmitting ? "Creating…" : "Create account →"}
               </button>
             </form>
+            <div className="mt-5 flex gap-2" style={{ borderTop: "1px solid var(--liquid-border-soft)", paddingTop: 16 }}>
+              <span className="tag-pill !text-[11.5px]">✓ Private</span>
+              <span className="tag-pill !text-[11.5px]">✓ PDF + Word</span>
+              <span className="tag-pill !text-[11.5px]">✓ Free</span>
+            </div>
           </div>
 
-          <p className="mt-5" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
-            Already have one? <Link href="/login" style={{ color: "var(--color-link-blue)" }}>Sign in</Link>
+          <p className="mt-5" style={{ fontSize: 15, color: "var(--color-graphite)" }}>
+            Already have one? <Link href="/login" style={{ color: "var(--color-link-blue)", fontWeight: 600 }}>Sign in</Link>
           </p>
         </section>
       </main>

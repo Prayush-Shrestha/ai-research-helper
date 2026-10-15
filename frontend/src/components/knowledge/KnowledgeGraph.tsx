@@ -13,8 +13,8 @@ interface Node {
 }
 
 /**
- * Gallery knowledge map — ink dots on white, drifting slowly.
- * Flat, no shadows. Respects reduced motion.
+ * Liquid knowledge map — glowing nodes on frosted depth.
+ * Respects reduced motion.
  */
 export function KnowledgeGraph({ height = 480 }: { height?: number }) {
   const [nodes, setNodes] = useState<Node[]>([
@@ -54,24 +54,28 @@ export function KnowledgeGraph({ height = 480 }: { height?: number }) {
     <div
       role="img"
       aria-label="Map showing your papers linked by shared ideas"
-      className="relative overflow-hidden"
-      style={{ borderRadius: 28, background: "var(--color-pure-white)", height }}
+      className="gallery-card relative overflow-hidden !p-0"
+      style={{ height }}
     >
+      <div aria-hidden className="absolute inset-0">
+        <div className="orb" style={{ width: 420, height: 300, left: "10%", top: "5%", background: "radial-gradient(circle, rgba(157,231,193,0.16), transparent 65%)" }} />
+        <div className="orb" style={{ width: 460, height: 320, right: "5%", bottom: "5%", background: "radial-gradient(circle, rgba(138,180,248,0.14), transparent 65%)" }} />
+      </div>
       <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full" aria-hidden>
         {links.map(([a, b], i) => (
-          <line key={i} x1={nodes[a].x} y1={nodes[a].y} x2={nodes[b].x} y2={nodes[b].y} stroke="var(--color-line)" strokeWidth="0.3" vectorEffect="non-scaling-stroke" />
+          <line key={i} x1={nodes[a].x} y1={nodes[a].y} x2={nodes[b].x} y2={nodes[b].y} stroke="rgba(157,231,193,0.28)" strokeWidth="0.35" vectorEffect="non-scaling-stroke" strokeDasharray={i % 3 === 0 ? "1.2 0.8" : undefined} />
         ))}
       </svg>
       {nodes.map((n) => (
         <div key={n.id} className="absolute" style={{ left: `${n.x}%`, top: `${n.y}%`, transform: "translate(-50%,-50%)" }}>
-          <div style={{ width: n.r * 3, height: n.r * 3, borderRadius: 99, background: n.id === 2 ? "rgba(10,132,255,0.18)" : "color-mix(in srgb, var(--color-electric-blue) 8%, transparent)" }} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" />
-          <div style={{ width: n.r * 1.5, height: n.r * 1.5, borderRadius: 99, background: n.id === 2 ? "var(--color-electric-blue)" : "var(--color-apple-ink)" }} className="relative" />
-          <p className="mt-1.5 whitespace-nowrap text-center" style={{ fontSize: 12, color: "var(--color-iron)" }}>{n.label}</p>
+          <div style={{ width: n.r * 5, height: n.r * 5, borderRadius: 99, background: n.id === 2 ? "rgba(157,231,193,0.22)" : "rgba(157,231,193,0.1)", filter: "blur(6px)" }} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" />
+          <div style={{ width: n.r * 1.7, height: n.r * 1.7, borderRadius: 99, background: n.id === 2 ? "linear-gradient(180deg,#D6F9E5,var(--color-electric-blue))" : "var(--color-apple-ink)", border: "1px solid rgba(255,255,255,0.4)", boxShadow: n.id === 2 ? "0 0 24px rgba(157,231,193,0.6)" : "0 4px 14px rgba(0,0,0,0.4)" }} className="relative" />
+          <p className="tag-pill mt-2 whitespace-nowrap !text-[11px]" style={{ transform: "translateX(-50%)", marginLeft: "50%" }}>{n.label}</p>
         </div>
       ))}
-      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between px-6 py-3.5" style={{ background: "color-mix(in srgb, var(--color-pure-white) 88%, transparent)", backdropFilter: "blur(12px)", borderTop: "1px solid var(--color-line)" }}>
-        <p style={{ fontSize: 12, color: "var(--color-graphite)" }}>Papers → ideas → topics</p>
-        <p className="hidden sm:block" style={{ fontSize: 12, color: "var(--color-slate)" }}>Live preview</p>
+      <div className="absolute inset-x-4 bottom-4 flex items-center justify-between px-5 py-3" style={{ background: "rgba(10,14,12,0.55)", backdropFilter: "blur(16px)", border: "1px solid var(--liquid-border)", borderRadius: 18 }}>
+        <p style={{ fontSize: 12.5, color: "var(--color-graphite)" }}>Papers → ideas → topics</p>
+        <p className="tag-pill crimson hidden sm:inline-flex" style={{ fontSize: 11 }}>Live preview</p>
       </div>
     </div>
   );

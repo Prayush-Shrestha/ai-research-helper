@@ -3,8 +3,6 @@
 import { useState, type ReactNode } from "react";
 
 function renderMarkdown(body: string) {
-  // Minimal safe markdown: headings, bold, lists, numbered lists, quotes, paragraphs.
-  // No dangerouslySetInnerHTML — plain text rendering with structure.
   const lines = body.split("\n");
   const blocks: ReactNode[] = [];
   let listBuf: string[] = [];
@@ -15,7 +13,7 @@ function renderMarkdown(body: string) {
       blocks.push(
         <ul key={`${key}-ul`} className="mt-3 space-y-1.5" style={{ paddingLeft: 20, listStyle: "disc", color: "var(--color-iron)" }}>
           {listBuf.map((t, i) => (
-            <li key={i} className="text-[17px]" style={{ lineHeight: 1.6 }}>{inline(t)}</li>
+            <li key={i} className="text-[15.5px]" style={{ lineHeight: 1.65 }}>{inline(t)}</li>
           ))}
         </ul>
       );
@@ -25,7 +23,7 @@ function renderMarkdown(body: string) {
       blocks.push(
         <ol key={`${key}-ol`} className="mt-3 space-y-1.5" style={{ paddingLeft: 20, listStyle: "decimal", color: "var(--color-iron)" }}>
           {orderedBuf.map((t, i) => (
-            <li key={i} className="text-[17px]" style={{ lineHeight: 1.6 }}>{inline(t)}</li>
+            <li key={i} className="text-[15.5px]" style={{ lineHeight: 1.65 }}>{inline(t)}</li>
           ))}
         </ol>
       );
@@ -34,7 +32,6 @@ function renderMarkdown(body: string) {
   };
 
   const inline = (t: string): ReactNode => {
-    // **bold**
     const parts = t.split(/\*\*(.+?)\*\*/g);
     return parts.map((p, i) => (i % 2 === 1 ? <strong key={i} style={{ color: "var(--color-apple-ink)" }}>{p}</strong> : <span key={i}>{p}</span>));
   };
@@ -48,7 +45,7 @@ function renderMarkdown(body: string) {
     if (/^#{1,3}\s/.test(l)) {
       flushLists(`h${idx}`);
       blocks.push(
-        <h4 key={idx} className="mt-4" style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 19, fontWeight: 600, letterSpacing: "-0.015em", color: "var(--color-apple-ink)" }}>
+        <h4 key={idx} className="mt-4" style={{ fontSize: 17, fontWeight: 650, letterSpacing: "-0.01em", color: "var(--color-apple-ink)" }}>
           {inline(l.replace(/^#{1,3}\s/, ""))}
         </h4>
       );
@@ -57,7 +54,7 @@ function renderMarkdown(body: string) {
     if (/^>\s?/.test(l)) {
       flushLists(`q${idx}`);
       blocks.push(
-        <blockquote key={idx} className="mt-3 pl-4 text-[17px]" style={{ borderLeft: "3px solid var(--color-electric-blue)", color: "var(--color-iron)", lineHeight: 1.6 }}>
+        <blockquote key={idx} className="mt-3 rounded-r-2xl py-2 pl-4 pr-3 text-[15.5px]" style={{ borderLeft: "2px solid var(--color-electric-blue)", background: "rgba(157,231,193,0.07)", color: "var(--color-iron)", lineHeight: 1.65 }}>
           {inline(l.replace(/^>\s?/, ""))}
         </blockquote>
       );
@@ -75,7 +72,7 @@ function renderMarkdown(body: string) {
     }
     flushLists(`p${idx}`);
     blocks.push(
-      <p key={idx} className="mt-3 text-[17px]" style={{ color: "var(--color-iron)", lineHeight: 1.65 }}>
+      <p key={idx} className="mt-3 text-[15.5px]" style={{ color: "var(--color-iron)", lineHeight: 1.7 }}>
         {inline(line)}
       </p>
     );
@@ -98,17 +95,20 @@ export function AIResponse({
   const [copied, setCopied] = useState(false);
 
   return (
-    <article aria-live="polite" className="gallery-card page-enter mt-5">
-      <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>
-        Answer to {query.slice(0, 90)}{query.length > 90 ? "…" : ""}
-      </p>
+    <article aria-live="polite" className="gallery-card page-enter mt-4 !p-6">
+      <div className="flex items-center gap-2.5">
+        <span aria-hidden className="flex h-7 w-7 items-center justify-center" style={{ borderRadius: 99, background: "linear-gradient(180deg, var(--color-electric-blue), #6FCF9A)", color: "#06110C", fontSize: 13, fontWeight: 700 }}>✦</span>
+        <p style={{ fontSize: 12.5, fontWeight: 600, color: "var(--color-slate)" }}>
+          Answer · {query.slice(0, 80)}{query.length > 80 ? "…" : ""}
+        </p>
+      </div>
       {scope && (
-        <p className="mt-0.5" style={{ fontSize: 12, color: "var(--color-slate)" }}>
+        <p className="mt-1.5" style={{ fontSize: 12.5, color: "var(--color-slate)" }}>
           {scope}
         </p>
       )}
       <div className="max-w-[72ch]">{renderMarkdown(answer)}</div>
-      <div className="mt-4 flex items-center gap-5" style={{ borderTop: "1px solid var(--color-line)", paddingTop: 12 }}>
+      <div className="mt-5 flex items-center gap-2" style={{ borderTop: "1px solid var(--liquid-border-soft)", paddingTop: 14 }}>
         <button
           type="button"
           onClick={() => {
@@ -129,12 +129,13 @@ export function AIResponse({
               setCopied(false);
             }
           }}
-          style={{ fontSize: 15, color: "var(--color-link-blue)" }}
+          className="ghost-pill"
+          style={{ fontSize: 13, padding: "7px 16px" }}
         >
           {copied ? "Copied ✓" : "Copy"}
         </button>
         {onRetry && (
-          <button type="button" onClick={onRetry} style={{ fontSize: 15, color: "var(--color-link-blue)" }}>
+          <button type="button" onClick={onRetry} className="secondary-button !px-3" style={{ fontSize: 13.5 }}>
             Try again
           </button>
         )}
@@ -145,8 +146,8 @@ export function AIResponse({
 
 export function UserPrompt({ query }: { query: string }) {
   return (
-    <div className="mt-6 flex justify-end">
-      <p className="max-w-[80%] px-5 py-3 text-[17px]" style={{ background: "var(--color-electric-blue)", color: "var(--color-fog-canvas)", fontWeight: 500, borderRadius: 12, borderBottomRightRadius: 4, lineHeight: 1.45 }}>
+    <div className="mt-5 flex justify-end">
+      <p className="max-w-[82%] px-5 py-3 text-[15.5px]" style={{ background: "linear-gradient(180deg, #C9F5DC, var(--color-electric-blue))", color: "#06110C", fontWeight: 550, borderRadius: 20, borderBottomRightRadius: 6, lineHeight: 1.55, boxShadow: "0 8px 24px rgba(157,231,193,0.22)" }}>
         {query}
       </p>
     </div>

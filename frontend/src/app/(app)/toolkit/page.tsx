@@ -38,12 +38,14 @@ function CopyButton({ text }: { text: string }) {
           setDone(false);
         }
       }}
-      className="shrink-0 rounded-full px-4 py-1.5"
+      className="ghost-pill shrink-0"
+      aria-live="polite"
       style={{
-        fontSize: 15,
-        border: "1px solid var(--color-line)",
-        background: done ? "var(--color-apple-ink)" : "transparent",
-        color: done ? "var(--color-fog-canvas)" : "var(--color-link-blue)",
+        fontSize: 13,
+        padding: "6px 16px",
+        ...(done
+          ? { background: "rgba(157,231,193,0.16)", color: "var(--color-electric-blue)", borderColor: "rgba(157,231,193,0.45)" }
+          : undefined),
       }}
     >
       {done ? "Copied ✓" : "Copy"}
@@ -69,14 +71,16 @@ function CitationBuilder() {
     setForm((f) => ({ ...f, [k]: v }));
   }
 
+  const labelStyle = { fontSize: 15, fontWeight: 500, color: "var(--color-apple-ink)" } as const;
+
   return (
     <div className="gallery-card grid gap-8 lg:grid-cols-[1fr_1.2fr]">
       <div>
-        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>Details</p>
+        <p className="tech-label" style={{ color: "var(--color-electric-blue)" }}>Details</p>
         <div className="mt-3 space-y-4">
           <div>
-            <label htmlFor="cite-authors" className="mb-1.5 block text-[17px]" style={{ color: "var(--color-apple-ink)" }}>
-              Authors <span style={{ fontSize: 15, color: "var(--color-slate)" }}>(separate with commas)</span>
+            <label htmlFor="cite-authors" className="mb-1.5 block" style={labelStyle}>
+              Authors <span style={{ fontSize: 13, color: "var(--color-slate)" }}>(separate with commas)</span>
             </label>
             <input
               id="cite-authors" value={form.authors} onChange={(e) => updateField("authors", e.target.value)}
@@ -86,7 +90,7 @@ function CitationBuilder() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="cite-year" className="mb-1.5 block text-[17px]" style={{ color: "var(--color-apple-ink)" }}>Year</label>
+              <label htmlFor="cite-year" className="mb-1.5 block" style={labelStyle}>Year</label>
               <input
                 id="cite-year" value={form.year} onChange={(e) => updateField("year", e.target.value)}
                 placeholder="2026" inputMode="numeric"
@@ -94,11 +98,10 @@ function CitationBuilder() {
               />
             </div>
             <div>
-              <label htmlFor="cite-kind" className="mb-1.5 block text-[17px]" style={{ color: "var(--color-apple-ink)" }}>Type</label>
+              <label htmlFor="cite-kind" className="mb-1.5 block" style={labelStyle}>Type</label>
               <select
                 id="cite-kind" value={form.kind} onChange={(e) => updateField("kind", e.target.value as CiteInput["kind"])}
                 className="field-input"
-                style={{ background: "var(--color-pure-white)" }}
               >
                 <option value="Conference">Conference</option>
                 <option value="Journal">Journal</option>
@@ -106,7 +109,7 @@ function CitationBuilder() {
             </div>
           </div>
           <div>
-            <label htmlFor="cite-title" className="mb-1.5 block text-[17px]" style={{ color: "var(--color-apple-ink)" }}>Paper title</label>
+            <label htmlFor="cite-title" className="mb-1.5 block" style={labelStyle}>Paper title</label>
             <input
               id="cite-title" value={form.title} onChange={(e) => updateField("title", e.target.value)}
               placeholder="Attention Is All You Need"
@@ -114,7 +117,7 @@ function CitationBuilder() {
             />
           </div>
           <div>
-            <label htmlFor="cite-venue" className="mb-1.5 block text-[17px]" style={{ color: "var(--color-apple-ink)" }}>Venue</label>
+            <label htmlFor="cite-venue" className="mb-1.5 block" style={labelStyle}>Venue</label>
             <input
               id="cite-venue" value={form.venue} onChange={(e) => updateField("venue", e.target.value)}
               placeholder="Advances in Neural Information Processing Systems"
@@ -124,7 +127,7 @@ function CitationBuilder() {
         </div>
       </div>
       <div>
-        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>Live result</p>
+        <p className="tech-label" style={{ color: "var(--color-electric-blue)" }}>Live result</p>
         <div className="mt-3 space-y-3">
           {(
             [
@@ -133,12 +136,12 @@ function CitationBuilder() {
               ["BibTeX", bib],
             ] as Array<[string, string]>
           ).map(([label, text]) => (
-            <div key={label} style={{ background: "var(--color-fog-canvas)", borderRadius: 18, padding: "14px 18px" }}>
+            <div key={label} className="liquid-search" style={{ borderRadius: 18, padding: "14px 18px" }}>
               <div className="flex items-center justify-between gap-3">
-                <span style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>{label}</span>
+                <span className="tag-pill">{label}</span>
                 {ready && <CopyButton text={text} />}
               </div>
-              <p className="mt-1.5 text-[15px]" style={{ color: ready ? "var(--color-apple-ink)" : "var(--color-slate)", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>
+              <p className="mt-1.5 font-mono text-[15px]" style={{ color: ready ? "var(--color-apple-ink)" : "var(--color-slate)", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>
                 {ready ? text : "Fill in authors, title and venue to generate…"}
               </p>
             </div>
@@ -177,20 +180,20 @@ function StructureChecklist() {
           <p style={{ fontSize: 17, fontWeight: 600, color: "var(--color-apple-ink)" }}>
             {checked.length} of {STRUCTURE.length} sections · {pct}%
           </p>
-          <div className="mt-3 h-[8px] w-full max-w-md overflow-hidden" style={{ background: "var(--color-ash)", borderRadius: 99 }}>
-            <div style={{ width: `${pct}%`, height: "100%", background: "var(--color-electric-blue)", borderRadius: 99, transition: "width .4s ease" }} />
+          <div className="mt-3 h-[8px] w-full max-w-md overflow-hidden" style={{ background: "rgba(255,255,255,0.08)", borderRadius: 99, border: "1px solid var(--liquid-border-soft)" }}>
+            <div style={{ width: `${pct}%`, height: "100%", background: "var(--color-electric-blue)", borderRadius: 99, transition: "width .4s ease", boxShadow: "var(--liquid-glow-mint)" }} />
           </div>
         </div>
-        <p className="shrink-0" style={{ fontSize: 15, color: "var(--color-graphite)" }}>
+        <p className="tag-pill crimson shrink-0" aria-live="polite">
           {pct === 100 ? "Ready to submit ✓" : pct >= 50 ? "Draft taking shape" : "Start with title + abstract"}
         </p>
       </div>
 
       <div className="gallery-card mt-4 !p-4 sm:!p-5">
-        {STRUCTURE.map((s) => {
+        {STRUCTURE.map((s, i) => {
           const done = checked.includes(s.id);
           return (
-            <div key={s.id} className="py-4" style={{ borderBottom: "1px solid var(--color-line)" }}>
+            <div key={s.id} className="py-4" style={i === STRUCTURE.length - 1 ? undefined : { borderBottom: "1px solid var(--liquid-border-soft)" }}>
               <button
                 type="button"
                 onClick={() => toggle(s.id)}
@@ -205,11 +208,12 @@ function StructureChecklist() {
                   className="flex h-7 w-7 shrink-0 items-center justify-center"
                   style={{
                     fontSize: 14,
-                    fontWeight: 600,
+                    fontWeight: 700,
                     borderRadius: 999,
-                    border: done ? "none" : "1.5px solid var(--color-line)",
-                    background: done ? "var(--color-electric-blue)" : "transparent",
-                    color: done ? "var(--color-fog-canvas)" : "var(--color-slate)",
+                    border: done ? "1px solid rgba(157,231,193,0.5)" : "1.5px solid var(--liquid-border)",
+                    background: done ? "rgba(157,231,193,0.16)" : "transparent",
+                    color: done ? "var(--color-electric-blue)" : "var(--color-slate)",
+                    boxShadow: done ? "var(--liquid-glow-mint)" : undefined,
                   }}
                 >
                   {done ? "✓" : ""}
@@ -233,36 +237,45 @@ function StructureChecklist() {
 
 export default function ToolkitPage() {
   return (
-    <div>
-      <section className="pt-6 text-center sm:pt-10">
-        <h1 className="type-heading mx-auto" style={{ color: "var(--color-apple-ink)" }}>
-          Write it right.
-        </h1>
-        <p className="mx-auto mt-4 max-w-xl" style={{ fontSize: 21, color: "var(--color-graphite)" }}>
-          Citations and structure get easier with practice.
-          Both tools below run free in your browser.
-        </p>
+    <div className="page-shell page-enter">
+      <section className="relative overflow-hidden pt-6 text-center sm:pt-10">
+        <span aria-hidden className="orb rise rise-1" style={{ width: 420, height: 420, left: "-8%", top: "-140px", background: "radial-gradient(circle, rgba(157,231,193,0.16), transparent 65%)" }} />
+        <span aria-hidden className="orb rise rise-2" style={{ width: 480, height: 480, right: "-10%", top: "-100px", background: "radial-gradient(circle, rgba(196,181,253,0.12), transparent 65%)" }} />
+        <div className="relative" style={{ zIndex: 1 }}>
+          <p className="eyebrow rise rise-1"><span className="dot" aria-hidden /> Toolkit · Write it right</p>
+          <h1 className="type-heading rise rise-2 mx-auto mt-4" style={{ color: "var(--color-apple-ink)", fontWeight: 600, letterSpacing: "-0.03em" }}>
+            Write it right.
+          </h1>
+          <p className="hero-sub rise rise-3 mx-auto mt-4 max-w-xl">
+            Citations and structure get easier with practice.
+            Both tools below run free in your browser.
+          </p>
+          <div className="rise rise-4 mt-6 flex flex-wrap justify-center gap-3">
+            <a href="#citation-builder" className="primary-button">Build a citation</a>
+            <a href="#paper-checklist" className="ghost-pill">Open checklist</a>
+          </div>
+        </div>
       </section>
 
-      <section className="mt-10" aria-label="Citation builder">
-        <h2 className="type-heading-sm" style={{ color: "var(--color-apple-ink)" }}>1 · Citation builder.</h2>
-        <p className="mt-2 max-w-xl" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
+      <section id="citation-builder" className="rise rise-2 mt-10 scroll-mt-24" aria-label="Citation builder">
+        <h2 className="type-heading-sm" style={{ color: "var(--color-apple-ink)", fontWeight: 600, letterSpacing: "-0.03em" }}>1 · Citation builder.</h2>
+        <p className="hero-sub mt-2 max-w-xl">
           Type the details once and get APA, IEEE and BibTeX back right away.
         </p>
         <div className="mt-5"><CitationBuilder /></div>
       </section>
 
-      <section className="mt-12" aria-label="Structure checklist">
-        <h2 className="type-heading-sm" style={{ color: "var(--color-apple-ink)" }}>2 · Paper checklist.</h2>
-        <p className="mt-2 max-w-xl" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
+      <section id="paper-checklist" className="rise rise-3 mt-12 scroll-mt-24" aria-label="Structure checklist">
+        <h2 className="type-heading-sm" style={{ color: "var(--color-apple-ink)", fontWeight: 600, letterSpacing: "-0.03em" }}>2 · Paper checklist.</h2>
+        <p className="hero-sub mt-2 max-w-xl">
           Tick sections off as you write. Progress saves on this device.
         </p>
         <div className="mt-5"><StructureChecklist /></div>
       </section>
 
-      <section className="gallery-card mb-4 mt-8 text-center">
-        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>Draft taking shape?</p>
-        <p className="mt-2" style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 32, fontWeight: 600, color: "var(--color-apple-ink)" }}>
+      <section className="gallery-card rise rise-5 mb-4 mt-8 text-center">
+        <p className="eyebrow"><span className="dot" aria-hidden /> Draft taking shape?</p>
+        <p className="mt-3" style={{ fontFamily: "var(--font-sf-pro-display)", fontSize: 32, fontWeight: 600, letterSpacing: "-0.03em", color: "var(--color-apple-ink)" }}>
           Now give it a deadline.
         </p>
         <div className="mt-5 flex flex-wrap justify-center gap-3">

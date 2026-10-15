@@ -26,17 +26,22 @@ export default function CollectionsPage() {
 
   return (
     <div>
-      <section className="pt-6 text-center sm:pt-10">
-        <h1 className="type-heading-sm mx-auto" style={{ color: "var(--color-apple-ink)" }}>
+      <section className="rise rise-1 relative pt-6 text-center sm:pt-10">
+        <div aria-hidden className="orb" style={{ width: 340, height: 340, top: -120, left: -10, background: "radial-gradient(circle, rgba(157,231,193,0.16), transparent 65%)" }} />
+        <div aria-hidden className="orb" style={{ width: 300, height: 300, top: -100, right: -40, background: "radial-gradient(circle, rgba(138,180,248,0.14), transparent 65%)" }} />
+        <div className="relative">
+        <span className="eyebrow"><span className="dot" />Collections</span>
+        <h1 className="mx-auto mt-4" style={{ fontWeight: 600, letterSpacing: "-0.03em", fontSize: 28, lineHeight: 1.2, color: "var(--color-apple-ink)" }}>
           Piles that make sense to you.
         </h1>
-        <p className="mx-auto mt-3 max-w-xl" style={{ fontSize: 19, color: "var(--color-graphite)" }}>
+        <p className="hero-sub mx-auto mt-3 max-w-xl">
           Put papers that go together in one place. Sort by topic or course or
           just whatever logic works for you. They stay saved on this device.
         </p>
+        </div>
       </section>
 
-      <section aria-label="New collection" className="gallery-card mt-8">
+      <section aria-label="New collection" className="gallery-card rise rise-2 mt-8 !p-5 sm:!p-6">
         <form onSubmit={handleCreate} className="grid gap-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
           <div>
             <label htmlFor="col-name" className="mb-1.5 block text-[17px]" style={{ color: "var(--color-apple-ink)" }}>Name</label>
@@ -52,10 +57,11 @@ export default function CollectionsPage() {
         </form>
       </section>
 
-      <section aria-label="Your collections" className="mt-5">
+      <section aria-label="Your collections" className="rise rise-3 mt-5">
         {collections.length === 0 ? (
           <div className="gallery-card py-10 text-center">
-            <p style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>Nothing grouped up yet.</p>
+            <span className="tag-pill">No groups yet</span>
+            <p className="mt-3" style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)" }}>Nothing grouped up yet.</p>
             <p className="mx-auto mt-2 max-w-md" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
               Give one a name above and start ticking off the papers that belong in it.
             </p>
@@ -66,7 +72,7 @@ export default function CollectionsPage() {
               const docs = allDocuments.filter((d) => c.documentIds.includes(d.id));
               const open = openId === c.id;
               return (
-                <div key={c.id} className="gallery-card">
+                <div key={c.id} className="gallery-card hover-lift !p-5 sm:!p-6">
                   <div className="flex flex-wrap items-baseline gap-3">
                     <div className="min-w-0 flex-1">
                       {editing === c.id ? (
@@ -87,16 +93,16 @@ export default function CollectionsPage() {
                         </form>
                       ) : (
                         <>
-                          <p style={{ fontSize: 21, fontWeight: 600, letterSpacing: "-0.012em", color: "var(--color-apple-ink)" }}>{c.name}</p>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p style={{ fontSize: 17, fontWeight: 650, letterSpacing: "-0.012em", color: "var(--color-apple-ink)" }}>{c.name}</p>
+                            <span className="tag-pill">{docs.length} {docs.length === 1 ? "paper" : "papers"}</span>
+                          </div>
                           {c.description && <p className="mt-0.5" style={{ fontSize: 15, color: "var(--color-graphite)" }}>{c.description}</p>}
                         </>
                       )}
-                      <p className="mt-1" style={{ fontSize: 13, color: "var(--color-slate)" }}>
-                        {docs.length} {docs.length === 1 ? "paper" : "papers"}
-                      </p>
                     </div>
-                    <div className="flex shrink-0 gap-4">
-                      <button onClick={() => setOpenId(open ? null : c.id)} style={{ fontSize: 17, color: "var(--color-link-blue)" }} aria-expanded={open}>
+                    <div className="flex shrink-0 items-center gap-2">
+                      <button onClick={() => setOpenId(open ? null : c.id)} className={`tag-pill px-4 py-1.5${open ? " crimson" : ""}`} aria-expanded={open} aria-pressed={open}>
                         {open ? "Done" : "Add papers"}
                       </button>
                       <button onClick={() => { setEditing(c.id); setEditName(c.name); }} style={{ fontSize: 17, color: "var(--color-graphite)" }}>Rename</button>

@@ -63,7 +63,7 @@ export function MobileNav() {
         <div className="fixed inset-0 z-40 lg:hidden" role="dialog" aria-modal="true" aria-label="Workspace menu">
           <div className="liquid-scrim absolute inset-0 animate-fade-in" onClick={() => setOpen(false)} />
           <nav aria-label="Mobile workspace" className="liquid-dialog absolute inset-x-3 max-h-[70vh] overflow-y-auto px-4 pb-4 pt-2 animate-slide-up" style={{ top: "calc(var(--nav-h) + var(--nav-float) * 2 + 8px)" }}>
-            <p className="px-2 pb-1 pt-3" style={{ fontSize: 12, fontWeight: 600, color: "var(--color-slate)" }}>Workspace</p>
+            <p className="tech-label px-2 pb-1 pt-3" style={{ color: "var(--color-electric-blue)" }}>Workspace</p>
             {LINKS.map((l) => {
               const active = pathname === l.href || (l.href === "/documents" && pathname.startsWith("/documents"));
               return (
@@ -72,14 +72,16 @@ export function MobileNav() {
                   href={l.href}
                   onClick={() => setOpen(false)}
                   aria-current={active ? "page" : undefined}
-                  className="block px-2 py-2.5 text-[17px]"
-                  style={{ color: active ? "var(--color-electric-blue)" : "var(--color-apple-ink)", fontWeight: active ? 600 : 400 }}
+                  className="block px-3 py-2.5 text-[17px]"
+                  style={active
+                    ? { color: "var(--color-electric-blue)", fontWeight: 600, background: "rgba(157,231,193,0.12)", border: "1px solid rgba(157,231,193,0.35)", borderRadius: 14, boxShadow: "var(--liquid-glow-mint)" }
+                    : { color: "var(--color-apple-ink)", fontWeight: 400, border: "1px solid transparent", borderRadius: 14 }}
                 >
                   {l.label}
                 </Link>
               );
             })}
-            <div className="mt-2 flex items-center justify-between px-2 pt-3" style={{ borderTop: "1px solid var(--color-line)" }}>
+            <div className="mt-2 flex items-center justify-between px-2 pt-3" style={{ borderTop: "1px solid var(--liquid-border-soft)" }}>
               <div className="leading-tight">
                 <p className="text-[15px] font-medium" style={{ color: "var(--color-apple-ink)" }}>{user?.name}</p>
                 <p style={{ fontSize: 12, color: "var(--color-slate)" }}>{user?.email}</p>

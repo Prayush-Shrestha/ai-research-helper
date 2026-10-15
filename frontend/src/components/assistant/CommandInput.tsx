@@ -36,21 +36,22 @@ export function CommandInput({
           e.preventDefault();
           submit(value);
         }}
-        className="ask-box flex items-center gap-2 p-2 pl-5"
-        style={{ background: "var(--color-pure-white)", border: "1px solid var(--color-line)", borderRadius: 980 }}
+        className="ask-box liquid-search flex items-center gap-2 p-2 pl-5"
+        style={{ borderRadius: "999px" }}
       >
+        <span aria-hidden style={{ color: "var(--color-electric-blue)", fontSize: 16 }}>✦</span>
         <label htmlFor="assistant-query" className="sr-only">Ask about your papers</label>
         <input
           id="assistant-query"
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          placeholder="What do you want to know…"
+          placeholder="Ask across your papers…"
           autoComplete="off"
-          className="w-full bg-transparent py-2.5 text-[17px] outline-none"
+          className="w-full bg-transparent py-2.5 text-[16px] outline-none"
           style={{ color: "var(--color-apple-ink)" }}
         />
-        <button type="submit" className="primary-button shrink-0" style={{ padding: "8px 22px", fontSize: 15 }}>
-          Send
+        <button type="submit" className="primary-button shrink-0" style={{ padding: "9px 24px", fontSize: 14 }}>
+          Ask
         </button>
       </form>
       {!compact && (
@@ -60,8 +61,8 @@ export function CommandInput({
               key={s}
               type="button"
               onClick={() => submit(s)}
-              className="tag-pill"
-              style={{ cursor: "pointer", padding: "8px 16px", fontSize: 15 }}
+              className="tag-pill hover-lift"
+              style={{ cursor: "pointer", padding: "8px 15px", fontSize: 13.5 }}
             >
               {s}
             </button>

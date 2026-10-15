@@ -38,10 +38,12 @@ export function Navbar() {
         <Link
           href={user ? "/dashboard" : "/"}
           aria-label="Lumina home"
-          className="flex items-center gap-2"
+          className="group flex items-center gap-2"
           style={{ fontFamily: "var(--font-sf-pro-text)", fontSize: 17, fontWeight: 600, letterSpacing: "-0.019em", color: "var(--color-apple-ink)" }}
         >
-          <LogoMark size={22} />
+          <span style={{ filter: "drop-shadow(0 0 10px rgba(157,231,193,0.45))", display: "inline-flex" }}>
+            <LogoMark size={22} />
+          </span>
           Lumina
         </Link>
 
@@ -120,7 +122,8 @@ export function Navbar() {
       </div>
 
       {open && (
-        <nav aria-label="Primary mobile" className="liquid-dialog animate-slide-up mx-auto mt-2 max-w-[1120px] px-5 pb-6 md:hidden">
+        <nav aria-label="Primary mobile" className="liquid-dialog animate-slide-up mx-auto mt-2 max-w-[1120px] px-5 pb-6 shadow-2xl md:hidden">
+          <p className="tech-label px-0 pb-1 pt-4" style={{ color: "var(--color-electric-blue)" }}>Menu</p>
           <div className="flex flex-col">
             {(isLanding ? LINKS.map((l) => ({ href: l.href, label: l.label })) : [
               { href: "/dashboard", label: "Workspace" },
@@ -134,8 +137,8 @@ export function Navbar() {
                 key={l.href}
                 href={l.href}
                 onClick={() => setOpen(false)}
-                className="py-3.5"
-                style={{ fontSize: 17, color: "var(--color-apple-ink)", borderBottom: "1px solid var(--liquid-border)" }}
+                className="py-3.5 transition-colors"
+                style={{ fontSize: 17, color: "var(--color-apple-ink)", borderBottom: "1px solid var(--liquid-border-soft)" }}
               >
                 {l.label}
               </Link>

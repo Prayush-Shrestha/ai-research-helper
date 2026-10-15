@@ -17,7 +17,7 @@ export default function AppGroupLayout({ children }: { children: ReactNode }) {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen flex-col" style={{ background: "var(--color-void)" }}>
+      <div className="flex min-h-screen flex-col" style={{ background: "transparent" }}>
         <Navbar />
         <div className="mx-auto w-full px-5 py-20 sm:px-8" style={{ maxWidth: "var(--page-max-width)" }}>
           <p className="tech-label pulse-dot" style={{ color: "var(--color-graphite)" }}>
@@ -31,7 +31,7 @@ export default function AppGroupLayout({ children }: { children: ReactNode }) {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen" style={{ background: "var(--color-void)" }}>
+    <div className="min-h-screen" style={{ background: "transparent" }}>
       <Navbar />
       <AppShell>{children}</AppShell>
       <Footer />
