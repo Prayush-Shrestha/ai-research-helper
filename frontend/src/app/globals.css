@@ -283,7 +283,8 @@ body::after {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px 16px;
+  flex-wrap: wrap;
 }
 .mt-brand {
   display: flex;
@@ -330,7 +331,28 @@ body::after {
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
   pointer-events: none;
 }
-@media (min-width: 900px) { .mt-center { display: flex; } }
+@media (min-width: 900px) { .mt-center-desktop { display: flex; } }
+/* mobile — scrollable link row instead of a menu button */
+.mt-center-mobile {
+  display: flex;
+  flex: 1 1 100%;
+  order: 3;
+  align-items: center;
+  gap: 4px;
+  padding: 7px;
+  border-radius: 999px;
+  background: rgba(20,20,23,0.72);
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  box-shadow: 0 16px 50px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.mt-center-mobile::-webkit-scrollbar { display: none; }
+.mt-center-mobile .mt-link { flex-shrink: 0; padding: 9px 18px; font-size: 14.5px; }
+@media (min-width: 900px) { .mt-center-mobile { display: none; } }
+[data-theme="light"] .mt-center-mobile { background: rgba(255,255,255,0.78); border-color: rgba(10,10,12,0.1); box-shadow: 0 16px 40px rgba(0,0,0,0.1); }
 .mt-link {
   padding: 12px 26px;
   border-radius: 999px;
@@ -349,27 +371,9 @@ body::after {
   border-color: rgba(255,255,255,0.14) !important;
   font-weight: 600;
 }
-.mt-right { display: flex; align-items: center; gap: 12px; }
+.mt-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
 .mt-signin { white-space: nowrap; }
 .mt-signin:hover { color: var(--color-apple-ink) !important; }
-/* liquid burger — one round glass button, real icon */
-.mt-burger {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 52px;
-  height: 52px;
-  border-radius: 999px;
-  background: rgba(20,20,23,0.72);
-  border: 1.5px solid rgba(255,255,255,0.2);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  color: #F5F5F7;
-  cursor: pointer;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.12);
-  transition: all 180ms ease;
-}
-.mt-burger:hover { border-color: rgba(255,255,255,0.4); transform: translateY(-1px); }
 .mt-cta {
   display: inline-flex;
   align-items: center;
@@ -737,8 +741,6 @@ article p { text-wrap: pretty; }
 [data-theme="light"] .ghost-pill { background: rgba(255,255,255,0.7); }
 [data-theme="light"] .field-input { background: rgba(255,255,255,0.9); }
 [data-theme="light"] .tag-pill.crimson { background: #0A0A0C; color: #fff; border-color: transparent; }
-[data-theme="light"] .mt-burger { background: rgba(255,255,255,0.85); border-color: rgba(10,10,12,0.16); color: #0A0A0C; box-shadow: 0 8px 24px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.9); }
-[data-theme="light"] .mt-burger:hover { border-color: rgba(10,10,12,0.32); }
 [data-theme="light"] .mt-center::after { background: linear-gradient(90deg, transparent, rgba(255,255,255,0.95), transparent); }
 /* light-mode liquid surfaces: milk glass, never dark slabs */
 [data-theme="light"] .liquid-search { background: rgba(255,255,255,0.85) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 10px 28px rgba(10,10,12,0.08); }
@@ -771,8 +773,16 @@ article p { text-wrap: pretty; }
 }
 @media (max-width: 640px) {
   :root { --section-gap: 64px; --card-padding: 20px; }
-  .mt-logo-box { width: 44px; height: 44px; border-radius: 15px; }
-  .mt-brand-name { font-size: 20px; }
+  .mt-bar { padding: 12px 12px 8px; }
+  .mt-logo-box { width: 42px; height: 42px; border-radius: 15px; }
+  .mt-brand-name { font-size: 19px; }
+  .mt-cta { padding: 11px 20px; font-size: 14px; }
+  .theme-big { height: 42px; padding: 0 15px; font-size: 13.5px; gap: 7px; }
+}
+@media (max-width: 400px) {
+  /* icon-only toggle on tiny screens so logo + CTA always fit */
+  .theme-big span:last-child { display: none; }
+  .theme-big { padding: 0 12px; }
 }
 
 /* ═══════════════════════════════════════════════════════════════

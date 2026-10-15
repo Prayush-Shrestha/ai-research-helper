@@ -13,6 +13,7 @@ import {
   Quote,
   ScanText,
   Settings,
+  ShieldCheck,
   Sparkles,
   User,
   LogOut,
@@ -90,6 +91,9 @@ export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle:
   ];
 
   const account: NavItem[] = [
+    ...(user?.role === "admin"
+      ? [{ href: "/admin", label: "Admin Console", icon: <ShieldCheck size={17} aria-hidden /> }]
+      : []),
     { href: "/settings", label: "Settings", icon: <Settings size={17} aria-hidden /> },
     { href: "/settings", label: "Profile", icon: <User size={17} aria-hidden /> },
     { label: "Sign out", icon: <LogOut size={17} aria-hidden />, action: logout },

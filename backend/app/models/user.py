@@ -5,7 +5,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, String
+from sqlalchemy import CheckConstraint, DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -15,8 +15,17 @@ def _utcnow() -> datetime:
     return datetime.now(timezone.utc)
 
 
+ADMIN_ROLE = "admin"
+USER_ROLE = "user"
+
+
 class User(Base):
     __tablename__ = "users"
+    __table_args__ = (
+        CheckConstraint(
+            f"role IN ('{USER_ROLE}', '{ADMIN_ROLE}')", name="ck_users_role"
+        ),
+    )
 
     id: Mapped[str] = mapped_column(
         String(36), primary_key=True, default=lambda: uuid.uuid4().hex
@@ -27,6 +36,10 @@ class User(Base):
     )
     # Argon2 hash. Plaintext passwords are never stored anywhere.
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    # "user" by default; "admin" unlocks the /api/v1/admin console.
+    role: Mapped[str] = mapped_column(
+        String(10), nullable=False, default=USER_ROLE, server_default=USER_ROLE
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=_utcnow, nullable=False
     )
@@ -45,3 +58,7 @@ class User(Base):
 
     def __repr__(self) -> str:  # pragma: no cover - never logs secrets
         return f"User(id={self.id!r}, email={self.email!r})"
+
+    @property
+    def is_admin(self) -> bool:
+        return self.role == ADMIN_ROLE

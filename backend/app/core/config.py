@@ -29,6 +29,10 @@ class Settings(BaseSettings):
 
     SESSION_COOKIE_NAME: str = "ros_session"
     SESSION_EXPIRE_DAYS: int = 7
+    # Comma-separated emails that automatically hold the admin role
+    # (promoted on register and on login, so existing accounts pick it up
+    # as soon as the env var is set). Admins get the /api/v1/admin console.
+    ADMIN_EMAILS: str = ""
     # slowapi limit string for the auth endpoints (raised in tests via env).
     AUTH_RATE_LIMIT: str = "10/minute"
     # None means: True in production, False otherwise. Set explicitly to
@@ -44,6 +48,15 @@ class Settings(BaseSettings):
     @property
     def max_upload_bytes(self) -> int:
         return self.MAX_UPLOAD_SIZE_MB * 1024 * 1024
+
+    @property
+    def admin_emails(self) -> set[str]:
+        """Lowercased allowlist of admin emails (empty set = no admins)."""
+        return {
+            part.strip().lower()
+            for part in self.ADMIN_EMAILS.split(",")
+            if part.strip()
+        }
 
 
 @lru_cache

@@ -24,6 +24,7 @@ class UserOut(BaseModel):
     id: str
     name: str
     email: str
+    role: str = "user"
     created_at: datetime
 
 

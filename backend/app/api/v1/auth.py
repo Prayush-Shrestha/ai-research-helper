@@ -34,7 +34,7 @@ def register(
     settings: Settings = Depends(get_settings_dep),
     db: Session = Depends(get_db),
 ) -> User:
-    user = auth_service.register_user(db, payload)
+    user = auth_service.register_user(db, payload, settings)
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -62,6 +62,10 @@ def login(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password.",
         )
+    # Picks up ADMIN_EMAILS for accounts created before the env var existed.
+    if auth_service.ensure_admin_role(user, settings):
+        db.commit()
+        db.refresh(user)
     auth_service.set_session_cookie(response, user, settings)
     return user
 

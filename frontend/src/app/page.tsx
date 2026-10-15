@@ -6,16 +6,16 @@ import { Spotlight } from "@/components/motion/Spotlight";
 import { DocumentRow } from "@/components/documents/DocumentRow";
 import type { ResearchDocument } from "@/types/document";
 
-function Feature({ title, body, aside, index }: { title: string; body: string; aside: string; index: string }) {
+function Feature({ title, body, aside, index, delay = 0 }: { title: string; body: string; aside: string; index: string; delay?: number }) {
   return (
-    <div className="group flex gap-5 py-7" style={{ borderBottom: "1px solid var(--liquid-border-soft)" }}>
+    <Reveal delay={delay} className="flex gap-5 py-7" style={{ borderBottom: "1px solid var(--liquid-border-soft)" } as never}>
       <span className="mono-meta mt-1 shrink-0" style={{ fontSize: 12, color: "var(--color-slate)" }}>{index}</span>
       <div>
         <h3 style={{ fontSize: 19, fontWeight: 650, letterSpacing: "-0.01em", lineHeight: 1.25, color: "var(--color-apple-ink)" }}>{title}</h3>
         <p className="mt-1.5 max-w-2xl" style={{ fontSize: 15.5, lineHeight: 1.65, color: "var(--color-graphite)" }}>{body}</p>
         <p className="hand mt-1.5" style={{ fontSize: 15, color: "var(--color-slate)" }}>{aside}</p>
       </div>
-    </div>
+    </Reveal>
   );
 }
 
@@ -208,25 +208,27 @@ export default function LandingPage() {
         </Reveal>
 
         {/* ——— FEATURES ——— */}
-        <Reveal as="section" id="features" className="relative mx-auto mt-24" aria-label="Features" style={{ maxWidth: 860, zIndex: 1 } as never}>
-          <p className="hand" style={{ fontSize: 19, color: "var(--color-graphite)" }}>what you actually get (no more, no less)</p>
-          <h2 className="mt-2" style={{ fontSize: "clamp(32px,4vw,50px)", fontWeight: 650, letterSpacing: "-0.03em", lineHeight: 1.05, color: "var(--color-apple-ink)" }}>
-            Less filing, more reading.
-          </h2>
+        <section id="features" className="relative mx-auto mt-24" aria-label="Features" style={{ maxWidth: 860, zIndex: 1 }}>
+          <Reveal>
+            <p className="hand" style={{ fontSize: 19, color: "var(--color-graphite)" }}>what you actually get (no more, no less)</p>
+            <h2 className="mt-2" style={{ fontSize: "clamp(32px,4vw,50px)", fontWeight: 650, letterSpacing: "-0.03em", lineHeight: 1.05, color: "var(--color-apple-ink)" }}>
+              Less filing, more reading.
+            </h2>
+          </Reveal>
           <div className="gallery-card mt-8 !p-8">
-            <Feature index="01" title="One list for everything" body="All your papers in a single searchable list. Filter by file type, sort a few ways. Deliberately plain — a hundred papers still feel manageable." aside="yes, I tried folders. no, they didn't survive contact with me." />
-            <Feature index="02" title="It reads the file for you" body="Upload a PDF or Word doc and the text comes out on its own. Scanned image with no readable text? It says so straight, instead of a mysterious blank page." aside="OCR for scans is on the someday list. someday is doing great." />
-            <Feature index="03" title="Notes sit next to their paper" body="Jot down why a paper matters while reading it. The note stays attached, dated, so future-you remembers the context." aside="future-me has thanked past-me twice. a record." />
-            <Feature index="04" title="Citations without the fuss" body="Small form in, APA / IEEE / BibTeX out. Plus a writing checklist, because I kept forgetting the limitations section." aside="the checklist is just my supervisor's comments, formatted." />
-            <div className="flex gap-5 py-7">
+            <Feature delay={0} index="01" title="One list for everything" body="All your papers in a single searchable list. Filter by file type, sort a few ways. Deliberately plain — a hundred papers still feel manageable." aside="yes, I tried folders. no, they didn't survive contact with me." />
+            <Feature delay={90} index="02" title="It reads the file for you" body="Upload a PDF or Word doc and the text comes out on its own. Scanned image with no readable text? It says so straight, instead of a mysterious blank page." aside="OCR for scans is on the someday list. someday is doing great." />
+            <Feature delay={180} index="03" title="Notes sit next to their paper" body="Jot down why a paper matters while reading it. The note stays attached, dated, so future-you remembers the context." aside="future-me has thanked past-me twice. a record." />
+            <Feature delay={270} index="04" title="Citations without the fuss" body="Small form in, APA / IEEE / BibTeX out. Plus a writing checklist, because I kept forgetting the limitations section." aside="the checklist is just my supervisor's comments, formatted." />
+            <Reveal delay={360} className="flex gap-5 py-7">
               <span className="mono-meta mt-1 shrink-0" style={{ fontSize: 12, color: "var(--color-slate)" }}>05</span>
               <div>
                 <h3 style={{ fontSize: 19, fontWeight: 650, color: "var(--color-apple-ink)" }}>Yours means yours</h3>
                 <p className="mt-1.5" style={{ fontSize: 15.5, lineHeight: 1.65, color: "var(--color-graphite)" }}>You only ever see your own uploads. Every page checks first. I can&apos;t see your files, which is good, because my curiosity is boundless.</p>
               </div>
-            </div>
+            </Reveal>
           </div>
-        </Reveal>
+        </section>
 
         {/* ——— HOW IT WORKS ——— */}
         <Reveal as="section" id="workflow" className="relative mx-auto mt-24" aria-label="How it works" style={{ maxWidth: 960, zIndex: 1 } as never}>
@@ -253,28 +255,30 @@ export default function LandingPage() {
         </Reveal>
 
         {/* ——— FIELD NOTES ——— */}
-        <Reveal as="section" className="relative mx-auto mt-16" aria-label="Field notes" style={{ maxWidth: 860, zIndex: 1 } as never}>
+        <section className="relative mx-auto mt-16" aria-label="Field notes" style={{ maxWidth: 860, zIndex: 1 }}>
           <div className="gallery-card tilt-l !p-8">
-            <div className="flex items-baseline justify-between gap-4">
-              <h2 style={{ fontSize: 24, fontWeight: 650, letterSpacing: "-0.02em", color: "var(--color-apple-ink)" }}>
-                Field notes
-              </h2>
-              <p className="hand shrink-0" style={{ fontSize: 15, color: "var(--color-slate)" }}>stuff I&apos;ve fixed lately</p>
-            </div>
+            <Reveal>
+              <div className="flex items-baseline justify-between gap-4">
+                <h2 style={{ fontSize: 24, fontWeight: 650, letterSpacing: "-0.02em", color: "var(--color-apple-ink)" }}>
+                  Field notes
+                </h2>
+                <p className="hand shrink-0" style={{ fontSize: 15, color: "var(--color-slate)" }}>stuff I&apos;ve fixed lately</p>
+              </div>
+            </Reveal>
             <div className="mt-4">
               {[
                 ["Oct 12", "Uploads used to choke on 14.9 MB files. Off by one. Classic. Fixed."],
                 ["Oct 03", "Word docs with footnotes rendered as soup. Less soupy now."],
                 ["Sep 27", "Someone (me) deleted a note with no undo. Delete asks first now."],
-              ].map(([date, note]) => (
-                <div key={date} className="flex gap-4 py-3.5" style={{ borderTop: "1px solid var(--liquid-border-soft)" }}>
+              ].map(([date, note], i) => (
+                <Reveal key={date} delay={i * 110} className="flex gap-4 py-3.5" style={{ borderTop: "1px solid var(--liquid-border-soft)" } as never}>
                   <span className="mono-meta shrink-0 pt-0.5" style={{ fontSize: 12, color: "var(--color-slate)" }}>{date}</span>
                   <p style={{ fontSize: 15.5, color: "var(--color-iron)", lineHeight: 1.6 }}>{note}</p>
-                </div>
+                </Reveal>
               ))}
             </div>
           </div>
-        </Reveal>
+        </section>
 
         {/* ——— PEOPLE ASK ——— */}
         <Reveal as="section" className="relative mx-auto mt-16" aria-label="Questions people actually ask" style={{ maxWidth: 860, zIndex: 1 } as never}>

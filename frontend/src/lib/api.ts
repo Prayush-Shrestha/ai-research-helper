@@ -238,4 +238,65 @@ export function getDashboard(): Promise<DashboardData> {
   return request<DashboardData>("/dashboard");
 }
 
+// --------------------------------------------------------------- Admin ---
+
+export interface AdminUser {
+  id: string;
+  name: string;
+  email: string;
+  role: "user" | "admin";
+  created_at: string;
+  document_count: number;
+  note_count: number;
+  storage_bytes: number;
+}
+
+export interface AdminDocument {
+  id: string;
+  title: string;
+  file_type: string;
+  file_size: number;
+  page_count: number | null;
+  extraction_status: string;
+  created_at: string;
+}
+
+export interface AdminUserDetail extends AdminUser {
+  recent_documents: AdminDocument[];
+}
+
+export interface AdminStats {
+  total_users: number;
+  admin_count: number;
+  total_documents: number;
+  total_notes: number;
+  total_storage_bytes: number;
+}
+
+export function getAdminStats(): Promise<AdminStats> {
+  return request<AdminStats>("/admin/stats");
+}
+
+export function getAdminUsers(search?: string): Promise<AdminUser[]> {
+  const qs = search?.trim() ? `?search=${encodeURIComponent(search.trim())}` : "";
+  return request<AdminUser[]>(`/admin/users${qs}`);
+}
+
+export function getAdminUser(id: string): Promise<AdminUserDetail> {
+  return request<AdminUserDetail>(`/admin/users/${encodeURIComponent(id)}`);
+}
+
+export function setAdminRole(id: string, role: "user" | "admin"): Promise<AdminUser> {
+  return request<AdminUser>(`/admin/users/${encodeURIComponent(id)}/role`, {
+    method: "PATCH",
+    body: JSON.stringify({ role }),
+  });
+}
+
+export function deleteAdminUser(id: string): Promise<{ detail: string }> {
+  return request<{ detail: string }>(`/admin/users/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+}
+
 export { BASE_URL };
