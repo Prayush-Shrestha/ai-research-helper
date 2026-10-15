@@ -4,10 +4,10 @@ import { useEffect, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { Sidebar, useSidebarState } from "./Sidebar";
-import { MobileNav } from "./MobileNav";
 import { PageLoading } from "@/components/ui/Loading";
 
-/** Protects all /(app) routes + pours the liquid ambience behind every page. */
+/** Protects all /(app) routes + pours the liquid ambience behind every page.
+ *  Single global Navbar (in layout) handles mobile — no second nav bar here. */
 export function AppShell({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
@@ -35,7 +35,6 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="orb" style={{ width: 480, height: 320, left: "-8%", top: "2%", background: "radial-gradient(circle, rgba(255,255,255,0.12), transparent 65%)" }} />
           <div className="orb" style={{ width: 560, height: 380, right: "-10%", top: "22%", background: "radial-gradient(circle, rgba(255,255,255,0.1), transparent 65%)" }} />
         </div>
-        <MobileNav />
         <main className="page-enter relative mx-auto w-full flex-1 px-4 py-6 sm:px-8 sm:py-8" style={{ maxWidth: "var(--page-max-width)", zIndex: 1 }}>
           {children}
         </main>

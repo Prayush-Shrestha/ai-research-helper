@@ -13,6 +13,7 @@ import { NucleusLoader } from "@/components/research/Nucleus";
 import { loadConversations } from "@/lib/research";
 import { formatDate } from "@/lib/utils";
 import { ApiError, getDashboard } from "@/lib/api";
+import { CountUp } from "@/components/motion/CountUp";
 import type { DashboardData } from "@/types/document";
 
 function PanelHead({ title, href, link }: { title: string; href: string; link: string }) {
@@ -188,12 +189,18 @@ export default function DashboardPage() {
 
       <section aria-label="At a glance" className="rise rise-3 mt-8 grid gap-5 sm:grid-cols-3">
         {[
-          ["Papers on the shelf", String(docCount)],
-          ["PDFs", String(stats?.counts.pdf_count ?? "—")],
-          ["Notes scribbled", String(stats?.counts.total_notes ?? notes.length)],
+          ["Papers on the shelf", docCount],
+          ["PDFs", stats?.counts.pdf_count ?? null],
+          ["Notes scribbled", stats?.counts.total_notes ?? notes.length],
         ].map(([label, value]) => (
-          <div key={label} className="glass-stat text-center">
-            <p style={{ fontSize: 32, fontWeight: 600, color: "var(--color-apple-ink)" }}>{value}</p>
+          <div key={label as string} className="glass-stat text-center">
+            <p style={{ fontSize: 32, fontWeight: 600, color: "var(--color-apple-ink)" }}>
+              {typeof value === "number" ? (
+                <CountUp end={value} />
+              ) : (
+                "—"
+              )}
+            </p>
             <p className="mt-1" style={{ fontSize: 13, color: "var(--color-slate)" }}>{label}</p>
           </div>
         ))}

@@ -21,7 +21,9 @@ export function ThemeToggle({ compact = false }: { compact?: boolean; tone?: str
       className="theme-big"
       style={compact ? { height: 44, padding: "0 16px", fontSize: 14 } : undefined}
     >
-      {isDark ? <Sun size={compact ? 18 : 21} aria-hidden strokeWidth={2.2} /> : <Moon size={compact ? 18 : 21} aria-hidden strokeWidth={2.2} />}
+      <span key={resolved} className="theme-icon-spin">
+        {isDark ? <Sun size={compact ? 18 : 21} aria-hidden strokeWidth={2.2} /> : <Moon size={compact ? 18 : 21} aria-hidden strokeWidth={2.2} />}
+      </span>
       <span>{isDark ? "Light" : "Dark"}</span>
     </button>
   );

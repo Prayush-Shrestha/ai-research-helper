@@ -1,16 +1,19 @@
 import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { Reveal } from "@/components/motion/Reveal";
+import { Spotlight } from "@/components/motion/Spotlight";
 import { DocumentRow } from "@/components/documents/DocumentRow";
 import type { ResearchDocument } from "@/types/document";
 
-function Feature({ title, body, index }: { title: string; body: string; index: string }) {
+function Feature({ title, body, aside, index }: { title: string; body: string; aside: string; index: string }) {
   return (
     <div className="group flex gap-5 py-7" style={{ borderBottom: "1px solid var(--liquid-border-soft)" }}>
-      <span className="mono-meta mt-1 shrink-0" style={{ fontSize: 12, color: "var(--color-electric-blue)" }}>{index}</span>
+      <span className="mono-meta mt-1 shrink-0" style={{ fontSize: 12, color: "var(--color-slate)" }}>{index}</span>
       <div>
         <h3 style={{ fontSize: 19, fontWeight: 650, letterSpacing: "-0.01em", lineHeight: 1.25, color: "var(--color-apple-ink)" }}>{title}</h3>
         <p className="mt-1.5 max-w-2xl" style={{ fontSize: 15.5, lineHeight: 1.65, color: "var(--color-graphite)" }}>{body}</p>
+        <p className="hand mt-1.5" style={{ fontSize: 15, color: "var(--color-slate)" }}>{aside}</p>
       </div>
     </div>
   );
@@ -44,19 +47,27 @@ const PREVIEW_DOCS: ResearchDocument[] = [
   },
 ];
 
+const TICKER = [
+  "47 half-read tabs",
+  "final_final_v2.pdf",
+  "citations at 2am",
+  "“where did I save that?”",
+  "one more paper, then sleep",
+  "notes on napkins",
+];
+
 function ProductPreview() {
   return (
     <div className="relative">
-      <div aria-hidden className="orb" style={{ width: 420, height: 300, right: "-6%", top: "-12%", background: "radial-gradient(circle, rgba(255,255,255,0.18), transparent 65%)", filter: "blur(60px)" }} />
       <div
         aria-label="Illustrated preview of the Lumina workspace"
-        className="gallery-card relative overflow-hidden !p-0"
+        className="gallery-card taped tilt-r relative overflow-hidden !p-0"
         style={{ borderRadius: 28 }}
       >
         <div className="flex items-center gap-1.5 px-5 pt-4">
-          <span style={{ width: 10, height: 10, borderRadius: 99, background: "rgba(255,255,255,0.16)" }} />
-          <span style={{ width: 10, height: 10, borderRadius: 99, background: "rgba(255,255,255,0.16)" }} />
-          <span style={{ width: 10, height: 10, borderRadius: 99, background: "var(--color-electric-blue)", boxShadow: "0 0 12px rgba(255,255,255,0.6)" }} />
+          <span style={{ width: 10, height: 10, borderRadius: 99, background: "rgba(127,127,133,0.4)" }} />
+          <span style={{ width: 10, height: 10, borderRadius: 99, background: "rgba(127,127,133,0.4)" }} />
+          <span style={{ width: 10, height: 10, borderRadius: 99, background: "var(--color-apple-ink)" }} />
           <span className="ml-2 tag-pill !text-[11px]">lumina · workspace</span>
         </div>
         <div className="grid md:grid-cols-[172px_1fr]">
@@ -69,8 +80,8 @@ function ProductPreview() {
                   style={{
                     fontSize: 13,
                     borderRadius: 12,
-                    background: i === 1 ? "rgba(255,255,255,0.12)" : "transparent",
-                    border: i === 1 ? "1px solid rgba(255,255,255,0.3)" : "1px solid transparent",
+                    background: i === 1 ? "rgba(127,127,133,0.14)" : "transparent",
+                    border: i === 1 ? "1px solid var(--liquid-border)" : "1px solid transparent",
                     color: i === 1 ? "var(--color-apple-ink)" : "var(--color-graphite)",
                     fontWeight: i === 1 ? 600 : 450,
                   }}
@@ -79,9 +90,9 @@ function ProductPreview() {
                 </p>
               ))}
             </div>
-            <div className="mt-4 rounded-2xl p-3" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.2)" }}>
-              <p style={{ fontSize: 12, fontWeight: 650, color: "var(--color-apple-ink)" }}>✦ 2 papers ready</p>
-              <p style={{ fontSize: 11.5, color: "var(--color-graphite)" }}>Text extracted · linked</p>
+            <div className="mt-4 rounded-2xl p-3" style={{ background: "rgba(127,127,133,0.1)", border: "1px solid var(--liquid-border-soft)" }}>
+              <p style={{ fontSize: 12, fontWeight: 650, color: "var(--color-apple-ink)" }}>2 papers ready</p>
+              <p style={{ fontSize: 11.5, color: "var(--color-graphite)" }}>text extracted · linked</p>
             </div>
           </div>
           <div className="min-w-0">
@@ -99,24 +110,24 @@ function ProductPreview() {
                 <p className="mt-2 truncate" style={{ fontSize: 14.5, fontWeight: 650, color: "var(--color-apple-ink)" }}>
                   Retrieval-Augmented Generation — A Survey
                 </p>
-                <p className="mt-1" style={{ fontSize: 12.5, color: "var(--color-slate)" }}>PDF · 42 pages · ready to read</p>
+                <p className="mt-1" style={{ fontSize: 12.5, color: "var(--color-slate)" }}>PDF · 42 pages · page 17 of 42, obviously</p>
               </div>
               <div className="p-5" style={{ background: "color-mix(in srgb, var(--color-pure-white) 82%, transparent)", backdropFilter: "blur(12px)" }}>
                 <p className="tag-pill crimson !text-[11px]">A note I left myself</p>
-                <p className="mt-2" style={{ fontSize: 14, color: "var(--color-iron)", lineHeight: 1.55, fontStyle: "italic" }}>
-                  “Three stages: parse it, index it, then check against the source.”
+                <p className="hand mt-2" style={{ fontSize: 15.5, color: "var(--color-iron)", lineHeight: 1.55 }}>
+                  “Three stages: parse it, index it, then check against the source!!”
                 </p>
-                <p className="mt-2 flex items-center gap-1.5" style={{ fontSize: 12, fontWeight: 600, color: "var(--color-electric-blue)" }}>
-                  <span aria-hidden style={{ width: 6, height: 6, borderRadius: 99, background: "currentColor", display: "inline-block", boxShadow: "0 0 8px currentColor" }} />
-                  Saved
+                <p className="mt-2 flex items-center gap-1.5" style={{ fontSize: 12, fontWeight: 600, color: "var(--color-graphite)" }}>
+                  <span aria-hidden style={{ width: 6, height: 6, borderRadius: 99, background: "currentColor", display: "inline-block" }} />
+                  Saved at 1:47am
                 </p>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <p className="mt-2.5 text-right" style={{ fontSize: 12, color: "var(--color-slate)" }}>
-        Illustrated preview — your library fills as you upload.
+      <p className="hand mt-3 text-right" style={{ fontSize: 14, color: "var(--color-slate)" }}>
+        my actual library — paper names changed to protect the guilty (me)
       </p>
     </div>
   );
@@ -128,134 +139,194 @@ export default function LandingPage() {
       <Navbar />
 
       <main className="relative mx-auto px-5 sm:px-8" style={{ maxWidth: 1180 }}>
-        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-visible">
-          <div className="orb float-slow" style={{ width: 620, height: 420, left: "-12%", top: "4%", background: "radial-gradient(circle, rgba(255,255,255,0.13), transparent 65%)" }} />
-          <div className="orb" style={{ width: 560, height: 380, right: "-10%", top: "30%", background: "radial-gradient(circle, rgba(255,255,255,0.1), transparent 65%)" }} />
-        </div>
-
         {/* ——— HERO ——— */}
-        <section className="relative grid items-center gap-12 pt-12 sm:pt-20 lg:grid-cols-[1fr_1.05fr]" aria-labelledby="hero-title" id="product" style={{ zIndex: 1 }}>
-          <div className="rise rise-1">
-            <span className="eyebrow"><span className="dot" /> Built for students drowning in PDFs</span>
-            <h1 id="hero-title" className="font-editorial mt-5" style={{ fontSize: "clamp(46px,6vw,74px)", lineHeight: 1.02, color: "var(--color-apple-ink)" }}>
-              A desk for<br />your <span style={{ background: "linear-gradient(120deg, #FFFFFF, #A1A1A6)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}>papers.</span>
+        <section className="relative grid items-center gap-12 overflow-visible pt-10 sm:pt-16 lg:grid-cols-[1fr_1.05fr]" aria-labelledby="hero-title" id="product" style={{ zIndex: 1 }}>
+          <Spotlight />
+          <div className="rise rise-1 relative" style={{ zIndex: 1 }}>
+            <p className="hand" style={{ fontSize: 19, color: "var(--color-graphite)" }}>
+              from a downloads folder with 400+ unread PDFs —
+            </p>
+            <h1 id="hero-title" className="mt-3" style={{ fontSize: "clamp(46px,6vw,74px)", fontWeight: 650, letterSpacing: "-0.035em", lineHeight: 1.0, color: "var(--color-apple-ink)" }}>
+              A desk for<br />your <span className="hand" style={{ letterSpacing: "-0.01em" }}>papers.</span>
             </h1>
             <p className="hero-sub mt-5 max-w-md">
-              I started Lumina because my downloads folder was a mess of
-              half-read papers. Upload them here, keep notes next to the source,
-              and find things again. That is the whole idea.
+              Hi, I&apos;m the person who kept losing papers in browser tabs.
+              So I built a shelf: drop your PDFs in, scribble notes next to
+              them, grab citations when it&apos;s 2am and the deadline is real.
+              That&apos;s the whole pitch.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link href="/register" className="primary-button" style={{ padding: "13px 30px", fontSize: 16 }}>
-                Make an account
+              <Link href="/register" className="primary-button" style={{ padding: "14px 32px", fontSize: 16 }}>
+                Get started — it&apos;s free
               </Link>
               <Link href="/dashboard" className="ghost-pill">
                 Look inside →
               </Link>
             </div>
-            <div className="mt-6 flex flex-wrap gap-2">
-              <span className="tag-pill">PDF + Word</span>
-              <span className="tag-pill">Free</span>
-              <span className="tag-pill crimson">Private by default</span>
-            </div>
+            <p className="mt-5" style={{ fontSize: 13.5, color: "var(--color-slate)" }}>
+              PDFs + Word · no credit card · I never see your uploads
+            </p>
           </div>
-          <div className="rise rise-2">
+          <div className="rise rise-2 relative">
+            {/* hand-drawn nudge */}
+            <div aria-hidden className="drift absolute -top-12 left-2 z-10 hidden items-center gap-2 sm:flex">
+              <svg className="doodle-draw" width="72" height="46" viewBox="0 0 72 46" fill="none" aria-hidden>
+                <path d="M4 6 C 24 4, 48 8, 62 34 M62 34 l-9 -3 M62 34 l1 -9" stroke="var(--color-slate)" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              <span className="hand" style={{ fontSize: 16, color: "var(--color-slate)" }}>this bit is real, go click it</span>
+            </div>
             <ProductPreview />
           </div>
         </section>
 
-        {/* ——— LOGOS / STATS STRIP ——— */}
-        <section className="rise rise-3 relative mt-16 grid gap-3 sm:grid-cols-3" style={{ zIndex: 1 }}>
+        {/* ——— TICKER ——— */}
+        <Reveal className="relative mt-14" style={{ zIndex: 1 } as never}>
+          <div className="marquee gallery-card !p-0" aria-hidden>
+            <div className="marquee-track py-3.5">
+              {[...TICKER, ...TICKER].map((t, i) => (
+                <span key={i} className="flex items-center" style={{ fontSize: 14.5, color: "var(--color-graphite)", whiteSpace: "nowrap" }}>
+                  <span className="hand px-6" style={{ fontSize: 16 }}>{t}</span>
+                  <span aria-hidden style={{ color: "var(--color-slate)" }}>✦</span>
+                </span>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+
+        {/* ——— HONEST NUMBERS ——— */}
+        <Reveal className="relative mt-6 grid gap-3 sm:grid-cols-3" style={{ zIndex: 1 } as never}>
           {[
-            ["15 MB", "per file, parsed instantly"],
-            ["3 formats", "APA · IEEE · BibTeX in one click"],
-            ["100%", "yours — isolated per account"],
+            ["15 MB", "biggest file it'll swallow. most papers are ~3."],
+            ["3", "citation styles. APA, IEEE, BibTeX — that's all I know."],
+            ["0", "trackers, ads, or 'AI insights' dashboards."],
           ].map(([v, l]) => (
             <div key={l} className="glass-stat">
-              <p style={{ fontSize: 26, fontWeight: 700, letterSpacing: "-0.02em", color: "var(--color-apple-ink)" }}>{v}</p>
-              <p className="mt-1" style={{ fontSize: 13.5, color: "var(--color-graphite)" }}>{l}</p>
+              <p style={{ fontSize: 30, fontWeight: 700, letterSpacing: "-0.03em", color: "var(--color-apple-ink)" }}>{v}</p>
+              <p className="mt-1" style={{ fontSize: 13.5, color: "var(--color-graphite)", lineHeight: 1.55 }}>{l}</p>
             </div>
           ))}
-        </section>
+        </Reveal>
 
         {/* ——— FEATURES ——— */}
-        <section id="features" className="relative mx-auto mt-24" aria-label="Features" style={{ maxWidth: 860, zIndex: 1 }}>
-          <span className="eyebrow"><span className="dot" /> What you actually get</span>
-          <h2 className="font-editorial mt-4" style={{ fontSize: "clamp(32px,4vw,50px)", lineHeight: 1.06, color: "var(--color-apple-ink)" }}>
+        <Reveal as="section" id="features" className="relative mx-auto mt-24" aria-label="Features" style={{ maxWidth: 860, zIndex: 1 } as never}>
+          <p className="hand" style={{ fontSize: 19, color: "var(--color-graphite)" }}>what you actually get (no more, no less)</p>
+          <h2 className="mt-2" style={{ fontSize: "clamp(32px,4vw,50px)", fontWeight: 650, letterSpacing: "-0.03em", lineHeight: 1.05, color: "var(--color-apple-ink)" }}>
             Less filing, more reading.
           </h2>
           <div className="gallery-card mt-8 !p-8">
-            <Feature index="01" title="One list for everything" body="All your papers in a single searchable list. Filter by file type, sort a few ways. It is plain on purpose, so a hundred papers still feel manageable." />
-            <Feature index="02" title="It reads the file for you" body="Upload a PDF or Word doc and the text comes out automatically. If a scan has no readable text, it tells you straight instead of showing a blank page." />
-            <Feature index="03" title="Notes sit next to their paper" body="Jot down why a paper matters while you are reading it. The note stays attached to that paper, with a date, so you remember the context later." />
-            <Feature index="04" title="Citations without the fuss" body="Fill in a small form and get APA, IEEE, or BibTeX back. There is also a checklist if you are writing and keep forgetting sections." />
+            <Feature index="01" title="One list for everything" body="All your papers in a single searchable list. Filter by file type, sort a few ways. Deliberately plain — a hundred papers still feel manageable." aside="yes, I tried folders. no, they didn't survive contact with me." />
+            <Feature index="02" title="It reads the file for you" body="Upload a PDF or Word doc and the text comes out on its own. Scanned image with no readable text? It says so straight, instead of a mysterious blank page." aside="OCR for scans is on the someday list. someday is doing great." />
+            <Feature index="03" title="Notes sit next to their paper" body="Jot down why a paper matters while reading it. The note stays attached, dated, so future-you remembers the context." aside="future-me has thanked past-me twice. a record." />
+            <Feature index="04" title="Citations without the fuss" body="Small form in, APA / IEEE / BibTeX out. Plus a writing checklist, because I kept forgetting the limitations section." aside="the checklist is just my supervisor's comments, formatted." />
             <div className="flex gap-5 py-7">
-              <span className="mono-meta mt-1 shrink-0" style={{ fontSize: 12, color: "var(--color-electric-blue)" }}>05</span>
+              <span className="mono-meta mt-1 shrink-0" style={{ fontSize: 12, color: "var(--color-slate)" }}>05</span>
               <div>
                 <h3 style={{ fontSize: 19, fontWeight: 650, color: "var(--color-apple-ink)" }}>Yours means yours</h3>
-                <p className="mt-1.5" style={{ fontSize: 15.5, lineHeight: 1.65, color: "var(--color-graphite)" }}>You only ever see your own uploads. Every page checks that before showing anything.</p>
+                <p className="mt-1.5" style={{ fontSize: 15.5, lineHeight: 1.65, color: "var(--color-graphite)" }}>You only ever see your own uploads. Every page checks first. I can&apos;t see your files, which is good, because my curiosity is boundless.</p>
               </div>
             </div>
           </div>
-        </section>
+        </Reveal>
 
         {/* ——— HOW IT WORKS ——— */}
-        <section id="workflow" className="relative mx-auto mt-24" aria-label="How it works" style={{ maxWidth: 960, zIndex: 1 }}>
+        <Reveal as="section" id="workflow" className="relative mx-auto mt-24" aria-label="How it works" style={{ maxWidth: 960, zIndex: 1 } as never}>
           <div className="text-center">
-            <span className="eyebrow"><span className="dot" /> Getting started</span>
-            <h2 className="font-editorial mt-4" style={{ fontSize: "clamp(32px,4vw,50px)", color: "var(--color-apple-ink)" }}>
+            <p className="hand" style={{ fontSize: 19, color: "var(--color-graphite)" }}>the whole onboarding, honestly</p>
+            <h2 className="mt-2" style={{ fontSize: "clamp(32px,4vw,50px)", fontWeight: 650, letterSpacing: "-0.03em", color: "var(--color-apple-ink)" }}>
               Up and running in minutes.
             </h2>
           </div>
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
             {[
-              ["01 · First", "Make an account", "Name, email, password. About half a minute.", "/register", "Register"],
-              ["02 · Then", "Drop in a paper", "PDF or Word, up to 15 MB. Text pulls out by itself.", "/documents", "Open library"],
-              ["03 · After that", "Read and scribble", "Read the text, save a note, grab a citation.", "/guide", "Read the guide"],
+              ["step one", "Get started", "Name, email, password. About half a minute, I timed it.", "/register", "Create account →"],
+              ["step two", "Drop in a paper", "PDF or Word, up to 15 MB. The one that's been open in a tab for a week.", "/documents", "Open the library →"],
+              ["step three", "Read & scribble", "Read the text, save a note, steal a citation at 2am.", "/guide", "Read the guide →"],
             ].map(([n, t, d, href, link]) => (
               <div key={t} className="gallery-card hover-lift !p-6">
-                <p className="tag-pill crimson !text-[11px]">{n}</p>
-                <p className="mt-3" style={{ fontSize: 18, fontWeight: 650, letterSpacing: "-0.01em", color: "var(--color-apple-ink)" }}>{t}</p>
+                <p className="hand" style={{ fontSize: 16, color: "var(--color-slate)" }}>{n}</p>
+                <p className="mt-2" style={{ fontSize: 18, fontWeight: 650, letterSpacing: "-0.01em", color: "var(--color-apple-ink)" }}>{t}</p>
                 <p className="mt-1.5" style={{ fontSize: 14.5, color: "var(--color-graphite)", lineHeight: 1.6 }}>{d}</p>
-                <Link href={href} className="mt-4 inline-block" style={{ fontSize: 14.5, fontWeight: 600, color: "var(--color-link-blue)" }}>{link} →</Link>
+                <Link href={href} className="mt-4 inline-block" style={{ fontSize: 14.5, fontWeight: 600, color: "var(--color-link-blue)" }}>{link}</Link>
               </div>
             ))}
           </div>
-        </section>
+        </Reveal>
+
+        {/* ——— FIELD NOTES ——— */}
+        <Reveal as="section" className="relative mx-auto mt-16" aria-label="Field notes" style={{ maxWidth: 860, zIndex: 1 } as never}>
+          <div className="gallery-card tilt-l !p-8">
+            <div className="flex items-baseline justify-between gap-4">
+              <h2 style={{ fontSize: 24, fontWeight: 650, letterSpacing: "-0.02em", color: "var(--color-apple-ink)" }}>
+                Field notes
+              </h2>
+              <p className="hand shrink-0" style={{ fontSize: 15, color: "var(--color-slate)" }}>stuff I&apos;ve fixed lately</p>
+            </div>
+            <div className="mt-4">
+              {[
+                ["Oct 12", "Uploads used to choke on 14.9 MB files. Off by one. Classic. Fixed."],
+                ["Oct 03", "Word docs with footnotes rendered as soup. Less soupy now."],
+                ["Sep 27", "Someone (me) deleted a note with no undo. Delete asks first now."],
+              ].map(([date, note]) => (
+                <div key={date} className="flex gap-4 py-3.5" style={{ borderTop: "1px solid var(--liquid-border-soft)" }}>
+                  <span className="mono-meta shrink-0 pt-0.5" style={{ fontSize: 12, color: "var(--color-slate)" }}>{date}</span>
+                  <p style={{ fontSize: 15.5, color: "var(--color-iron)", lineHeight: 1.6 }}>{note}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+
+        {/* ——— PEOPLE ASK ——— */}
+        <Reveal as="section" className="relative mx-auto mt-16" aria-label="Questions people actually ask" style={{ maxWidth: 860, zIndex: 1 } as never}>
+          <h2 className="text-center" style={{ fontSize: "clamp(28px,3.5vw,40px)", fontWeight: 650, letterSpacing: "-0.03em", color: "var(--color-apple-ink)" }}>
+            Things people ask me
+          </h2>
+          <div className="mt-6 grid gap-4 sm:grid-cols-3">
+            {[
+              ["“Is it free?”", "Yes. I'm a student. Charging students would be a bold move."],
+              ["“Do you train AI on my PDFs?”", "No. I can barely afford the server. Your files stay yours."],
+              ["“What if I upload garbage?”", "It'll hold your garbage lovingly. Search still works. No judgment."],
+            ].map(([q, a]) => (
+              <div key={q} className="gallery-card !p-6">
+                <p className="hand" style={{ fontSize: 17, color: "var(--color-apple-ink)" }}>{q}</p>
+                <p className="mt-2" style={{ fontSize: 14.5, color: "var(--color-graphite)", lineHeight: 1.6 }}>{a}</p>
+              </div>
+            ))}
+          </div>
+        </Reveal>
 
         {/* ——— AI NOTE ——— */}
-        <section className="relative mx-auto mt-16" aria-label="About future AI features" style={{ maxWidth: 960, zIndex: 1 }}>
-          <div className="gallery-card relative overflow-hidden">
-            <div aria-hidden className="orb" style={{ width: 380, height: 240, right: "-5%", top: "-30%", background: "radial-gradient(circle, rgba(255,255,255,0.16), transparent 65%)" }} />
-            <span className="tag-pill crimson">✦ A note on AI</span>
+        <Reveal as="section" className="relative mx-auto mt-16" aria-label="About future AI features" style={{ maxWidth: 860, zIndex: 1 } as never}>
+          <div className="gallery-card">
+            <span className="tag-pill">a note on AI, since everyone asks</span>
             <h2 className="mt-3" style={{ fontSize: 24, fontWeight: 650, letterSpacing: "-0.02em", color: "var(--color-apple-ink)" }}>
               Question answering is next. It will quote or stay quiet.
             </h2>
             <p className="mt-2 max-w-2xl" style={{ fontSize: 15.5, color: "var(--color-graphite)", lineHeight: 1.65 }}>
               Right now this is a solid base: uploads that work, text you can
-              read, notes that stay put. The next step is asking questions over
-              your own files with real quotes. The assistant pages are marked
-              as early previews until that lands.
+              read, notes that stay put. Next: asking questions over your own
+              files, with real quotes. The assistant pages wear an &ldquo;early
+              preview&rdquo; badge until then — I&apos;d rather under-promise.
             </p>
           </div>
-        </section>
+        </Reveal>
 
         {/* ——— FINAL CTA ——— */}
-        <section className="relative mx-auto mt-16 text-center" aria-label="Get started" style={{ maxWidth: 720, marginBottom: 24, zIndex: 1 }}>
-          <div className="gallery-card !p-12" style={{ borderRadius: 32 }}>
-            <div aria-hidden className="orb" style={{ width: 500, height: 300, left: "50%", top: "-40%", transform: "translateX(-50%)", background: "radial-gradient(circle, rgba(255,255,255,0.16), transparent 65%)" }} />
-            <h2 className="font-editorial relative" style={{ fontSize: "clamp(34px,5vw,54px)", lineHeight: 1.05, color: "var(--color-apple-ink)" }}>
+        <Reveal as="section" className="relative mx-auto mt-16 text-center" aria-label="Get started" style={{ maxWidth: 720, marginBottom: 24, zIndex: 1 } as never}>
+          <div className="gallery-card taped !p-12" style={{ borderRadius: 32 }}>
+            <p className="hand" style={{ fontSize: 18, color: "var(--color-graphite)" }}>no sales call, I promise. there&apos;s no sales team. it&apos;s me.</p>
+            <h2 className="mt-3" style={{ fontSize: "clamp(34px,5vw,54px)", fontWeight: 650, letterSpacing: "-0.03em", lineHeight: 1.04, color: "var(--color-apple-ink)" }}>
               Got one PDF lying around?
             </h2>
-            <p className="relative mx-auto mt-4 max-w-md" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
-              Put it here and see if this feels better than your downloads folder.
+            <p className="mx-auto mt-4 max-w-md" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
+              Put it here. If it doesn&apos;t feel better than your downloads folder, tell me why — I read everything.
             </p>
-            <div className="relative mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Link href="/register" className="primary-button" style={{ padding: "13px 32px" }}>Make an account</Link>
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Link href="/register" className="primary-button" style={{ padding: "14px 34px", fontSize: 16 }}>Get started</Link>
               <Link href="/guide" className="ghost-pill">How it works</Link>
             </div>
           </div>
-        </section>
+        </Reveal>
       </main>
 
       <Footer />
