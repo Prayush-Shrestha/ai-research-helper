@@ -8,14 +8,17 @@ from sqlalchemy.orm import Session
 from app.core.config import Settings
 from app.models.document import Document
 from app.models.note import ResearchNote
-from app.models.user import ADMIN_ROLE, User
+from app.models.user import ADMIN_ROLE, USER_ROLE, User
 from app.schemas.admin import (
     AdminDocumentWithOwner,
     AdminNoteWithOwner,
+    AdminRegisterIn,
     AdminStatsOut,
     AdminUserDetailOut,
     AdminUserOut,
+    RoleUpdateIn,
 )
+from app.services import auth_service
 from app.services.file_storage import LocalFileStorage
 
 
@@ -210,3 +213,33 @@ def delete_user_account(db: Session, target: User, settings: Settings) -> None:
     db.commit()
     for key in keys:
         storage.delete(key)
+
+
+def admin_register_user(
+    db: Session,
+    admin: User,
+    payload: AdminRegisterIn,
+    settings: Settings,
+) -> User | None:
+    """Admin creates another account.
+
+    Only an existing admin may call this. Returns None when the email is taken.
+    The new account gets the role the admin chose (user or admin).
+    """
+    if not admin.is_admin:
+        return None
+
+    email = payload.email.strip().lower()
+    if auth_service.get_user_by_email(db, email) is not None:
+        return None
+
+    user = User(
+        name=payload.name.strip(),
+        email=email,
+        password_hash=auth_service.hash_password(payload.password),
+        role=payload.role,
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user

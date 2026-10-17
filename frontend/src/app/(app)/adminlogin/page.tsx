@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { CountUp } from "@/components/motion/CountUp";
 import { PageLoading } from "@/components/ui/Loading";
 import {
+  adminRegisterUser,
   deleteAdminUser,
   getAdminDocuments,
   getAdminNotes,
@@ -162,6 +163,35 @@ export default function AdminPage() {
     }
   }
 
+  /* Add a new account from the admin console. */
+  const [addOpen, setAddOpen] = useState(false);
+  const [addName, setAddName] = useState("");
+  const [addEmail, setAddEmail] = useState("");
+  const [addPassword, setAddPassword] = useState("");
+  const [addRole, setAddRole] = useState<"user" | "admin">("user");
+  const [addLoading, setAddLoading] = useState(false);
+  const [addError, setAddError] = useState<string | null>(null);
+
+  async function handleAddAccount(e: React.FormEvent) {
+    e.preventDefault();
+    setAddError(null);
+    setAddLoading(true);
+    try {
+      await adminRegisterUser({ name: addName, email: addEmail, password: addPassword, role: addRole });
+      setNotice(`${addEmail} created as ${addRole}.`);
+      setAddOpen(false);
+      setAddName("");
+      setAddEmail("");
+      setAddPassword("");
+      setAddRole("user");
+      await load(search);
+    } catch (err) {
+      setAddError(err instanceof ApiError ? err.message : "Could not create account.");
+    } finally {
+      setAddLoading(false);
+    }
+  }
+
   /* Non-admins landing on /adminlogin get a plain "not allowed" page. */
   if (!isAdmin && !loading) {
     return (
@@ -230,6 +260,62 @@ export default function AdminPage() {
               <p className="mt-1" style={{ fontSize: 13, color: "var(--color-slate)" }}>Stored files</p>
             </div>
           </section>
+
+          <div className="mt-6 flex flex-wrap justify-between gap-3">
+            <button
+              type="button"
+              onClick={() => setAddOpen((v) => !v)}
+              className="primary-button"
+              style={{ padding: "10px 24px", fontSize: 14.5 }}
+            >
+              {addOpen ? "Close" : "Add account +"}
+            </button>
+            {addOpen && (
+              <form onSubmit={handleAddAccount} className="flex gap-3" style={{ marginTop: 10 }}>
+                <input
+                  name="name"
+                  placeholder="Name"
+                  defaultValue=""
+                  className="field-input"
+                  style={{ minWidth: 140 }}
+                  required
+                />
+                <input
+                  name="email"
+                  placeholder="Email"
+                  type="email"
+                  defaultValue=""
+                  className="field-input"
+                  style={{ minWidth: 180 }}
+                  required
+                />
+                <select
+                  name="role"
+                  defaultValue="user"
+                  className="field-input"
+                  style={{ minWidth: 120 }}
+                >
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
+                </select>
+                <input
+                  name="password"
+                  placeholder="Password (8+ chars)"
+                  type="password"
+                  defaultValue=""
+                  className="field-input"
+                  style={{ minWidth: 160 }}
+                  required
+                />
+                <button type="submit" disabled={addLoading} className="primary-button" style={{ padding: "10px 20px", fontSize: 13.5, opacity: addLoading ? 0.6 : 1 }}>
+                  {addLoading ? "Creating…" : "Create"}
+                </button>
+              </form>
+            )}
+            {addError && (
+              <p style={{ fontSize: 12.5, color: "var(--color-alert)", marginTop: 10 }}>{addError}</p>
+            )}
+          </div>
 
           {/* Find an account */}
           <section aria-label="Find an account" className="rise rise-3 mx-auto mt-8" style={{ maxWidth: 680 }}>

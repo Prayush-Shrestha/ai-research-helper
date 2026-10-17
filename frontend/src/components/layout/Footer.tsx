@@ -76,7 +76,7 @@ export function Footer() {
         </div>
         <div className="mt-8 flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between" style={{ borderTop: "1px solid var(--liquid-border)", paddingTop: 18 }}>
           <p style={{ fontSize: 12.5, color: "var(--color-slate)" }}>© 2026 Lumina · poured in glass, built for readers.</p>
-          <p style={{ fontSize: 12.5, color: "var(--color-slate)" }}>Your files stay yours, always.</p>
+          <p style={{ fontSize: 12.5, color: "var(--color-slate)" }}>Your files stay yours, always. Lumina claims no copyright over your uploads or notes.</p>
         </div>
       </div>
     </footer>

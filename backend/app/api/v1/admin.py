@@ -17,6 +17,7 @@ from app.models.user import ADMIN_ROLE, USER_ROLE, User
 from app.schemas.admin import (
     AdminDocumentWithOwner,
     AdminNoteWithOwner,
+    AdminRegisterIn,
     AdminStatsOut,
     AdminUserDetailOut,
     AdminUserOut,
@@ -41,6 +42,23 @@ def read_users(
     db: Session = Depends(get_db),
 ) -> list[AdminUserOut]:
     return admin_service.list_users(db, search)
+
+
+@router.post("/register", response_model=AdminUserOut, status_code=status.HTTP_201_CREATED)
+def admin_register(
+    payload: AdminRegisterIn,
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_user),
+    settings: Settings = Depends(get_settings_dep),
+) -> AdminUserOut:
+    """Admin creates another account (user or admin)."""
+    created = admin_service.admin_register_user(db, admin, payload, settings)
+    if created is None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="An account with this email already exists.",
+        )
+    return admin_service.row_for(db, created)
 
 
 @router.get("/documents", response_model=list[AdminDocumentWithOwner])

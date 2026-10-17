@@ -69,3 +69,11 @@ class AdminStatsOut(BaseModel):
 
 class RoleUpdateIn(BaseModel):
     role: str = Field(pattern="^(user|admin)$")
+
+
+class AdminRegisterIn(BaseModel):
+    """Admin-created account. Only an existing admin may use this."""
+    name: str = Field(min_length=1, max_length=100)
+    email: str = Field(max_length=320)
+    password: str = Field(min_length=8, max_length=128)
+    role: str = Field(pattern="^(user|admin)$", default="user")

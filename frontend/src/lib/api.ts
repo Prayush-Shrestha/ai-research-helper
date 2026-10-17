@@ -299,6 +299,18 @@ export function getAdminUsers(search?: string): Promise<AdminUser[]> {
   return request<AdminUser[]>(`/adminlogin/users${qs}`);
 }
 
+export function adminRegisterUser(payload: {
+  name: string;
+  email: string;
+  password: string;
+  role: "user" | "admin";
+}): Promise<AdminUser> {
+  return request<AdminUser>("/adminlogin/register", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
 export function getAdminDocuments(): Promise<AdminDocument[]> {
   return request<AdminDocument[]>("/adminlogin/documents");
 }
