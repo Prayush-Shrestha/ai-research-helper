@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useDocuments } from "@/hooks/useDocuments";
+import { useAuth } from "@/hooks/useAuth";
 import { DocumentRow } from "@/components/documents/DocumentRow";
 import { UploadPanel } from "@/components/documents/UploadPanel";
 import { PageLoading } from "@/components/ui/Loading";
@@ -14,6 +15,8 @@ type Sort = "newest" | "oldest" | "name";
 const PAGE_SIZE = 12;
 
 export default function DocumentsPage() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<Filter>("ALL");
   const [sort, setSort] = useState<Sort>("newest");
@@ -73,9 +76,9 @@ export default function DocumentsPage() {
         <div aria-hidden className="orb" style={{ width: 340, height: 340, top: -120, left: -120, background: "radial-gradient(circle, rgba(255,255,255,0.16), transparent 65%)" }} />
         <div aria-hidden className="orb" style={{ width: 300, height: 300, top: -100, right: -100, background: "radial-gradient(circle, rgba(255,255,255,0.14), transparent 65%)" }} />
         <div className="relative">
-          <span className="eyebrow"><span className="dot" />Library</span>
+          <span className="eyebrow"><span className="dot" />{isAdmin ? "Site library" : "Library"}</span>
           <h1 className="mt-4" style={{ fontWeight: 600, letterSpacing: "-0.03em", fontSize: 28, lineHeight: 1.2, color: "var(--color-apple-ink)" }}>
-            {total === 0 ? "Your shelf is waiting." : "Your papers."}
+            {total === 0 ? "Your shelf is waiting." : isAdmin ? "All papers on the site" : "Your papers."}
           </h1>
           <p className="hero-sub mt-3 max-w-xl">
             {total === 0

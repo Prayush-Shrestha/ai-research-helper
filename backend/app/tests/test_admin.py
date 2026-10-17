@@ -7,6 +7,7 @@ from fastapi.testclient import TestClient
 from app.core.config import get_settings
 from app.models.user import User
 from app.tests.conftest import auth_client, login, register
+from app.tests.test_documents import TINY_PDF, upload
 
 
 def make_admin(
@@ -101,3 +102,70 @@ def test_admin_allowlist_promotes_on_login(client: TestClient, monkeypatch):
     monkeypatch.setattr(get_settings(), "ADMIN_EMAILS", "ada@example.edu")
     me = login(client, email="ada@example.edu")
     assert me["role"] == "admin"
+
+
+# --- admin cross-user access -----------------------------------------------
+
+
+def _seed_admin_and_user(client: TestClient, db_session):
+    """Register a regular user and an admin; return (admin, user_client, ada)."""
+    user_client = auth_client(client, email="ada@example.edu")
+    ada = db_session.query(User).filter_by(email="ada@example.edu").one()
+    admin = make_admin(client, db_session, email="boss@example.edu")
+    return admin, user_client, ada
+
+
+def test_admin_can_read_another_users_document(client: TestClient, db_session):
+    admin, user_client, _ada = _seed_admin_and_user(client, db_session)
+    doc_id = upload(user_client).json()["id"]
+
+    # Admin may fetch any user's document.
+    got = admin.get(f"/api/v1/documents/{doc_id}")
+    assert got.status_code == 200
+    assert got.json()["id"] == doc_id
+
+    # Admin's document list includes the other user's document.
+    listing = admin.get("/api/v1/documents").json()
+    assert listing["total"] >= 1
+    assert any(d["id"] == doc_id for d in listing["items"])
+
+
+def test_admin_can_download_another_users_document(client: TestClient, db_session):
+    admin, user_client, _ada = _seed_admin_and_user(client, db_session)
+    doc_id = upload(user_client).json()["id"]
+
+    dl = admin.get(f"/api/v1/documents/{doc_id}/download")
+    assert dl.status_code == 200
+    assert dl.content == TINY_PDF
+
+
+def test_admin_can_read_another_users_note(client: TestClient, db_session):
+    admin, user_client, _ada = _seed_admin_and_user(client, db_session)
+    doc_id = upload(user_client).json()["id"]
+    note_id = user_client.post(
+        f"/api/v1/notes/documents/{doc_id}/notes",
+        json={"title": "Secret", "content": "mine"},
+    ).json()["id"]
+
+    # Admin may fetch any user's note.
+    got = admin.get(f"/api/v1/notes/{note_id}")
+    assert got.status_code == 200
+    assert got.json()["id"] == note_id
+
+    # Admin's note list includes the other user's note.
+    listing = admin.get("/api/v1/notes").json()
+    assert listing["total"] >= 1
+    assert any(n["id"] == note_id for n in listing["items"])
+
+
+def test_admin_can_create_note_on_another_users_document(client: TestClient, db_session):
+    admin, user_client, _ada = _seed_admin_and_user(client, db_session)
+    doc_id = upload(user_client).json()["id"]
+
+    created = admin.post(
+        f"/api/v1/notes/documents/{doc_id}/notes",
+        json={"title": "Admin note", "content": "observed by admin"},
+    )
+    assert created.status_code == 201
+    assert created.json()["document_id"] == doc_id
+    assert created.json()["content"] == "observed by admin"

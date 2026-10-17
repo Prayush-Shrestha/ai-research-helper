@@ -22,18 +22,20 @@ def _storage(settings: Settings) -> LocalFileStorage:
     return LocalFileStorage(settings.UPLOAD_DIRECTORY)
 
 
-def get_document(db: Session, owner: User, document_id: str) -> Document | None:
-    """Fetch one document, enforcing ownership (no IDOR by obscurity)."""
-    return db.scalars(
-        select(Document).where(
-            Document.id == document_id, Document.owner_id == owner.id
-        )
-    ).first()
+def get_document(db: Session, requester: User, document_id: str) -> Document | None:
+    """Fetch one document.
+
+    Admins may read any document; everyone else only their own (no IDOR).
+    """
+    stmt = select(Document).where(Document.id == document_id)
+    if not requester.is_admin:
+        stmt = stmt.where(Document.owner_id == requester.id)
+    return db.scalars(stmt).first()
 
 
 def list_documents(
     db: Session,
-    owner: User,
+    requester: User,
     *,
     search: str | None = None,
     file_type: str | None = None,
@@ -41,7 +43,9 @@ def list_documents(
     page: int = 1,
     page_size: int = 20,
 ) -> tuple[list[Document], int]:
-    stmt = select(Document).where(Document.owner_id == owner.id)
+    stmt = select(Document)
+    if not requester.is_admin:
+        stmt = stmt.where(Document.owner_id == requester.id)
     if file_type in ("PDF", "DOCX"):
         stmt = stmt.where(Document.file_type == file_type)
     if search and search.strip():

@@ -23,24 +23,22 @@ def _to_out(note: ResearchNote, document_title: str | None = None) -> NoteOut:
     )
 
 
-def get_note(db: Session, owner: User, note_id: str) -> ResearchNote | None:
-    return db.scalars(
-        select(ResearchNote).where(
-            ResearchNote.id == note_id, ResearchNote.owner_id == owner.id
-        )
-    ).first()
+def get_note(db: Session, requester: User, note_id: str) -> ResearchNote | None:
+    stmt = select(ResearchNote).where(ResearchNote.id == note_id)
+    if not requester.is_admin:
+        stmt = stmt.where(ResearchNote.owner_id == requester.id)
+    return db.scalars(stmt).first()
 
 
 def _resolve_document(
-    db: Session, owner: User, document_id: str | None
+    db: Session, requester: User, document_id: str | None
 ) -> tuple[Document | None, str | None]:
     if document_id is None:
         return None, None
-    document = db.scalars(
-        select(Document).where(
-            Document.id == document_id, Document.owner_id == owner.id
-        )
-    ).first()
+    stmt = select(Document).where(Document.id == document_id)
+    if not requester.is_admin:
+        stmt = stmt.where(Document.owner_id == requester.id)
+    document = db.scalars(stmt).first()
     if document is None:
         return None, "Document not found."
     return document, None
@@ -80,13 +78,14 @@ def delete_note(db: Session, note: ResearchNote) -> None:
 
 
 def list_notes(
-    db: Session, owner: User, *, page: int = 1, page_size: int = 20
+    db: Session, requester: User, *, page: int = 1, page_size: int = 20
 ) -> tuple[list[NoteOut], int]:
     base = (
         select(ResearchNote, Document.title)
         .outerjoin(Document, Document.id == ResearchNote.document_id)
-        .where(ResearchNote.owner_id == owner.id)
     )
+    if not requester.is_admin:
+        base = base.where(ResearchNote.owner_id == requester.id)
     total = db.scalar(select(func.count()).select_from(base.subquery())) or 0
     rows = db.execute(
         base.order_by(ResearchNote.updated_at.desc())
@@ -96,14 +95,15 @@ def list_notes(
     return [_to_out(note, doc_title) for note, doc_title in rows], total
 
 
-def list_document_notes(db: Session, owner: User, document: Document) -> list[NoteOut]:
-    notes = db.scalars(
-        select(ResearchNote)
-        .where(
-            ResearchNote.owner_id == owner.id,
-            ResearchNote.document_id == document.id,
-        )
-        .order_by(ResearchNote.updated_at.desc())
-        .options(joinedload(ResearchNote.document))
-    ).all()
+def list_document_notes(db: Session, requester: User, document: Document) -> list[NoteOut]:
+    stmt = select(ResearchNote).where(ResearchNote.document_id == document.id)
+    if not requester.is_admin:
+        stmt = stmt.where(ResearchNote.owner_id == requester.id)
+    notes = list(
+        db.scalars(
+            stmt.order_by(ResearchNote.updated_at.desc()).options(
+                joinedload(ResearchNote.document)
+            )
+        ).all()
+    )
     return [_to_out(note, document.title) for note in notes]
