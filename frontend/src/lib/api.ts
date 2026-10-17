@@ -291,36 +291,63 @@ export interface AdminStats {
 }
 
 export function getAdminStats(): Promise<AdminStats> {
-  return request<AdminStats>("/admin/stats");
+  return request<AdminStats>("/adminlogin/stats");
 }
 
 export function getAdminUsers(search?: string): Promise<AdminUser[]> {
   const qs = search?.trim() ? `?search=${encodeURIComponent(search.trim())}` : "";
-  return request<AdminUser[]>(`/admin/users${qs}`);
+  return request<AdminUser[]>(`/adminlogin/users${qs}`);
 }
 
 export function getAdminDocuments(): Promise<AdminDocument[]> {
-  return request<AdminDocument[]>("/admin/documents");
+  return request<AdminDocument[]>("/adminlogin/documents");
 }
 
 export function getAdminNotes(): Promise<AdminNote[]> {
-  return request<AdminNote[]>("/admin/notes");
+  return request<AdminNote[]>("/adminlogin/notes");
 }
 
 export function getAdminUser(id: string): Promise<AdminUserDetail> {
-  return request<AdminUserDetail>(`/admin/users/${encodeURIComponent(id)}`);
+  return request<AdminUserDetail>(`/adminlogin/users/${encodeURIComponent(id)}`);
 }
 
 export function setAdminRole(id: string, role: "user" | "admin"): Promise<AdminUser> {
-  return request<AdminUser>(`/admin/users/${encodeURIComponent(id)}/role`, {
+  return request<AdminUser>(`/adminlogin/users/${encodeURIComponent(id)}/role`, {
     method: "PATCH",
     body: JSON.stringify({ role }),
   });
 }
 
 export function deleteAdminUser(id: string): Promise<{ detail: string }> {
-  return request<{ detail: string }>(`/admin/users/${encodeURIComponent(id)}`, {
+  return request<{ detail: string }>(`/adminlogin/users/${encodeURIComponent(id)}`, {
     method: "DELETE",
+  });
+}
+
+// ----------------------------------------------------------- Research ---
+
+export interface TopicSuggestion {
+  title: string;
+  description: string;
+  why_it_fits: string;
+  suggested_approach: string;
+  is_best: boolean;
+}
+
+export interface SuggestTopicsOut {
+  topics: TopicSuggestion[];
+  best_topic_index: number | null;
+  note: string | null;
+}
+
+export interface SuggestTopicsIn {
+  description: string;
+}
+
+export function suggestTopics(description: string): Promise<SuggestTopicsOut> {
+  return request<SuggestTopicsOut>("/research/suggest-topics", {
+    method: "POST",
+    body: JSON.stringify({ description }),
   });
 }
 

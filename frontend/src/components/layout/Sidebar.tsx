@@ -78,6 +78,7 @@ export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle:
   const workspace: NavItem[] = [
     { href: "/dashboard", label: "Overview", icon: <LayoutDashboard size={17} aria-hidden /> },
     { href: "/documents", label: "My Research", icon: <BookOpen size={17} aria-hidden /> },
+    { href: "/research-topics", label: "Topic Suggestions", icon: <Sparkles size={17} aria-hidden /> },
     { href: "/collections", label: "Collections", icon: <FolderOpen size={17} aria-hidden /> },
     { href: "/assistant", label: "AI Conversations", icon: <MessagesSquare size={17} aria-hidden /> },
     { href: "/notes", label: "Saved Notes", icon: <NotebookPen size={17} aria-hidden /> },
@@ -92,7 +93,7 @@ export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle:
 
   const account: NavItem[] = [
     ...(user?.role === "admin"
-      ? [{ href: "/admin", label: "Admin Console", icon: <ShieldCheck size={17} aria-hidden /> }]
+      ? [{ href: "/adminlogin", label: "Admin Console", icon: <ShieldCheck size={17} aria-hidden /> }]
       : []),
     { href: "/settings", label: "Settings", icon: <Settings size={17} aria-hidden /> },
     { href: "/settings", label: "Profile", icon: <User size={17} aria-hidden /> },

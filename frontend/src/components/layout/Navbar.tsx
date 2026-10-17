@@ -17,6 +17,7 @@ const LANDING_LINKS = [
 const APP_LINKS = [
   { href: "/dashboard", label: "Workspace" },
   { href: "/documents", label: "Library" },
+  { href: "/research-topics", label: "Topics" },
   { href: "/assistant", label: "Assistant" },
   { href: "/guide", label: "Guide" },
 ];
@@ -25,6 +26,7 @@ const APP_LINKS = [
 const MOBILE_LINKS = [
   { href: "/dashboard", label: "Overview" },
   { href: "/documents", label: "My Research" },
+  { href: "/research-topics", label: "Topics" },
   { href: "/collections", label: "Collections" },
   { href: "/notes", label: "Notes" },
   { href: "/assistant", label: "Assistant" },
@@ -62,7 +64,7 @@ export function Navbar() {
       ? links
       : [
           ...MOBILE_LINKS,
-          ...(user.role === "admin" ? [{ href: "/admin", label: "Admin" }] : []),
+          ...(user.role === "admin" ? [{ href: "/adminlogin", label: "Admin" }] : []),
         ];
   const ctaHref = user ? "/dashboard" : "/register";
   const ctaLabel = user ? "Open workspace" : "Get started";

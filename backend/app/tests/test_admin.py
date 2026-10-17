@@ -23,35 +23,35 @@ def make_admin(
 
 def test_non_admin_is_forbidden(client: TestClient):
     user_client = auth_client(client, email="ada@example.edu")
-    assert user_client.get("/api/v1/admin/stats").status_code == 403
-    assert user_client.get("/api/v1/admin/users").status_code == 403
+    assert user_client.get("/api/v1/adminlogin/stats").status_code == 403
+    assert user_client.get("/api/v1/adminlogin/users").status_code == 403
 
 
 def test_anonymous_is_unauthorized(client: TestClient):
-    assert client.get("/api/v1/admin/stats").status_code == 401
-    assert client.get("/api/v1/admin/users").status_code == 401
+    assert client.get("/api/v1/adminlogin/stats").status_code == 401
+    assert client.get("/api/v1/adminlogin/users").status_code == 401
 
 
 def test_admin_stats_and_users(client: TestClient, db_session):
     admin = make_admin(client, db_session)
     auth_client(client, email="ada@example.edu")
 
-    stats = admin.get("/api/v1/admin/stats").json()
+    stats = admin.get("/api/v1/adminlogin/stats").json()
     assert stats["total_users"] == 2
     assert stats["admin_count"] == 1
     assert stats["total_documents"] == 0
 
-    users = admin.get("/api/v1/admin/users").json()
+    users = admin.get("/api/v1/adminlogin/users").json()
     assert {u["email"] for u in users} == {"boss@example.edu", "ada@example.edu"}
     assert all("document_count" in u for u in users)
 
-    found = admin.get("/api/v1/admin/users", params={"search": "ada@example"}).json()
+    found = admin.get("/api/v1/adminlogin/users", params={"search": "ada@example"}).json()
     assert [u["email"] for u in found] == ["ada@example.edu"]
 
-    detail = admin.get(f"/api/v1/admin/users/{found[0]['id']}").json()
+    detail = admin.get(f"/api/v1/adminlogin/users/{found[0]['id']}").json()
     assert detail["email"] == "ada@example.edu"
     assert detail["recent_documents"] == []
-    assert admin.get("/api/v1/admin/users/nope").status_code == 404
+    assert admin.get("/api/v1/adminlogin/users/nope").status_code == 404
 
 
 def test_role_changes_and_self_protection(client: TestClient, db_session):
@@ -60,17 +60,17 @@ def test_role_changes_and_self_protection(client: TestClient, db_session):
     ada = db_session.query(User).filter_by(email="ada@example.edu").one()
     boss = db_session.query(User).filter_by(email="boss@example.edu").one()
 
-    promoted = admin.patch(f"/api/v1/admin/users/{ada.id}/role", json={"role": "admin"})
+    promoted = admin.patch(f"/api/v1/adminlogin/users/{ada.id}/role", json={"role": "admin"})
     assert promoted.status_code == 200
     assert promoted.json()["role"] == "admin"
 
     # Cannot remove your own admin role.
-    own = admin.patch(f"/api/v1/admin/users/{boss.id}/role", json={"role": "user"})
+    own = admin.patch(f"/api/v1/adminlogin/users/{boss.id}/role", json={"role": "user"})
     assert own.status_code == 400
 
-    assert admin.patch("/api/v1/admin/users/nope/role", json={"role": "admin"}).status_code == 404
+    assert admin.patch("/api/v1/adminlogin/users/nope/role", json={"role": "admin"}).status_code == 404
     assert (
-        admin.patch(f"/api/v1/admin/users/{ada.id}/role", json={"role": "owner"}).status_code
+        admin.patch(f"/api/v1/adminlogin/users/{ada.id}/role", json={"role": "owner"}).status_code
         == 422
     )
 
@@ -81,12 +81,12 @@ def test_delete_user_and_self_protection(client: TestClient, db_session):
     ada = db_session.query(User).filter_by(email="ada@example.edu").one()
     boss = db_session.query(User).filter_by(email="boss@example.edu").one()
 
-    assert admin.delete(f"/api/v1/admin/users/{ada.id}").status_code == 200
-    assert admin.get(f"/api/v1/admin/users/{ada.id}").status_code == 404
+    assert admin.delete(f"/api/v1/adminlogin/users/{ada.id}").status_code == 200
+    assert admin.get(f"/api/v1/adminlogin/users/{ada.id}").status_code == 404
 
     # Cannot delete yourself.
-    assert admin.delete(f"/api/v1/admin/users/{boss.id}").status_code == 400
-    assert admin.delete("/api/v1/admin/users/nope").status_code == 404
+    assert admin.delete(f"/api/v1/adminlogin/users/{boss.id}").status_code == 400
+    assert admin.delete("/api/v1/adminlogin/users/nope").status_code == 404
 
 
 def test_admin_allowlist_promotes_on_register(client: TestClient, monkeypatch):
@@ -178,7 +178,7 @@ def test_admin_sees_all_documents_with_owners(client: TestClient, db_session):
     admin, user_client, _ada = _seed_admin_and_user(client, db_session)
     doc_id = upload(user_client).json()["id"]
 
-    docs = admin.get("/api/v1/admin/documents").json()
+    docs = admin.get("/api/v1/adminlogin/documents").json()
     assert len(docs) >= 1
     found = next(d for d in docs if d["id"] == doc_id)
     assert found["owner_email"] == "ada@example.edu"
@@ -193,7 +193,7 @@ def test_admin_sees_all_notes_with_owners(client: TestClient, db_session):
         json={"title": "Secret", "content": "mine"},
     ).json()["id"]
 
-    notes = admin.get("/api/v1/admin/notes").json()
+    notes = admin.get("/api/v1/adminlogin/notes").json()
     assert len(notes) >= 1
     found = next(n for n in notes if n["id"] == note_id)
     assert found["owner_email"] == "ada@example.edu"
@@ -202,5 +202,5 @@ def test_admin_sees_all_notes_with_owners(client: TestClient, db_session):
 
 def test_non_admin_cannot_see_admin_document_list(client: TestClient, db_session):
     user_client = auth_client(client, email="ada@example.edu")
-    assert user_client.get("/api/v1/admin/documents").status_code == 403
-    assert user_client.get("/api/v1/admin/notes").status_code == 403
+    assert user_client.get("/api/v1/adminlogin/documents").status_code == 403
+    assert user_client.get("/api/v1/adminlogin/notes").status_code == 403
