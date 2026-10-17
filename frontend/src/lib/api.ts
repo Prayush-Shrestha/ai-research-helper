@@ -246,6 +246,7 @@ export interface AdminUser {
   email: string;
   role: "user" | "admin";
   created_at: string;
+  last_login_at: string | null;
   document_count: number;
   note_count: number;
   storage_bytes: number;
@@ -259,6 +260,22 @@ export interface AdminDocument {
   page_count: number | null;
   extraction_status: string;
   created_at: string;
+  owner_id: string;
+  owner_name: string;
+  owner_email: string;
+}
+
+export interface AdminNote {
+  id: string;
+  title: string;
+  content: string;
+  document_id: string | null;
+  document_title: string | null;
+  created_at: string;
+  updated_at: string;
+  owner_id: string;
+  owner_name: string;
+  owner_email: string;
 }
 
 export interface AdminUserDetail extends AdminUser {
@@ -280,6 +297,14 @@ export function getAdminStats(): Promise<AdminStats> {
 export function getAdminUsers(search?: string): Promise<AdminUser[]> {
   const qs = search?.trim() ? `?search=${encodeURIComponent(search.trim())}` : "";
   return request<AdminUser[]>(`/admin/users${qs}`);
+}
+
+export function getAdminDocuments(): Promise<AdminDocument[]> {
+  return request<AdminDocument[]>("/admin/documents");
+}
+
+export function getAdminNotes(): Promise<AdminNote[]> {
+  return request<AdminNote[]>("/admin/notes");
 }
 
 export function getAdminUser(id: string): Promise<AdminUserDetail> {

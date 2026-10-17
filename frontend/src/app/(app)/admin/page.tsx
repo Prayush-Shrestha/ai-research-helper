@@ -7,10 +7,14 @@ import { CountUp } from "@/components/motion/CountUp";
 import { PageLoading } from "@/components/ui/Loading";
 import {
   deleteAdminUser,
+  getAdminDocuments,
+  getAdminNotes,
   getAdminStats,
   getAdminUser,
   getAdminUsers,
   setAdminRole,
+  type AdminDocument,
+  type AdminNote,
   type AdminStats,
   type AdminUser,
   type AdminUserDetail,
@@ -18,6 +22,7 @@ import {
 import { formatBytes, formatDate } from "@/lib/utils";
 import { ApiError } from "@/lib/api";
 
+/* --- small stat card used on the site totals row --- */
 function Stat({ label, value }: { label: string; value: number }) {
   return (
     <div className="glass-stat text-center">
@@ -29,12 +34,29 @@ function Stat({ label, value }: { label: string; value: number }) {
   );
 }
 
+/* Format a last-login timestamp into something readable ("2h ago", "3 days ago", etc.). */
+function loginAgo(iso: string | null | undefined): string {
+  if (!iso) return "never";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "never";
+  const now = new Date();
+  const mins = Math.floor((now.getTime() - d.getTime()) / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
+
 export default function AdminPage() {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
 
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [users, setUsers] = useState<AdminUser[]>([]);
+  const [documents, setDocuments] = useState<AdminDocument[]>([]);
+  const [notes, setNotes] = useState<AdminNote[]>([]);
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detail, setDetail] = useState<AdminUserDetail | null>(null);
@@ -46,9 +68,16 @@ export default function AdminPage() {
 
   const load = useCallback(async (q: string) => {
     try {
-      const [s, u] = await Promise.all([getAdminStats(), getAdminUsers(q)]);
+      const [s, u, d, n] = await Promise.all([
+        getAdminStats(),
+        getAdminUsers(q),
+        getAdminDocuments(),
+        getAdminNotes(),
+      ]);
       setStats(s);
       setUsers(u);
+      setDocuments(d);
+      setNotes(n);
       setError(null);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Could not load the console.");
@@ -86,12 +115,19 @@ export default function AdminPage() {
 
   async function refreshRow(id: string) {
     try {
-      const [s, u] = await Promise.all([getAdminStats(), getAdminUsers(search)]);
+      const [s, u, d, n] = await Promise.all([
+        getAdminStats(),
+        getAdminUsers(search),
+        getAdminDocuments(),
+        getAdminNotes(),
+      ]);
       setStats(s);
       setUsers(u);
+      setDocuments(d);
+      setNotes(n);
       setDetail(await getAdminUser(id));
     } catch {
-      /* best effort */
+      /* best effort — nothing to show the user here */
     }
   }
 
@@ -126,17 +162,19 @@ export default function AdminPage() {
     }
   }
 
+  /* Non-admins landing on /admin get a plain "not allowed" page. */
   if (!isAdmin && !loading) {
     return (
       <div className="mx-auto" style={{ maxWidth: 620 }}>
         <section className="rise rise-1 pt-6 text-center sm:pt-10">
           <span className="eyebrow"><span className="dot" /> Restricted</span>
-          <h1 className="mt-4" style={{ fontSize: "clamp(32px,5vw,44px)", fontWeight: 650, letterSpacing: "-0.03em", color: "var(--color-apple-ink)" }}>
-            Admins only past this point.
+          <h1 className="mt-4" style={{ fontSize: "clamp(28px,5vw,40px)", fontWeight: 600, letterSpacing: "-0.02em", color: "var(--color-apple-ink)" }}>
+            You cannot go here — admin only.
           </h1>
           <p className="hero-sub mx-auto mt-3 max-w-md">
-            Your account is a regular one. If you run this instance, set
-            ADMIN_EMAILS in the backend .env and sign in again.
+            Your account is a regular one. Only the admin can open this console.
+            If you run this instance, set ADMIN_EMAILS in the backend .env
+            and sign in again.
           </p>
           <div className="gallery-card mt-8 !p-6">
             <p style={{ fontSize: 14.5, color: "var(--color-graphite)", lineHeight: 1.65 }}>
@@ -154,7 +192,7 @@ export default function AdminPage() {
       <section className="rise rise-1 relative pt-6 sm:pt-10">
         <div aria-hidden className="orb" style={{ width: 340, height: 340, top: -120, left: -120, background: "radial-gradient(circle, rgba(255,255,255,0.12), transparent 65%)" }} />
         <span className="eyebrow"><span className="dot" /> Admin console</span>
-        <h1 className="mt-4" style={{ fontSize: "clamp(32px,5vw,46px)", fontWeight: 650, letterSpacing: "-0.03em", lineHeight: 1.05, color: "var(--color-apple-ink)" }}>
+        <h1 className="mt-4" style={{ fontSize: "clamp(28px,5vw,42px)", fontWeight: 600, letterSpacing: "-0.02em", lineHeight: 1.1, color: "var(--color-apple-ink)" }}>
           Who&apos;s here, and what they&apos;re holding.
         </h1>
         <p className="hero-sub mt-3 max-w-xl">
@@ -164,12 +202,12 @@ export default function AdminPage() {
       </section>
 
       {notice && (
-        <p role="status" className="rise rise-2 mt-5 rounded-2xl px-5 py-3" style={{ fontSize: 14.5, background: "rgba(127,127,133,0.12)", border: "1px solid var(--liquid-border)", color: "var(--color-apple-ink)" }}>
+        <p role="status" className="rise rise-2 mt-6 rounded-2xl px-5 py-3" style={{ fontSize: 14.5, background: "rgba(127,127,133,0.12)", border: "1px solid var(--liquid-border)", color: "var(--color-apple-ink)" }}>
           {notice}
         </p>
       )}
       {error && (
-        <p role="alert" className="mt-5 rounded-2xl px-5 py-3" style={{ fontSize: 14.5, color: "var(--color-alert)", background: "rgba(255,155,138,0.08)", border: "1px solid rgba(255,155,138,0.25)" }}>
+        <p role="alert" className="mt-6 rounded-2xl px-5 py-3" style={{ fontSize: 14.5, color: "var(--color-alert)", background: "rgba(255,155,138,0.08)", border: "1px solid rgba(255,155,138,0.25)" }}>
           {error}{" "}
           <button onClick={() => void load(search)} className="ml-1 underline underline-offset-4">Try again</button>
         </p>
@@ -179,6 +217,7 @@ export default function AdminPage() {
         <div className="mt-8"><PageLoading label="Opening the console" /></div>
       ) : (
         <>
+          {/* Site-wide totals */}
           <section aria-label="Site totals" className="rise rise-2 mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
             <Stat label="Accounts" value={stats?.total_users ?? 0} />
             <Stat label="Admins" value={stats?.admin_count ?? 0} />
@@ -192,7 +231,8 @@ export default function AdminPage() {
             </div>
           </section>
 
-          <section aria-label="Find an account" className="rise rise-3 mx-auto mt-6" style={{ maxWidth: 680 }}>
+          {/* Find an account */}
+          <section aria-label="Find an account" className="rise rise-3 mx-auto mt-8" style={{ maxWidth: 680 }}>
             <div className="liquid-search flex items-center gap-3 px-5 py-3" style={{ borderRadius: 999 }}>
               <span aria-hidden style={{ color: "var(--color-slate)", fontSize: 16 }}>✦</span>
               <label htmlFor="admin-search" className="sr-only">Search accounts</label>
@@ -209,12 +249,13 @@ export default function AdminPage() {
                 <button onClick={() => setSearch("")} aria-label="Clear search" style={{ fontSize: 14, color: "var(--color-link-blue)" }}>Clear</button>
               )}
             </div>
-            <p className="mt-2.5 text-center" style={{ fontSize: 12.5, color: "var(--color-slate)" }}>
+            <p className="mt-3 text-center" style={{ fontSize: 12.5, color: "var(--color-slate)" }}>
               {users.length} {users.length === 1 ? "account" : "accounts"}
             </p>
           </section>
 
-          <div className="rise rise-3 mt-5 grid gap-5 lg:grid-cols-[1fr_380px]">
+          <div className="rise rise-4 mt-8 grid gap-5 lg:grid-cols-[1fr_380px]">
+            {/* Accounts list */}
             <section aria-label="Accounts" className="gallery-card !p-4 sm:!p-5">
               {users.length === 0 ? (
                 <p className="py-8 text-center" style={{ fontSize: 16, color: "var(--color-graphite)" }}>
@@ -255,6 +296,9 @@ export default function AdminPage() {
                           <span className={u.role === "admin" ? "tag-pill crimson" : "tag-pill"}>{u.role}</span>
                           <span className="tag-pill">{u.document_count} papers</span>
                           <span className="tag-pill">{u.note_count} notes</span>
+                          <span className="tag-pill" title={`Last login: ${loginAgo(u.last_login_at)}`}>
+                            last seen {loginAgo(u.last_login_at)}
+                          </span>
                         </span>
                       </span>
                       <span aria-hidden style={{ color: "var(--color-slate)" }}>→</span>
@@ -264,6 +308,7 @@ export default function AdminPage() {
               )}
             </section>
 
+            {/* Account detail */}
             <aside aria-label="Account detail" className="gallery-card !p-6 lg:sticky lg:top-24 lg:self-start">
               {!selectedId ? (
                 <div className="py-6 text-center">
@@ -283,7 +328,7 @@ export default function AdminPage() {
                     </div>
                     <span className={detail.role === "admin" ? "tag-pill crimson" : "tag-pill"}>{detail.role}</span>
                   </div>
-                  <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+                  <div className="mt-5 grid grid-cols-3 gap-3 text-center">
                     {[
                       [String(detail.document_count), "papers"],
                       [String(detail.note_count), "notes"],
@@ -296,13 +341,18 @@ export default function AdminPage() {
                     ))}
                   </div>
 
-                  <p className="mt-5" style={{ fontSize: 11.5, fontWeight: 650, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-slate)" }}>Recent papers</p>
-                  <div className="mt-1.5">
+                  <div className="mt-6" style={{ borderTop: `1px solid var(--liquid-border-soft)`, paddingTop: 20 }}>
+                    <p style={{ fontSize: 11.5, fontWeight: 650, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-slate)" }}>Last login</p>
+                    <p style={{ fontSize: 15, color: "var(--color-apple-ink)" }}>{detail.last_login_at ? loginAgo(detail.last_login_at) : "never"}</p>
+                  </div>
+
+                  <p className="mt-6" style={{ fontSize: 11.5, fontWeight: 650, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-slate)" }}>Recent papers</p>
+                  <div className="mt-2">
                     {detail.recent_documents.length === 0 ? (
                       <p style={{ fontSize: 14.5, color: "var(--color-graphite)" }}>Nothing uploaded yet.</p>
                     ) : (
                       detail.recent_documents.map((d) => (
-                        <div key={d.id} className="py-2" style={{ borderBottom: "1px solid var(--liquid-border-soft)" }}>
+                        <div key={d.id} className="py-3" style={{ borderBottom: "1px solid var(--liquid-border-soft)" }}>
                           <p className="truncate" style={{ fontSize: 14.5, fontWeight: 550, color: "var(--color-apple-ink)" }}>{d.title}</p>
                           <p className="mono-meta mt-0.5" style={{ fontSize: 11.5, color: "var(--color-slate)" }}>
                             {d.file_type} · {formatBytes(d.file_size)} · {d.extraction_status}
@@ -312,23 +362,25 @@ export default function AdminPage() {
                     )}
                   </div>
 
-                  <p className="mt-5" style={{ fontSize: 11.5, fontWeight: 650, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-slate)" }}>Role</p>
-                  <div className="theme-segment mt-2">
-                    {(["user", "admin"] as const).map((r) => (
-                      <button
-                        key={r}
-                        type="button"
-                        disabled={busy || detail.role === r}
-                        aria-pressed={detail.role === r}
-                        onClick={() => void handleRole(detail.id, r)}
-                        style={{ opacity: busy ? 0.6 : 1 }}
-                      >
-                        {r === "admin" ? "Admin" : "User"}
-                      </button>
-                    ))}
+                  <div className="mt-6" style={{ borderTop: `1px solid var(--liquid-border-soft)`, paddingTop: 20 }}>
+                    <p style={{ fontSize: 11.5, fontWeight: 650, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-slate)" }}>Role</p>
+                    <div className="theme-segment mt-3">
+                      {(["user", "admin"] as const).map((r) => (
+                        <button
+                          key={r}
+                          type="button"
+                          disabled={busy || detail.role === r}
+                          aria-pressed={detail.role === r}
+                          onClick={() => void handleRole(detail.id, r)}
+                          style={{ opacity: busy ? 0.6 : 1 }}
+                        >
+                          {r === "admin" ? "Admin" : "User"}
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
-                  <div className="mt-5" style={{ borderTop: "1px solid var(--liquid-border-soft)", paddingTop: 16 }}>
+                  <div className="mt-6">
                     <button
                       type="button"
                       disabled={busy || user?.id === detail.id}
@@ -346,6 +398,80 @@ export default function AdminPage() {
               ) : null}
             </aside>
           </div>
+
+          {/* All research on the site (admin only) */}
+          <section aria-label="All research activity" className="rise rise-5 mt-10 gallery-card !p-6">
+            <div className="flex items-baseline justify-between gap-4 mb-5">
+              <div>
+                <p style={{ fontSize: 11, fontWeight: 650, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-slate)" }}>All papers — who uploaded what</p>
+                <p style={{ fontSize: 17, fontWeight: 650, color: "var(--color-apple-ink)" }}>{documents.length} paper{documents.length === 1 ? "" : "s"} across all accounts</p>
+              </div>
+              {documents.length === 0 && <p style={{ fontSize: 14.5, color: "var(--color-graphite)" }}>No papers uploaded yet.</p>}
+            </div>
+            {documents.length > 0 && (
+              <div className="overflow-x-auto rounded-2xl" style={{ border: `1px solid var(--liquid-border-soft)` }}>
+                <table className="text-left min-w-full">
+                  <thead>
+                    <tr className="text-[11px] uppercase tracking-wider text-slate" style={{ borderBottom: `1px solid var(--liquid-border-soft)` }}>
+                      <th className="pb-3 px-4 font-semibold">Paper</th>
+                      <th className="pb-3 px-4 font-semibold">Type · Size</th>
+                      <th className="pb-3 px-4 font-semibold">Status</th>
+                      <th className="pb-3 px-4 font-semibold">Uploaded by</th>
+                      <th className="pb-3 px-4 font-semibold">When</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {documents.map((d) => (
+                      <tr key={d.id} className="border-b" style={{ borderColor: `var(--liquid-border-soft)` }}>
+                        <td className="px-4 py-3 truncate max-w-[220px] font-medium">{d.title}</td>
+                        <td className="px-4 py-3 text-sm">{d.file_type} · {formatBytes(d.file_size)}</td>
+                        <td className="px-4 py-3 text-sm">
+                          <span className={`tag-pill ${d.extraction_status === "completed" ? "" : "crimson"}`}>{d.extraction_status}</span>
+                        </td>
+                        <td className="px-4 py-3 text-sm truncate max-w-[170px]">{d.owner_email}</td>
+                        <td className="px-4 py-3 text-sm mono-meta">{formatDate(d.created_at)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </section>
+
+          {/* All notes on the site (admin only) */}
+          <section aria-label="All notes activity" className="rise rise-6 mt-8 gallery-card !p-6">
+            <div className="flex items-baseline justify-between gap-4 mb-5">
+              <div>
+                <p style={{ fontSize: 11, fontWeight: 650, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-slate)" }}>All notes — who wrote what</p>
+                <p style={{ fontSize: 17, fontWeight: 650, color: "var(--color-apple-ink)" }}>{notes.length} note{notes.length === 1 ? "" : "s"} across all accounts</p>
+              </div>
+              {notes.length === 0 && <p style={{ fontSize: 14.5, color: "var(--color-graphite)" }}>No notes yet.</p>}
+            </div>
+            {notes.length > 0 && (
+              <div className="overflow-x-auto rounded-2xl" style={{ border: `1px solid var(--liquid-border-soft)` }}>
+                <table className="text-left min-w-full">
+                  <thead>
+                    <tr className="text-[11px] uppercase tracking-wider text-slate" style={{ borderBottom: `1px solid var(--liquid-border-soft)` }}>
+                      <th className="pb-3 px-4 font-semibold">Note</th>
+                      <th className="pb-3 px-4 font-semibold">Paper</th>
+                      <th className="pb-3 px-4 font-semibold">Written by</th>
+                      <th className="pb-3 px-4 font-semibold">Updated</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {notes.map((n) => (
+                      <tr key={n.id} className="border-b" style={{ borderColor: `var(--liquid-border-soft)` }}>
+                        <td className="px-4 py-3 truncate max-w-[220px] font-medium">{n.title}</td>
+                        <td className="px-4 py-3 text-sm truncate max-w-[180px]">{n.document_title ?? "— (standalone)"}</td>
+                        <td className="px-4 py-3 text-sm truncate max-w-[170px]">{n.owner_email}</td>
+                        <td className="px-4 py-3 text-sm mono-meta">{formatDate(n.updated_at)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </section>
         </>
       )}
     </div>

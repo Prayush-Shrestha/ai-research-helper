@@ -169,3 +169,38 @@ def test_admin_can_create_note_on_another_users_document(client: TestClient, db_
     assert created.status_code == 201
     assert created.json()["document_id"] == doc_id
     assert created.json()["content"] == "observed by admin"
+
+
+# --- admin full-site visibility (documents + notes with owners) -------------
+
+
+def test_admin_sees_all_documents_with_owners(client: TestClient, db_session):
+    admin, user_client, _ada = _seed_admin_and_user(client, db_session)
+    doc_id = upload(user_client).json()["id"]
+
+    docs = admin.get("/api/v1/admin/documents").json()
+    assert len(docs) >= 1
+    found = next(d for d in docs if d["id"] == doc_id)
+    assert found["owner_email"] == "ada@example.edu"
+    assert found["owner_name"] == "Ada Lovelace"
+
+
+def test_admin_sees_all_notes_with_owners(client: TestClient, db_session):
+    admin, user_client, _ada = _seed_admin_and_user(client, db_session)
+    doc_id = upload(user_client).json()["id"]
+    note_id = user_client.post(
+        f"/api/v1/notes/documents/{doc_id}/notes",
+        json={"title": "Secret", "content": "mine"},
+    ).json()["id"]
+
+    notes = admin.get("/api/v1/admin/notes").json()
+    assert len(notes) >= 1
+    found = next(n for n in notes if n["id"] == note_id)
+    assert found["owner_email"] == "ada@example.edu"
+    assert found["title"] == "Secret"
+
+
+def test_non_admin_cannot_see_admin_document_list(client: TestClient, db_session):
+    user_client = auth_client(client, email="ada@example.edu")
+    assert user_client.get("/api/v1/admin/documents").status_code == 403
+    assert user_client.get("/api/v1/admin/notes").status_code == 403

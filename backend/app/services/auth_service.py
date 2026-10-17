@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
+
 from fastapi import Response
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -54,6 +56,9 @@ def authenticate_user(db: Session, email: str, password: str) -> User | None:
     user = get_user_by_email(db, email)
     if user is None or not verify_password(user.password_hash, password):
         return None
+    # Stamp the last-login time so the admin console can show who's been in.
+    user.last_login_at = datetime.now(timezone.utc)
+    db.add(user)
     return user
 
 

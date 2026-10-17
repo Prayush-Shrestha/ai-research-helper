@@ -46,6 +46,12 @@ class User(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=_utcnow, onupdate=_utcnow, nullable=False
     )
+    # When they last signed in — admin console shows this so you can tell
+    # who's been active and who's gone quiet. Nullable because older
+    # accounts (created before this column existed) never logged in after it.
+    last_login_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     # Deleting a user removes their documents, notes, and (via the document
     # service) their stored files.

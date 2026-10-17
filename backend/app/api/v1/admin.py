@@ -15,6 +15,8 @@ from app.api.dependencies import (
 from app.core.config import Settings
 from app.models.user import ADMIN_ROLE, USER_ROLE, User
 from app.schemas.admin import (
+    AdminDocumentWithOwner,
+    AdminNoteWithOwner,
     AdminStatsOut,
     AdminUserDetailOut,
     AdminUserOut,
@@ -39,6 +41,18 @@ def read_users(
     db: Session = Depends(get_db),
 ) -> list[AdminUserOut]:
     return admin_service.list_users(db, search)
+
+
+@router.get("/documents", response_model=list[AdminDocumentWithOwner])
+def read_all_documents(db: Session = Depends(get_db)) -> list[AdminDocumentWithOwner]:
+    """Every document on the site, with the account that owns each one."""
+    return admin_service.list_all_documents_with_owners(db)
+
+
+@router.get("/notes", response_model=list[AdminNoteWithOwner])
+def read_all_notes(db: Session = Depends(get_db)) -> list[AdminNoteWithOwner]:
+    """Every note on the site, with the account that owns each one."""
+    return admin_service.list_all_notes_with_owners(db)
 
 
 @router.get("/users/{user_id}", response_model=AdminUserDetailOut)
