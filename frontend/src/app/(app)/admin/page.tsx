@@ -192,7 +192,7 @@ export default function AdminPage() {
     }
   }
 
-  /* Non-admins landing on /adminlogin get a plain "not allowed" page. */
+  /* Non-admins landing on /admin get a plain "not allowed" page. */
   if (!isAdmin && !loading) {
     return (
       <div className="mx-auto" style={{ maxWidth: 620 }}>

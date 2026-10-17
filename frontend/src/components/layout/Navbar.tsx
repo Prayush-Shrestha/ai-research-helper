@@ -64,7 +64,7 @@ export function Navbar() {
       ? links
       : [
           ...MOBILE_LINKS,
-          ...(user.role === "admin" ? [{ href: "/adminlogin", label: "Admin" }] : []),
+          ...(user.role === "admin" ? [{ href: "/admin", label: "Admin" }] : []),
         ];
   const ctaHref = user ? "/dashboard" : "/register";
   const ctaLabel = user ? "Open workspace" : "Get started";

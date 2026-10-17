@@ -93,7 +93,7 @@ export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle:
 
   const account: NavItem[] = [
     ...(user?.role === "admin"
-      ? [{ href: "/adminlogin", label: "Admin Console", icon: <ShieldCheck size={17} aria-hidden /> }]
+      ? [{ href: "/admin", label: "Admin Console", icon: <ShieldCheck size={17} aria-hidden /> }]
       : []),
     { href: "/settings", label: "Settings", icon: <Settings size={17} aria-hidden /> },
     { href: "/settings", label: "Profile", icon: <User size={17} aria-hidden /> },

@@ -291,12 +291,12 @@ export interface AdminStats {
 }
 
 export function getAdminStats(): Promise<AdminStats> {
-  return request<AdminStats>("/adminlogin/stats");
+  return request<AdminStats>("/admin/stats");
 }
 
 export function getAdminUsers(search?: string): Promise<AdminUser[]> {
   const qs = search?.trim() ? `?search=${encodeURIComponent(search.trim())}` : "";
-  return request<AdminUser[]>(`/adminlogin/users${qs}`);
+  return request<AdminUser[]>(`/admin/users${qs}`);
 }
 
 export function adminRegisterUser(payload: {
@@ -305,33 +305,33 @@ export function adminRegisterUser(payload: {
   password: string;
   role: "user" | "admin";
 }): Promise<AdminUser> {
-  return request<AdminUser>("/adminlogin/register", {
+  return request<AdminUser>("/admin/register", {
     method: "POST",
     body: JSON.stringify(payload),
   });
 }
 
 export function getAdminDocuments(): Promise<AdminDocument[]> {
-  return request<AdminDocument[]>("/adminlogin/documents");
+  return request<AdminDocument[]>("/admin/documents");
 }
 
 export function getAdminNotes(): Promise<AdminNote[]> {
-  return request<AdminNote[]>("/adminlogin/notes");
+  return request<AdminNote[]>("/admin/notes");
 }
 
 export function getAdminUser(id: string): Promise<AdminUserDetail> {
-  return request<AdminUserDetail>(`/adminlogin/users/${encodeURIComponent(id)}`);
+  return request<AdminUserDetail>(`/admin/users/${encodeURIComponent(id)}`);
 }
 
 export function setAdminRole(id: string, role: "user" | "admin"): Promise<AdminUser> {
-  return request<AdminUser>(`/adminlogin/users/${encodeURIComponent(id)}/role`, {
+  return request<AdminUser>(`/admin/users/${encodeURIComponent(id)}/role`, {
     method: "PATCH",
     body: JSON.stringify({ role }),
   });
 }
 
 export function deleteAdminUser(id: string): Promise<{ detail: string }> {
-  return request<{ detail: string }>(`/adminlogin/users/${encodeURIComponent(id)}`, {
+  return request<{ detail: string }>(`/admin/users/${encodeURIComponent(id)}`, {
     method: "DELETE",
   });
 }
