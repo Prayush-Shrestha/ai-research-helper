@@ -183,9 +183,6 @@ types; every query path is identical on PostgreSQL.
 ## Current Phase 1 limitations
 
 - No OCR: image-only PDFs report `requires_ocr` honestly instead of text.
-- No vector DB / embeddings / AI answers (Phase 2). The assistant, knowledge,
-  and insights pages work only on local extractive helpers and are labelled
-  as previews.
 - Collections, history, and theme live in browser localStorage (single-user
   device data); documents, notes, and accounts live in PostgreSQL.
 - No toast system; feedback is inline (alerts, save states, progress bars).
@@ -193,9 +190,61 @@ types; every query path is identical on PostgreSQL.
 - Session "remember me" is fixed-length (7 days); no password reset flow yet.
 - `backend/e2e_check.py` targets `127.0.0.1:8000` and default PG credentials.
 
+## Phase 2: RAG (implemented)
+
+Lumina now includes a Retrieval-Augmented Generation (RAG) research assistant:
+
+- **Document chunking**: Extracted text is split into overlapping chunks with page-level metadata where available.
+- **Embeddings**: Configurable provider (local simhash for offline/dev, OpenAI, or Ollama). Vectors are stored alongside document chunks.
+- **Vector search**: PostgreSQL with pgvector is preferred; a JSON-based in-Python fallback works on SQLite and as a safe fallback.
+- **Grounded Q&A**: Answers are generated strictly from retrieved document chunks, with verifiable source citations (document title + page number when available).
+- **Conversations**: Persistent chat sessions with per-conversation document scoping, message history, rename, and delete.
+- **Cost control**: Request timeouts, rate limits, per-user AI usage tracking, and configurable model selection.
+
+### RAG environment variables
+
+Add to `backend/.env`:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `EMBEDDING_PROVIDER` | `local` | `local`, `openai`, or `ollama` |
+| `EMBEDDING_MODEL` | `local-simhash-v1` | Embedding model name |
+| `LLM_PROVIDER` | `local` | `local`, `openai`, or `ollama` |
+| `LLM_MODEL` | `local-extractive-v1` | LLM model name |
+| `OPENAI_API_KEY` | *(unset)* | Required when using `openai` provider |
+| `OPENAI_BASE_URL` | `https://api.openai.com/v1` | OpenAI-compatible API base URL |
+| `RAG_CHUNK_SIZE` | `1000` | Characters per chunk |
+| `RAG_CHUNK_OVERLAP` | `200` | Overlap between chunks |
+| `RAG_TOP_K` | `5` | Chunks retrieved per question |
+| `RAG_SIMILARITY_THRESHOLD` | `0.30` | Minimum similarity to include a chunk |
+| `RAG_MAX_QUESTION_CHARS` | `2000` | Max question length |
+| `RAG_MAX_CONTEXT_CHARS` | `6000` | Max context chars sent to LLM |
+| `RAG_RATE_LIMIT` | `30/minute` | Rate limit for ask endpoint |
+| `RAG_REQUEST_TIMEOUT` | `60` | Upstream request timeout (seconds) |
+| `RAG_TRACK_USAGE` | `true` | Track per-user AI usage |
+
+### Running RAG
+
+1. Add RAG env vars to `backend/.env` (see table above).
+2. Run `python -m alembic upgrade head` to create the RAG tables.
+3. Restart the backend: `python -m uvicorn app.main:app --host 127.0.0.1 --port 8000`.
+4. Open http://localhost:3002/assistant, select papers, and ask questions.
+
+### Database migrations
+
+Phase 2 adds these tables via Alembic migration `0004_rag_core`:
+
+- `document_chunks` — chunked text with embeddings per document
+- `research_conversations` — persistent chat sessions
+- `research_messages` — messages with citations
+- `ai_usage` — per-user AI request tracking
+
+Plus new columns on `documents`: `indexing_status`, `indexing_error`, `embedding_model`.
+
+To apply: `python -m alembic upgrade head`
+
 ## Planned future phases
 
-Phase 2 (RAG): text chunking service over stored `extracted_text`, embeddings
-+ vector search, grounded Q&A with citations and page references,
-conversation history. The extraction interface and `extracted_text` column
-already exist for this — no upload rewrite needed.
+- OCR support for image-only PDFs (beyond the current `requires_ocr` honest reporting).
+- Collections, history, and theme persisted server-side (currently localStorage).
+- Password reset flow and "remember me" session extension.

@@ -14,9 +14,11 @@ const SUGGESTIONS = [
 export function CommandInput({
   onAsk,
   compact = false,
+  disabled = false,
 }: {
   onAsk?: (q: string) => void;
   compact?: boolean;
+  disabled?: boolean;
 }) {
   const [value, setValue] = useState("");
 
@@ -49,8 +51,9 @@ export function CommandInput({
           autoComplete="off"
           className="w-full bg-transparent py-2.5 text-[16px] outline-none"
           style={{ color: "var(--color-apple-ink)" }}
+          disabled={disabled}
         />
-        <button type="submit" className="primary-button shrink-0" style={{ padding: "9px 24px", fontSize: 14 }}>
+        <button type="submit" className="primary-button shrink-0" style={{ padding: "9px 24px", fontSize: 14 }} disabled={disabled}>
           Ask
         </button>
       </form>

@@ -1,69 +1,171 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useDocuments } from "@/hooks/useDocuments";
 import { CommandInput } from "@/components/assistant/CommandInput";
 import { AIResponse, UserPrompt } from "@/components/assistant/AIResponse";
 import { PageLoading } from "@/components/ui/Loading";
-import { answerFromText, extractTerminology, loadConversations, localSummary, saveConversationPair } from "@/lib/research";
-import { recordHistory } from "@/hooks/useHistory";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  askQuestion,
+  createConversation,
+  getConversation,
+  getConversations,
+  type AskResponse,
+  type Conversation,
+  type ConversationMessage,
+} from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 
 export default function AssistantPage() {
+  const { user } = useAuth();
   const { documents: allDocuments, loading } = useDocuments({ pageSize: 12 });
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [history, setHistory] = useState<Array<{ id: string; q: string; a: string; scope: string }>>([]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [activeConversationId, setActiveConversationId] = useState<
+    string | null
+  >(null);
+  const [messages, setMessages] = useState<ConversationMessage[]>([]);
+  const [asking, setAsking] = useState(false);
   const [leftOpen, setLeftOpen] = useState(true);
   const [rightOpen, setRightOpen] = useState(true);
+  const [askError, setAskError] = useState<string | null>(null);
 
+  const selected = useMemo(
+    () => allDocuments.filter((d) => selectedIds.includes(d.id)),
+    [allDocuments, selectedIds]
+  );
+  const scopeDocs = selected.length > 0 ? selected : allDocuments.slice(0, 3);
+
+  const scopeLabel = selected.length > 0
+    ? `${selected.length} you ticked`
+    : allDocuments.length > 3
+      ? "the first 3 (tick up to 5 to change that)"
+      : allDocuments.length > 0
+        ? "everything you have"
+        : "nothing, because the shelf is empty";
+
+  // Load conversations on mount.
   useEffect(() => {
-    void (async () => {
-      await Promise.resolve();
-      const prev = loadConversations();
-      if (prev.length > 0) {
-        const pairs: Array<{ id: string; q: string; a: string; scope: string }> = [];
-        for (let i = 0; i < prev.length - 1; i += 2) {
-          const q = prev[i];
-          const a = prev[i + 1];
-          if (q?.role === "user" && a?.role === "assistant") {
-            pairs.push({ id: q.id, q: q.body, a: a.body, scope: q.scope ?? "" });
-          }
-          if (pairs.length >= 3) break;
+    (async () => {
+      try {
+        const convs = await getConversations();
+        setConversations(convs);
+        if (convs.length > 0 && !activeConversationId) {
+          setActiveConversationId(convs[0].id);
+          await loadConversation(convs[0].id);
         }
-        // Stored newest-first; keep that order to match newly asked items.
-        setHistory(pairs);
+      } catch {
+        /* conversations load failed — user can still start a new one */
       }
     })();
+  }, [activeConversationId]);
+
+  const loadConversation = useCallback(
+    async (id: string) => {
+      try {
+        const detail = await getConversation(id);
+        setMessages(detail.messages);
+      } catch {
+        setMessages([]);
+      }
+    },
+    []
+  );
+
+  const toggle = useCallback(
+    (id: string) => {
+      setSelectedIds((prev) =>
+        prev.includes(id)
+          ? prev.filter((x) => x !== id)
+          : [...prev, id].slice(0, 5)
+      );
+    },
+    []
+  );
+
+  const handleAsk = useCallback(
+    async (q: string) => {
+      setAskError(null);
+      setAsking(true);
+      try {
+        const response: AskResponse = await askQuestion({
+          question: q,
+          conversation_id: activeConversationId ?? undefined,
+          document_ids: selectedIds.length > 0 ? selectedIds : undefined,
+        });
+
+        // Create a new conversation if this was the first message.
+        if (!activeConversationId) {
+          setActiveConversationId(response.conversation_id);
+          setConversations((prev) => [
+            {
+              id: response.conversation_id,
+              title: q.slice(0, 60),
+              document_ids: selectedIds,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+              message_count: 0,
+            },
+            ...prev,
+          ]);
+        }
+
+        // Optimistically append messages.
+        const userMsg: ConversationMessage = {
+          id: `opt-${Date.now()}`,
+          role: "user",
+          content: q,
+          citations: [],
+          created_at: new Date().toISOString(),
+        };
+        const assistantMsg: ConversationMessage = {
+          id: response.conversation_id,
+          role: "assistant",
+          content: response.answer,
+          citations: response.citations,
+          created_at: new Date().toISOString(),
+        };
+        setMessages((prev) => [...prev, userMsg, assistantMsg]);
+
+        // Refresh conversation list to get updated title/message_count.
+        try {
+          const convs = await getConversations();
+          setConversations(convs);
+          // Re-select the active conversation.
+          const updated = convs.find((c) => c.id === response.conversation_id);
+          if (updated) {
+            setMessages(
+              (await getConversation(response.conversation_id)).messages
+            );
+          }
+        } catch {
+          /* best effort */
+        }
+      } catch (err) {
+        setAskError(
+          err instanceof Error
+            ? err.message
+            : "Failed to get an answer. Please try again."
+        );
+      } finally {
+        setAsking(false);
+      }
+    },
+    [activeConversationId, selectedIds]
+  );
+
+  const startNewConversation = useCallback(() => {
+    setActiveConversationId(null);
+    setMessages([]);
+    setAskError(null);
   }, []);
 
-  const selected = useMemo(() => allDocuments.filter((d) => selectedIds.includes(d.id)), [allDocuments, selectedIds]);
-  const scopeDocs = selected.length > 0 ? selected : allDocuments.slice(0, 3);
-  const scopeLabel = selected.length > 0 ? `${selected.length} you ticked` : allDocuments.length > 3 ? "the first 3 (tick up to 5 to change that)" : allDocuments.length > 0 ? "everything you have" : "nothing, because the shelf is empty";
-
-  const insights = useMemo(() => {
-    if (scopeDocs.length === 0) return null;
-    const primary = scopeDocs[0];
-    if (!primary) return null;
-    return {
-      title: primary.title,
-      summary: localSummary(primary.extracted_text ?? "", 2),
-      terms: extractTerminology(primary.extracted_text ?? "", 6),
-    };
-  }, [scopeDocs]);
-
-  function toggle(id: string) {
-    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id].slice(0, 5)));
-  }
-
-  function handleAsk(q: string) {
-    const docs = (selected.length > 0 ? selected : allDocuments.slice(0, 3)).map((d) => ({ title: d.title, text: d.extracted_text ?? "" }));
-    const answer = answerFromText(q, docs);
-    const scope = selected.length > 0 ? `From ${selected.length} selected papers` : "From your library (first 3 papers)";
-    const id = `h-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-    setHistory((h) => [{ id, q, a: answer, scope }, ...h].slice(0, 8));
-    saveConversationPair(q, answer, scope);
-    recordHistory({ kind: "question_asked", label: `Asked: ${q.slice(0, 70)}`, detail: scope, href: "/assistant" });
+  if (loading) {
+    return (
+      <div className="pt-10"><PageLoading label="Finding your papers" /></div>
+    );
   }
 
   return (
@@ -74,11 +176,11 @@ export default function AssistantPage() {
         <div className="relative rise rise-1">
           <span className="eyebrow"><span className="dot" />Assistant</span>
           <h1 className="type-heading-sm mt-4" style={{ color: "var(--color-apple-ink)", fontWeight: 600, letterSpacing: "-0.03em" }}>
-            Poke at your papers.
+            Ask about your papers.
           </h1>
           <p className="hero-sub mt-3 max-w-xl">
-            Tick a few papers on the left, then ask like you would a friend.
-            Right now looking at {scopeLabel}.
+            Pick papers on the left, then ask a question. Answers are grounded
+            in your uploaded documents with citations.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
             <button onClick={() => setLeftOpen((v) => !v)} className="ghost-pill" style={{ fontSize: 14, padding: "8px 18px" }} aria-expanded={leftOpen} aria-pressed={leftOpen}>
@@ -87,7 +189,15 @@ export default function AssistantPage() {
             <button onClick={() => setRightOpen((v) => !v)} className="ghost-pill" style={{ fontSize: 14, padding: "8px 18px" }} aria-expanded={rightOpen} aria-pressed={rightOpen}>
               {rightOpen ? "Hide key points" : "Show key points"}
             </button>
+            {activeConversationId && (
+              <button onClick={startNewConversation} className="ghost-pill" style={{ fontSize: 14, padding: "8px 18px" }}>
+                New conversation
+              </button>
+            )}
           </div>
+          {askError && (
+            <p className="mt-2" style={{ fontSize: 14.5, color: "var(--color-alert)" }}>{askError}</p>
+          )}
         </div>
       </section>
 
@@ -96,11 +206,9 @@ export default function AssistantPage() {
           <aside aria-label="Choose papers" className="gallery-card rise rise-2 !p-5 lg:sticky lg:top-[64px] lg:self-start">
             <p className="micro-label">Which papers? ({selectedIds.length}/5)</p>
             <div className="mt-2">
-              {loading ? (
-                <div className="py-3"><PageLoading label="Finding your papers" /></div>
-              ) : allDocuments.length === 0 ? (
+              {allDocuments.length === 0 ? (
                 <div className="py-3">
-                  <p style={{ fontSize: 17, color: "var(--color-graphite)" }}>Shelf&rsquo;s empty, so there&rsquo;s nothing to ask yet.</p>
+                  <p style={{ fontSize: 17, color: "var(--color-graphite)" }}>Shelf's empty, so there's nothing to ask yet.</p>
                   <Link href="/documents" className="primary-button mt-3" style={{ padding: "8px 20px", fontSize: 15 }}>Add one first</Link>
                 </div>
               ) : (
@@ -130,19 +238,22 @@ export default function AssistantPage() {
                   );
                 })
               )}
+              {selectedIds.length > 0 && (
+                <button onClick={() => setSelectedIds([])} className="secondary-button mt-3" style={{ fontSize: 15 }}>
+                  Clear selection
+                </button>
+              )}
             </div>
-            {selectedIds.length > 0 && (
-              <button onClick={() => setSelectedIds([])} className="secondary-button mt-3" style={{ fontSize: 15 }}>
-                Clear selection
-              </button>
-            )}
           </aside>
         )}
 
         <section aria-label="Conversation" className="rise rise-3">
-          <CommandInput onAsk={handleAsk} />
-          <div>
-            {history.length === 0 ? (
+          <CommandInput
+            onAsk={handleAsk}
+            disabled={asking || allDocuments.length === 0}
+          />
+          <div className="min-h-[300px]">
+            {messages.length === 0 && !asking && (
               <div className="gallery-card mt-5">
                 <p style={{ fontSize: 21, fontWeight: 600, color: "var(--color-apple-ink)", letterSpacing: "-0.02em" }}>Go on, ask something.</p>
                 <p className="mt-2 max-w-md" style={{ fontSize: 17, color: "var(--color-graphite)" }}>
@@ -153,21 +264,40 @@ export default function AssistantPage() {
                   <Link href="/documents" className="primary-button mt-4">To the library</Link>
                 )}
               </div>
-            ) : (
-              history.map((h) => (
-                <div key={h.id}>
-                  <UserPrompt query={h.q} />
-                  <AIResponse query={h.q} answer={h.a} scope={h.scope} onRetry={() => handleAsk(h.q)} />
+            )}
+            {messages.map((m) => (
+              <div key={m.id} className="mt-4">
+                {m.role === "user" ? (
+                  <UserPrompt query={m.content} />
+                ) : (
+                  <AIResponse
+                    query={m.content}
+                    answer={m.content}
+                    citations={m.citations}
+                    scope={m.role === "assistant" ? "From your documents" : undefined}
+                    onRetry={() => {
+                      const q = m.content;
+                      setAsking(true);
+                      handleAsk(q);
+                    }}
+                  />
+                )}
+              </div>
+            ))}
+            {asking && (
+              <div className="gallery-card mt-5">
+                <div className="flex items-center gap-3 py-4">
+                  <span className="tech-label pulse-dot" style={{ color: "var(--color-graphite)" }}>Thinking…</span>
                 </div>
-              ))
+              </div>
             )}
           </div>
 
           <div className="mt-5 grid gap-4 sm:grid-cols-3" aria-label="How answers work">
             {[
-              ["It quotes", "If the answer isn't in your files, it says so."],
-              ["You pick the scope", "The ticked papers, or the first few if you tick nothing."],
-              ["You can check", "Open the paper and find the line yourself. Please do."],
+              ["It quotes", "Answers cite your document passages directly."],
+              ["You pick the scope", "The ticked papers, or your whole library."],
+              ["Not enough evidence", "It will say so instead of guessing."],
             ].map(([k, v], i) => (
               <div key={k} className={`glass-stat rise rise-${4 + i}`}>
                 <p style={{ fontSize: 15, fontWeight: 600, color: "var(--color-apple-ink)" }}>{k}</p>
@@ -180,29 +310,17 @@ export default function AssistantPage() {
         {rightOpen && (
           <aside aria-label="Key points" className="gallery-card rise rise-4 !p-5 lg:sticky lg:top-[64px] lg:self-start">
             <p className="micro-label">The gist</p>
-            {!insights ? (
-              <p className="mt-2" style={{ fontSize: 17, color: "var(--color-graphite)" }}>Add a paper and I&rsquo;ll pull out what it seems to be about.</p>
+            {scopeDocs.length === 0 ? (
+              <p className="mt-2" style={{ fontSize: 17, color: "var(--color-graphite)" }}>Pick a paper to see a quick summary.</p>
             ) : (
               <div className="mt-2 space-y-3">
                 <div>
-                  <p style={{ fontSize: 15, fontWeight: 600, color: "var(--color-apple-ink)" }}>Reading now</p>
-                  <p className="mt-0.5" style={{ fontSize: 15, color: "var(--color-iron)", lineHeight: 1.5 }}>{insights.title}</p>
-                  <p className="mt-0.5" style={{ fontSize: 12, color: "var(--color-slate)" }}>{scopeDocs.length} {scopeDocs.length === 1 ? "paper" : "papers"} · {scopeDocs[0] ? formatDate(scopeDocs[0].updated_at) : "—"}</p>
-                </div>
-                <div style={{ borderTop: "1px solid var(--color-line)", paddingTop: 12 }}>
-                  <p style={{ fontSize: 15, fontWeight: 600, color: "var(--color-apple-ink)" }}>In short</p>
-                  <p className="mt-0.5" style={{ fontSize: 15, color: "var(--color-iron)", lineHeight: 1.55 }}>{insights.summary || "—"}</p>
-                </div>
-                <div style={{ borderTop: "1px solid var(--color-line)", paddingTop: 12 }}>
-                  <p style={{ fontSize: 15, fontWeight: 600, color: "var(--color-apple-ink)" }}>Key terms</p>
-                  <div className="mt-2 flex flex-wrap gap-1.5">
-                    {insights.terms.map((t) => (
-                      <span key={t} className="tag-pill">{t}</span>
-                    ))}
-                  </div>
+                  <p style={{ fontSize: 15, fontWeight: 600, color: "var(--color-apple-ink)" }}>Selected papers</p>
+                  <p className="mt-0.5" style={{ fontSize: 15, color: "var(--color-iron)", lineHeight: 1.5 }}>{scopeDocs.map(d => d.title).join(", ")}</p>
+                  <p className="mt-0.5" style={{ fontSize: 12, color: "var(--color-slate)" }}>{scopeDocs.length} {scopeDocs.length === 1 ? "paper" : "papers"} in scope</p>
                 </div>
                 <Link href="/documents" className="secondary-button" style={{ fontSize: 15 }}>
-                  Open reader →
+                  Open library →
                 </Link>
               </div>
             )}

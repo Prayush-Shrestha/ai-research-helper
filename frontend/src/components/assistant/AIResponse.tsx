@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import type { Citation } from "@/types/document";
 
 function renderMarkdown(body: string) {
   const lines = body.split("\n");
@@ -85,11 +86,13 @@ export function AIResponse({
   query,
   answer,
   scope,
+  citations,
   onRetry,
 }: {
   query: string;
   answer: string;
   scope?: string;
+  citations?: Citation[];
   onRetry?: () => void;
 }) {
   const [copied, setCopied] = useState(false);
@@ -108,6 +111,24 @@ export function AIResponse({
         </p>
       )}
       <div className="max-w-[72ch]">{renderMarkdown(answer)}</div>
+      {citations && citations.length > 0 && (
+        <div className="mt-5 rounded-2xl p-4" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--liquid-border-soft)" }}>
+          <p style={{ fontSize: 11.5, fontWeight: 650, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-slate)" }}>Sources</p>
+          <div className="mt-2 space-y-2">
+            {citations.map((c, i) => (
+              <div key={i} className="flex items-start gap-2 py-1.5" style={{ borderBottom: "1px solid var(--liquid-border-soft)", paddingBottom: i === citations.length - 1 ? 0 : 8 }}>
+                <span className="shrink-0" style={{ fontSize: 13, fontWeight: 700, color: "var(--color-apple-ink)" }}>[{i + 1}]</span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate" style={{ fontSize: 13.5, fontWeight: 600, color: "var(--color-apple-ink)" }}>{c.document_title}</p>
+                  <p className="truncate" style={{ fontSize: 12, color: "var(--color-graphite)" }}>
+                    {c.page_number != null ? `Page ${c.page_number}` : "Document"} · {c.text_snippet}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       <div className="mt-5 flex items-center gap-2" style={{ borderTop: "1px solid var(--liquid-border-soft)", paddingTop: 14 }}>
         <button
           type="button"

@@ -1,9 +1,16 @@
-"""Research topic suggestion schemas."""
+"""Research topic suggestion and RAG conversation schemas."""
 
 from __future__ import annotations
 
+from datetime import datetime
+from typing import Any
+
 from pydantic import BaseModel, ConfigDict, Field
 
+
+# ------------------------------------------------------------------
+# Topic suggestion (existing)
+# ------------------------------------------------------------------
 
 class SuggestTopicsIn(BaseModel):
     """User describes what they want to research."""
@@ -31,3 +38,119 @@ class SuggestTopicsOut(BaseModel):
     topics: list[TopicSuggestion]
     best_topic_index: int | None = None
     note: str | None = None
+
+
+# ------------------------------------------------------------------
+# RAG conversation schemas
+# ------------------------------------------------------------------
+
+class CitationOut(BaseModel):
+    """A source citation referenced by an answer."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    chunk_id: str
+    document_id: str
+    document_title: str
+    page_number: int | None = None
+    text_snippet: str
+    similarity: float
+
+
+class ConversationMessageOut(BaseModel):
+    """One message in a conversation."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    role: str
+    content: str
+    citations: list[CitationOut] = Field(default_factory=list)
+    created_at: datetime
+
+
+class ConversationOut(BaseModel):
+    """A research conversation summary."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    title: str
+    document_ids: list[str] = Field(default_factory=list)
+    created_at: datetime
+    updated_at: datetime
+    message_count: int = 0
+
+
+class ConversationDetailOut(ConversationOut):
+    """A conversation with its full message history."""
+
+    messages: list[ConversationMessageOut] = Field(default_factory=list)
+
+
+class ConversationCreateIn(BaseModel):
+    """Create a new research conversation."""
+
+    title: str | None = Field(default=None, max_length=200)
+    document_ids: list[str] = Field(default_factory=list)
+
+
+class RenameConversationIn(BaseModel):
+    """Rename a conversation."""
+
+    title: str = Field(..., min_length=1, max_length=200)
+
+
+class AskIn(BaseModel):
+    """Ask a question about your documents."""
+
+    question: str = Field(..., min_length=1, max_length=2000)
+    conversation_id: str | None = None
+    document_ids: list[str] | None = None
+
+
+class AskOut(BaseModel):
+    """Answer to a RAG question, with citations."""
+
+    conversation_id: str
+    answer: str
+    citations: list[CitationOut] = Field(default_factory=list)
+    model: str
+    provider: str
+    insufficient_evidence: bool = False
+    tokens_estimate: int | None = None
+
+
+class IndexingStatusOut(BaseModel):
+    """Document indexing status."""
+
+    document_id: str
+    indexing_status: str
+    indexing_error: str | None = None
+    embedding_model: str | None = None
+
+
+class ReindexIn(BaseModel):
+    """Reindex a document's chunks and embeddings."""
+
+    document_id: str
+
+
+class AIUsageOut(BaseModel):
+    """One recorded AI usage entry."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    operation_type: str
+    provider: str
+    model: str
+    tokens_estimate: int | None = None
+    cost_estimate_usd: float | None = None
+    created_at: datetime
+
+
+class ConversationListOut(BaseModel):
+    """List of conversation summaries."""
+
+    conversations: list[ConversationOut]

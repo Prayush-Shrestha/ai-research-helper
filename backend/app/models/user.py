@@ -5,10 +5,17 @@ from __future__ import annotations
 import uuid
 from datetime import datetime, timezone
 
+from typing import TYPE_CHECKING
+
 from sqlalchemy import CheckConstraint, DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
+
+if TYPE_CHECKING:  # pragma: no cover
+    from app.models.ai_usage import AIUsage
+    from app.models.conversation import ResearchConversation
+    from app.models.document_chunk import DocumentChunk
 
 
 def _utcnow() -> datetime:
@@ -59,6 +66,15 @@ class User(Base):
         back_populates="owner", cascade="all, delete-orphan"
     )
     notes: Mapped[list["ResearchNote"]] = relationship(
+        back_populates="owner", cascade="all, delete-orphan"
+    )
+    conversations: Mapped[list["ResearchConversation"]] = relationship(
+        back_populates="owner", cascade="all, delete-orphan"
+    )
+    ai_usage: Mapped[list["AIUsage"]] = relationship(
+        back_populates="owner", cascade="all, delete-orphan"
+    )
+    chunks: Mapped[list["DocumentChunk"]] = relationship(
         back_populates="owner", cascade="all, delete-orphan"
     )
 

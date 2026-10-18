@@ -21,6 +21,10 @@ export interface ResearchDocument {
   extracted_text?: string | null;
   created_at: string; // ISO
   updated_at: string; // ISO
+  /** Phase 2 RAG: indexing status for chunking + embeddings. */
+  indexing_status?: IndexingStatus;
+  indexing_error?: string | null;
+  embedding_model?: string | null;
 }
 
 /** Human-readable label for an extraction status (UI only). */
@@ -66,3 +70,79 @@ export interface DashboardData {
 
 /** POST /documents/upload response — the created document. */
 export type UploadResponse = ResearchDocument;
+
+/** ------------------------------------------------------------------ */
+/** Phase 2 RAG types                                                  */
+/** ------------------------------------------------------------------ */
+
+export interface Citation {
+  chunk_id: string;
+  document_id: string;
+  document_title: string;
+  page_number: number | null;
+  text_snippet: string;
+  similarity: number;
+}
+
+export interface ConversationMessage {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  citations: Citation[];
+  created_at: string; // ISO
+}
+
+export interface Conversation {
+  id: string;
+  title: string;
+  document_ids: string[];
+  created_at: string; // ISO
+  updated_at: string; // ISO
+  message_count: number;
+}
+
+export interface ConversationDetail extends Conversation {
+  messages: ConversationMessage[];
+}
+
+export interface ConversationCreate {
+  title?: string;
+  document_ids: string[];
+}
+
+export interface RenameConversation {
+  title: string;
+}
+
+export interface AskRequest {
+  question: string;
+  conversation_id?: string;
+  document_ids?: string[];
+}
+
+export interface AskResponse {
+  conversation_id: string;
+  answer: string;
+  citations: Citation[];
+  model: string;
+  provider: string;
+  insufficient_evidence: boolean;
+  tokens_estimate: number | null;
+}
+
+export interface IndexingStatus {
+  document_id: string;
+  indexing_status: IndexingStatus;
+  indexing_error: string | null;
+  embedding_model: string | null;
+}
+
+export interface AIUsageEntry {
+  id: string;
+  operation_type: "embedding" | "llm";
+  provider: string;
+  model: string;
+  tokens_estimate: number | null;
+  cost_estimate_usd: number | null;
+  created_at: string; // ISO
+}

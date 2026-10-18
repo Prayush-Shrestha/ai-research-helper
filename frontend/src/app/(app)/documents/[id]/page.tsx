@@ -1,10 +1,10 @@
 "use client";
 
-import { use, useEffect, useMemo, useRef, useState } from "react";
+import { use, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import * as api from "@/lib/api";
-import { downloadUrl } from "@/lib/api";
+import { downloadUrl, getIndexingStatus, reindexDocument } from "@/lib/api";
 import { statusLabel, type ResearchDocument } from "@/types/document";
 import { DocumentReader } from "@/components/documents/DocumentReader";
 import { CommandInput } from "@/components/assistant/CommandInput";
@@ -38,6 +38,8 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ id: s
   const [noteError, setNoteError] = useState<string | null>(null);
   const noteTimer = useRef<number | null>(null);
   const { create: createNote } = useNotes();
+  const [indexingStatus, setIndexingStatus] = useState<string | null>(null);
+  const [reindexing, setReindexing] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -67,6 +69,19 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ id: s
       live = false;
     };
   }, [id]);
+
+  const loadIndexingStatus = useCallback(async () => {
+    try {
+      const status = await getIndexingStatus(id);
+      setIndexingStatus(status.indexing_status);
+    } catch {
+      /* indexing status is optional UI */
+    }
+  }, [id]);
+
+  useEffect(() => {
+    void loadIndexingStatus();
+  }, [loadIndexingStatus]);
 
   const text = doc?.extracted_text ?? "";
   const summary = useMemo(() => localSummary(text, 3), [text]);
@@ -179,6 +194,9 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ id: s
             <span className="tag-pill">{doc.page_count ?? "—"} pages</span>
             <span className="tag-pill">{formatBytes(doc.file_size).toUpperCase()}</span>
             <span className={`tag-pill${doc.extraction_status === "failed" ? " crimson" : ""}`}>{statusLabel(doc.extraction_status)}</span>
+            <span className={`tag-pill${indexingStatus === "failed" ? " crimson" : ""}`}>
+              {indexingStatus === "completed" ? "Indexed" : indexingStatus === "processing" ? "Indexing…" : indexingStatus === "failed" ? "Index failed" : "Not indexed"}
+            </span>
           </div>
           {renaming ? (
             <form
@@ -216,6 +234,13 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ id: s
             <div className="mt-2">
               <button onClick={() => void handleRetry()} disabled={busy} className="ghost-pill" style={{ fontSize: 14, padding: "8px 18px" }}>
                 {busy ? "Retrying…" : "Retry extraction"}
+              </button>
+            </div>
+          )}
+          {(indexingStatus === "failed" || indexingStatus === null || indexingStatus === "pending") && (
+            <div className="mt-2">
+              <button onClick={() => { setReindexing(true); void reindexDocument(id).then(() => { setReindexing(false); void loadIndexingStatus(); }).catch(() => setReindexing(false)) }} disabled={busy || reindexing} className="ghost-pill" style={{ fontSize: 14, padding: "8px 18px" }}>
+                {reindexing ? "Indexing…" : "Index for Q&A"}
               </button>
             </div>
           )}

@@ -363,4 +363,137 @@ export function suggestTopics(description: string): Promise<SuggestTopicsOut> {
   });
 }
 
+// ------------------------------------------------------------------
+// RAG / Conversations
+// ------------------------------------------------------------------
+
+export interface Conversation {
+  id: string;
+  title: string;
+  document_ids: string[];
+  created_at: string;
+  updated_at: string;
+  message_count: number;
+}
+
+export interface ConversationMessage {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  citations: Citation[];
+  created_at: string;
+}
+
+export interface ConversationDetail extends Conversation {
+  messages: ConversationMessage[];
+}
+
+export interface ConversationCreate {
+  title?: string;
+  document_ids: string[];
+}
+
+export interface RenameConversation {
+  title: string;
+}
+
+export interface Citation {
+  chunk_id: string;
+  document_id: string;
+  document_title: string;
+  page_number: number | null;
+  text_snippet: string;
+  similarity: number;
+}
+
+export interface AskRequest {
+  question: string;
+  conversation_id?: string;
+  document_ids?: string[];
+}
+
+export interface AskResponse {
+  conversation_id: string;
+  answer: string;
+  citations: Citation[];
+  model: string;
+  provider: string;
+  insufficient_evidence: boolean;
+  tokens_estimate: number | null;
+}
+
+export interface IndexingStatus {
+  document_id: string;
+  indexing_status: string;
+  indexing_error: string | null;
+  embedding_model: string | null;
+}
+
+export function getConversations(): Promise<Conversation[]> {
+  return request<Conversation[]>("/research/conversations");
+}
+
+export function getConversation(
+  id: string
+): Promise<ConversationDetail> {
+  return request<ConversationDetail>(
+    `/research/conversations/${encodeURIComponent(id)}`
+  );
+}
+
+export function createConversation(
+  payload: ConversationCreate
+): Promise<Conversation> {
+  return request<Conversation>("/research/conversations", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function renameConversation(
+  id: string,
+  payload: RenameConversation
+): Promise<Conversation> {
+  return request<Conversation>(
+    `/research/conversations/${encodeURIComponent(id)}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    }
+  );
+}
+
+export function deleteConversation(id: string): Promise<{ detail: string }> {
+  return request<{ detail: string }>(
+    `/research/conversations/${encodeURIComponent(id)}`,
+    { method: "DELETE" }
+  );
+}
+
+export function askQuestion(
+  payload: AskRequest
+): Promise<AskResponse> {
+  return request<AskResponse>("/research/ask", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function getIndexingStatus(
+  documentId: string
+): Promise<IndexingStatus> {
+  return request<IndexingStatus>(
+    `/research/documents/${encodeURIComponent(documentId)}/indexing-status`
+  );
+}
+
+export function reindexDocument(
+  documentId: string
+): Promise<{ detail: string }> {
+  return request<{ detail: string }>(
+    `/research/documents/${encodeURIComponent(documentId)}/reindex`,
+    { method: "POST" }
+  );
+}
+
 export { BASE_URL };
