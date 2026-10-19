@@ -12,9 +12,11 @@ import {
   createConversation,
   getConversation,
   getConversations,
+  summarizeDocuments,
   type AskResponse,
   type Conversation,
   type ConversationMessage,
+  type SummarizeOut,
 } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 
@@ -31,6 +33,9 @@ export default function AssistantPage() {
   const [leftOpen, setLeftOpen] = useState(true);
   const [rightOpen, setRightOpen] = useState(true);
   const [askError, setAskError] = useState<string | null>(null);
+  const [summary, setSummary] = useState<SummarizeOut | null>(null);
+  const [summarizing, setSummarizing] = useState(false);
+  const [summaryError, setSummaryError] = useState<string | null>(null);
 
   const selected = useMemo(
     () => allDocuments.filter((d) => selectedIds.includes(d.id)),
@@ -162,6 +167,24 @@ export default function AssistantPage() {
     setAskError(null);
   }, []);
 
+  const handleSummarize = useCallback(async () => {
+    setSummaryError(null);
+    setSummarizing(true);
+    try {
+      const ids = selectedIds.length > 0 ? selectedIds : undefined;
+      const data: SummarizeOut = await summarizeDocuments({ document_ids: ids });
+      setSummary(data);
+    } catch (err) {
+      setSummaryError(
+        err instanceof Error
+          ? err.message
+          : "Failed to summarize. Please try again."
+      );
+    } finally {
+      setSummarizing(false);
+    }
+  }, [selectedIds]);
+
   if (loading) {
     return (
       <div className="pt-10"><PageLoading label="Finding your papers" /></div>
@@ -194,9 +217,15 @@ export default function AssistantPage() {
                 New conversation
               </button>
             )}
+            <button onClick={handleSummarize} disabled={summarizing || scopeDocs.length === 0} className="ghost-pill" style={{ fontSize: 14, padding: "8px 18px" }}>
+              {summarizing ? "Summarizing…" : "Summarize papers"}
+            </button>
           </div>
           {askError && (
             <p className="mt-2" style={{ fontSize: 14.5, color: "var(--color-alert)" }}>{askError}</p>
+          )}
+          {summaryError && (
+            <p className="mt-2" style={{ fontSize: 14.5, color: "var(--color-alert)" }}>{summaryError}</p>
           )}
         </div>
       </section>
@@ -312,6 +341,36 @@ export default function AssistantPage() {
             <p className="micro-label">The gist</p>
             {scopeDocs.length === 0 ? (
               <p className="mt-2" style={{ fontSize: 17, color: "var(--color-graphite)" }}>Pick a paper to see a quick summary.</p>
+            ) : summary ? (
+              <div className="mt-2 space-y-3">
+                <div>
+                  <p style={{ fontSize: 15, fontWeight: 600, color: "var(--color-apple-ink)" }}>Summary</p>
+                  <p className="mt-0.5" style={{ fontSize: 14, color: "var(--color-iron)", lineHeight: 1.6 }}>{summary.summary}</p>
+                </div>
+                {summary.key_points.length > 0 && (
+                  <div>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: "var(--color-apple-ink)" }}>Key points</p>
+                    <ul className="mt-0.5 space-y-1" style={{ fontSize: 13.5, color: "var(--color-iron)", lineHeight: 1.5, listStyle: "disc", paddingLeft: 18 }}>
+                      {summary.key_points.map((kp, i) => (
+                        <li key={i}>{kp.point}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {summary.study_questions.length > 0 && (
+                  <div>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: "var(--color-apple-ink)" }}>Study questions</p>
+                    <ul className="mt-0.5 space-y-1" style={{ fontSize: 13.5, color: "var(--color-iron)", lineHeight: 1.5, listStyle: "disc", paddingLeft: 18 }}>
+                      {summary.study_questions.map((q, i) => (
+                        <li key={i}>{q}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                <div>
+                  <p style={{ fontSize: 12, color: "var(--color-slate)" }}>{scopeDocs.length} {scopeDocs.length === 1 ? "paper" : "papers"} in scope · generated with {summary.provider}</p>
+                </div>
+              </div>
             ) : (
               <div className="mt-2 space-y-3">
                 <div>

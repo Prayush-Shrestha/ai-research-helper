@@ -496,4 +496,53 @@ export function reindexDocument(
   );
 }
 
+export interface KeyPoint {
+  point: string;
+  page_number: number | null;
+}
+
+export interface SummarizeIn {
+  document_ids?: string[];
+}
+
+export interface SummarizeOut {
+  summary: string;
+  key_points: KeyPoint[];
+  study_questions: string[];
+  model: string;
+  provider: string;
+  citations: Citation[];
+}
+
+export function summarizeDocuments(
+  payload: SummarizeIn
+): Promise<SummarizeOut> {
+  return request<SummarizeOut>("/research/summarize", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export interface KnowledgeNode {
+  id: string;
+  label: string;
+  size: number;
+  document_ids: string[];
+}
+
+export interface KnowledgeEdge {
+  source: string;
+  target: string;
+  weight: number;
+}
+
+export interface KnowledgeOut {
+  nodes: KnowledgeNode[];
+  edges: KnowledgeEdge[];
+}
+
+export function getKnowledgeGraph(): Promise<KnowledgeOut> {
+  return request<KnowledgeOut>("/research/knowledge");
+}
+
 export { BASE_URL };

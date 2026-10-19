@@ -154,3 +154,61 @@ class ConversationListOut(BaseModel):
     """List of conversation summaries."""
 
     conversations: list[ConversationOut]
+
+
+# ------------------------------------------------------------------
+# Summarization schemas
+# ------------------------------------------------------------------
+
+
+class KeyPoint(BaseModel):
+    """One key point extracted from a document."""
+
+    point: str
+    page_number: int | None = None
+
+
+class SummarizeIn(BaseModel):
+    """Request to summarize documents."""
+
+    document_ids: list[str] = Field(default_factory=list)
+
+
+class SummarizeOut(BaseModel):
+    """Summary, key points, and study questions for documents."""
+
+    summary: str
+    key_points: list[KeyPoint] = Field(default_factory=list)
+    study_questions: list[str] = Field(default_factory=list)
+    model: str
+    provider: str
+    citations: list[CitationOut] = Field(default_factory=list)
+
+
+# ------------------------------------------------------------------
+# Knowledge graph schemas
+# ------------------------------------------------------------------
+
+
+class KnowledgeNode(BaseModel):
+    """One node in the knowledge graph (a document)."""
+
+    id: str
+    label: str
+    size: int
+    document_ids: list[str] = Field(default_factory=list)
+
+
+class KnowledgeEdge(BaseModel):
+    """One edge between two documents sharing topics."""
+
+    source: str
+    target: str
+    weight: float
+
+
+class KnowledgeOut(BaseModel):
+    """Knowledge graph: nodes and edges."""
+
+    nodes: list[KnowledgeNode] = Field(default_factory=list)
+    edges: list[KnowledgeEdge] = Field(default_factory=list)

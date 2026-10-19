@@ -6,7 +6,9 @@ import json
 import logging
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import (
@@ -30,15 +32,19 @@ from app.schemas.research import (
     ConversationMessageOut,
     CitationOut,
     IndexingStatusOut,
+    KnowledgeOut,
     RenameConversationIn,
     ReindexIn,
     SuggestTopicsIn,
     SuggestTopicsOut,
+    SummarizeIn,
+    SummarizeOut,
 )
 from app.services import rag as rag_service_mod
 from app.services import research_service
 
 router = APIRouter(dependencies=[Depends(require_same_origin)])
+limiter = Limiter(key_func=get_remote_address)
 
 logger = logging.getLogger(__name__)
 
@@ -225,7 +231,9 @@ def delete_conversation(
     "/ask",
     response_model=AskOut,
 )
+@limiter.limit(lambda: get_settings().RAG_RATE_LIMIT)
 def ask_question(
+    request: Request,
     payload: AskIn,
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -309,7 +317,8 @@ def get_indexing_status(
     response_model=MessageOut,
     status_code=status.HTTP_202_ACCEPTED,
 )
-def reindex_document(
+async def reindex_document(
+    request: Request,
     document_id: str,
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -319,8 +328,7 @@ def reindex_document(
     doc = db.get(DocModel, document_id)
     if doc is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Document not found.",
+            status_code=status.HTTP_404_NOT_FOUND, detail="Document not found."
         )
     if not user.is_admin and doc.owner_id != user.id:
         raise HTTPException(
@@ -329,7 +337,7 @@ def reindex_document(
         )
     rag = rag_service_mod.create_rag_service(settings)
     try:
-        rag.reindex_document(db, doc, user)
+        await rag.reindex_document(db, doc, user)
     except Exception as exc:  # noqa: BLE001
         logger.exception("Reindex failed for document %s", document_id)
         raise HTTPException(
@@ -337,6 +345,45 @@ def reindex_document(
             detail=f"Reindexing failed: {exc}",
         )
     return MessageOut(detail="Document reindexing started.")
+
+
+# ------------------------------------------------------------------
+# Document summarization
+# ------------------------------------------------------------------
+
+
+@router.post(
+    "/summarize",
+    response_model=SummarizeOut,
+)
+def summarize_documents(
+    payload: SummarizeIn,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    settings: Settings = Depends(get_settings_dep),
+) -> SummarizeOut:
+    """Generate a summary, key points, and study questions for documents."""
+    rag = rag_service_mod.create_rag_service(settings)
+    return rag.summarize_document(db, user, document_ids=payload.document_ids or None)
+
+
+# ------------------------------------------------------------------
+# Knowledge graph
+# ------------------------------------------------------------------
+
+
+@router.get(
+    "/knowledge",
+    response_model=KnowledgeOut,
+)
+def get_knowledge_graph(
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    settings: Settings = Depends(get_settings_dep),
+) -> KnowledgeOut:
+    """Build a topic-clustering knowledge graph from the user's documents."""
+    rag = rag_service_mod.create_rag_service(settings)
+    return rag.build_knowledge_graph(db, user)
 
 
 # ------------------------------------------------------------------

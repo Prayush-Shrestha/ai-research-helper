@@ -18,6 +18,7 @@ from sqlalchemy.orm import Session
 from app.core.config import Settings
 from app.models.ai_usage import AIUsage
 from app.models.document import Document
+from app.models.document import Document as DocModel
 from app.models.document_chunk import DocumentChunk
 from app.models.user import User
 from app.services import conversation as conversation_service_mod
@@ -29,6 +30,13 @@ from app.services.embedding import EmbeddingService
 from app.services.indexing import IndexingService
 from app.services.llm import DEFAULT_SYSTEM_PROMPT, LLMResult, LLMService, LLMServiceConfig
 from app.services.vector_store import VectorStore
+from app.schemas.research import (
+    CitationOut,
+    KeyPoint,
+    KnowledgeNode,
+    KnowledgeOut,
+    SummarizeOut,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -286,6 +294,193 @@ class RAGService:
             emb_service=self._emb,
             vector_store=self._vs,
         ).index_document(db, document, owner)
+
+    # ------------------------------------------------------------------
+    # Summarization
+    # ------------------------------------------------------------------
+
+    def summarize_document(
+        self,
+        db: Session,
+        owner: User,
+        *,
+        document_ids: list[str] | None = None,
+    ) -> SummarizeOut:
+        """Generate a summary, key points, and study questions for documents."""
+        from app.models.document_chunk import DocumentChunk
+
+        # Resolve document IDs (owner-filtered).
+        if document_ids:
+            document_ids = self._authorized_document_ids(db, owner, document_ids)
+        else:
+            stmt = select(DocModel.id).where(DocModel.owner_id == owner.id)
+            rows = db.execute(stmt).all()
+            document_ids = [row[0] for row in rows]
+
+        if not document_ids:
+            return SummarizeOut(
+                summary="No documents found to summarize.",
+                key_points=[],
+                study_questions=[],
+                model=self._llm.model_name(),
+                provider=self._settings.LLM_PROVIDER,
+                citations=[],
+            )
+
+        # Fetch completed chunks for the documents.
+        stmt = (
+            select(DocumentChunk, DocModel.title)
+            .join(DocModel, DocModel.id == DocumentChunk.document_id)
+            .where(
+                DocumentChunk.document_id.in_(document_ids),
+                DocumentChunk.chunk_status == "completed",
+            )
+        )
+        rows = list(db.execute(stmt).all())
+        if not rows:
+            return SummarizeOut(
+                summary="No indexed chunks found for these documents.",
+                key_points=[],
+                study_questions=[],
+                model=self._llm.model_name(),
+                provider=self._settings.LLM_PROVIDER,
+                citations=[],
+            )
+
+        chunks = []
+        for chunk, title in rows:
+            chunks.append(
+                {
+                    "id": chunk.id,
+                    "document_id": chunk.document_id,
+                    "document_title": title,
+                    "page_number": chunk.page_number,
+                    "text": chunk.text,
+                    "similarity": 1.0,
+                }
+            )
+
+        # Generate a structured summary via the LLM.
+        summary_prompt = (
+            "You are a research assistant. Summarize the following document excerpts. "
+            "Provide exactly three sections:\n"
+            "1. SUMMARY: a concise 2-4 sentence summary.\n"
+            "2. KEY POINTS: 3-5 bullet points, each starting with '-'.\n"
+            "3. STUDY QUESTIONS: 3 bullet questions, each starting with '-'.\n"
+            "Use ONLY the provided excerpts. Do not invent facts."
+        )
+
+        try:
+            result = self._llm.generate_answer(
+                question="Summarize these documents.",
+                chunks=chunks[:20],
+                system_prompt=summary_prompt,
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.exception("Summarization failed")
+            raise RuntimeError(f"Failed to summarize: {exc}") from exc
+
+        answer = result.answer
+        summary = answer
+        key_points: list[KeyPoint] = []
+        study_questions: list[str] = []
+
+        current_section = None
+        for line in answer.split("\n"):
+            stripped = line.strip()
+            upper = stripped.upper()
+            if upper.startswith("SUMMARY:"):
+                current_section = "summary"
+                summary = stripped[len("SUMMARY:"):].strip()
+            elif upper.startswith("KEY POINTS:"):
+                current_section = "key_points"
+            elif upper.startswith("STUDY QUESTIONS:"):
+                current_section = "study_questions"
+            elif current_section == "key_points" and stripped.startswith("-"):
+                key_points.append(
+                    KeyPoint(point=stripped[1:].strip(), page_number=None)
+                )
+            elif current_section == "study_questions" and stripped.startswith("-"):
+                study_questions.append(stripped[1:].strip())
+
+        citations = [
+            CitationOut(
+                chunk_id=c.get("chunk_id", ""),
+                document_id=c.get("document_id", ""),
+                document_title=c.get("document_title", "Unknown document"),
+                page_number=c.get("page_number"),
+                text_snippet=c.get("text", "")[:200],
+                similarity=c.get("similarity", 0.0),
+            )
+            for c in chunks[:5]
+        ]
+
+        return SummarizeOut(
+            summary=summary,
+            key_points=key_points,
+            study_questions=study_questions,
+            model=result.model,
+            provider=result.provider,
+            citations=citations,
+        )
+
+    # ------------------------------------------------------------------
+    # Knowledge graph
+    # ------------------------------------------------------------------
+
+    def build_knowledge_graph(
+        self,
+        db: Session,
+        owner: User,
+    ) -> KnowledgeOut:
+        """Build a simple topic-clustering knowledge graph from documents."""
+        import re
+
+        stmt = select(DocModel.id, DocModel.title, DocModel.extracted_text)
+        if not owner.is_admin:
+            stmt = stmt.where(DocModel.owner_id == owner.id)
+        rows = list(db.execute(stmt).all())
+
+        if not rows:
+            return KnowledgeOut(nodes=[], edges=[])
+
+        def terms(text: str | None) -> set[str]:
+            if not text:
+                return set()
+            return set(re.findall(r"[a-z0-9]{4,}", text.lower()))
+
+        doc_terms = [(doc_id, title, terms(text)) for doc_id, title, text in rows]
+
+        nodes = [
+            KnowledgeNode(
+                id=doc_id,
+                label=title or "Untitled",
+                size=len(term_set),
+                document_ids=[doc_id],
+            )
+            for doc_id, title, term_set in doc_terms
+        ]
+
+        edges = []
+        for i in range(len(doc_terms)):
+            for j in range(i + 1, len(doc_terms)):
+                id_i, _, terms_i = doc_terms[i]
+                id_j, _, terms_j = doc_terms[j]
+                if not terms_i or not terms_j:
+                    continue
+                overlap = len(terms_i & terms_j)
+                union = len(terms_i | terms_j)
+                if union == 0:
+                    continue
+                weight = overlap / union
+                if weight > 0.15:
+                    edges.append(
+                        KnowledgeEdge(
+                            source=id_i, target=id_j, weight=round(weight, 2)
+                        )
+                    )
+
+        return KnowledgeOut(nodes=nodes, edges=edges)
 
 
 def create_rag_service(

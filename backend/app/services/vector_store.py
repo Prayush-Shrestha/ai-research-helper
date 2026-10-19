@@ -172,22 +172,45 @@ class PgVectorStore(VectorStore):
 
     Requires the pgvector extension enabled on the database and the
     ``embedding_vector`` column migrated to ``vector`` type. Falls back to
-    JSON in-Python search if the column isn't a vector type.
+    JSON in-Python search if the column isn't a vector type yet.
     """
 
     def __init__(self, settings: Settings) -> None:
         self._settings = settings
+
+    def _is_vector_column(self, db: Session) -> bool:
+        """Check whether embedding_vector is already a native vector column."""
+        bind = db.get_bind()
+        if bind.dialect.name != "postgresql":
+            return False
+        result = db.execute(
+            sa.text(
+                "SELECT data_type FROM information_schema.columns "
+                "WHERE table_name='document_chunks' "
+                "AND column_name='embedding_vector'"
+            )
+        )
+        row = result.fetchone()
+        return row is not None and row[0] == "user-defined"
 
     async def upsert_chunks(
         self,
         db: Session,
         chunks: list[tuple[str, str, list[float]]],
     ) -> None:
-        # When using pgvector natively, we'd store the vector type directly.
-        # For now we store JSON and compute in Python to keep parity with
-        # the JSON store. A future migration can convert the column type
-        # and use native `ORDER BY embedding_vector <=> $1` SQL.
-        await JsonVectorStore(self._settings).upsert_chunks(db, chunks)
+        if self._is_vector_column(db):
+            # Store vectors natively; pgvector auto-casts text like '[0.1,0.2]' to vector.
+            from app.models.document_chunk import DocumentChunk
+
+            for chunk_id, vector_json, _vector in chunks:
+                chunk = db.get(DocumentChunk, chunk_id)
+                if chunk is None:
+                    continue
+                chunk.embedding_vector = vector_json
+                db.add(chunk)
+            db.commit()
+        else:
+            await JsonVectorStore(self._settings).upsert_chunks(db, chunks)
 
     async def similarity_search(
         self,
@@ -199,6 +222,15 @@ class PgVectorStore(VectorStore):
         top_k: int = 5,
         threshold: float = 0.0,
     ) -> list[tuple[str, float, str | None, int | None]]:
+        if self._is_vector_column(db):
+            return await self._similarity_search_pgvector(
+                db,
+                query_vector=query_vector,
+                document_ids=document_ids,
+                owner_id=owner_id,
+                top_k=top_k,
+                threshold=threshold,
+            )
         return await JsonVectorStore(self._settings).similarity_search(
             db,
             query_vector=query_vector,
@@ -208,12 +240,66 @@ class PgVectorStore(VectorStore):
             threshold=threshold,
         )
 
+    async def _similarity_search_pgvector(
+        self,
+        db: Session,
+        *,
+        query_vector: list[float],
+        document_ids: list[str] | None = None,
+        owner_id: str | None = None,
+        top_k: int = 5,
+        threshold: float = 0.0,
+    ) -> list[tuple[str, str | None, int | None]]:
+        from app.models.document_chunk import DocumentChunk
+
+        # query_vector as a pgvector literal: '[0.1,0.2,...]'
+        q = "[" + ",".join(str(v) for v in query_vector) + "]"
+
+        conditions = ["chunk_status = 'completed'"]
+        params: dict = {"query": q, "top_k": top_k, "threshold": threshold}
+
+        if document_ids is not None:
+            conditions.append("document_id = ANY(:doc_ids)")
+            params["doc_ids"] = document_ids
+        if owner_id is not None:
+            conditions.append("owner_id = :owner_id")
+            params["owner_id"] = owner_id
+
+        where_clause = " AND ".join(conditions)
+
+        sql = f"""
+            SELECT id,
+                   1 - (embedding_vector <=> :query::vector) AS similarity,
+                   text,
+                   page_number
+            FROM document_chunks
+            WHERE {where_clause}
+              AND 1 - (embedding_vector <=> :query::vector) >= :threshold
+            ORDER BY embedding_vector <=> :query::vector
+            LIMIT :top_k
+        """
+
+        rows = db.execute(sa.text(sql), params).fetchall()
+        return [
+            (row[0], float(row[1]), row[2], row[3]) for row in rows
+        ]
+
     async def delete_chunks_for_document(
         self, db: Session, document_id: str
     ) -> None:
-        await JsonVectorStore(self._settings).delete_chunks_for_document(
-            db, document_id
-        )
+        if self._is_vector_column(db):
+            from app.models.document_chunk import DocumentChunk
+
+            db.execute(
+                sa.delete(DocumentChunk).where(
+                    DocumentChunk.document_id == document_id
+                )
+            )
+            db.commit()
+        else:
+            await JsonVectorStore(self._settings).delete_chunks_for_document(
+                db, document_id
+            )
 
     def provider_name(self) -> str:
         return "pgvector"
