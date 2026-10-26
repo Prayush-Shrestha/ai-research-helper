@@ -19,6 +19,7 @@ const APP_LINKS = [
   { href: "/documents", label: "Library" },
   { href: "/research-topics", label: "Topics" },
   { href: "/assistant", label: "Assistant" },
+  { href: "/insights", label: "Analytics" },
   { href: "/guide", label: "Guide" },
 ];
 
@@ -30,7 +31,8 @@ const MOBILE_LINKS = [
   { href: "/collections", label: "Collections" },
   { href: "/notes", label: "Notes" },
   { href: "/assistant", label: "Assistant" },
-  { href: "/insights", label: "Summaries" },
+  { href: "/insights", label: "Analytics" },
+  { href: "/compare", label: "Compare" },
   { href: "/toolkit", label: "Citations" },
   { href: "/knowledge", label: "Knowledge" },
   { href: "/history", label: "History" },
@@ -64,7 +66,14 @@ export function Navbar() {
       ? links
       : [
           ...MOBILE_LINKS,
-          ...(user.role === "admin" ? [{ href: "/admin", label: "Admin" }] : []),
+          ...(user.role === "admin"
+            ? [
+                { href: "/admin", label: "Admin" },
+                { href: "/admin/analytics", label: "Analytics" },
+                { href: "/admin/activity", label: "Audit log" },
+                { href: "/admin/settings", label: "System" },
+              ]
+            : []),
         ];
   const ctaHref = user ? "/dashboard" : "/register";
   const ctaLabel = user ? "Open workspace" : "Get started";

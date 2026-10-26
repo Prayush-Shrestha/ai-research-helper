@@ -243,8 +243,98 @@ Plus new columns on `documents`: `indexing_status`, `indexing_error`, `embedding
 
 To apply: `python -m alembic upgrade head`
 
+## Phase 3: Advanced AI Research Intelligence, Knowledge Graph, Admin Dashboard & Production Readiness
+
+Lumina Phase 3 extends the existing RAG assistant with a full knowledge graph,
+server-side research collections, separate user/admin experiences, activity and
+audit logging, research comparison, and production-readiness improvements.
+
+### New database tables (migration `0006_phase3_core`)
+
+| Table | Purpose |
+|-------|---------|
+| `research_collections` | User-owned document collections/projects |
+| `collection_documents` | Join table: documents in collections |
+| `knowledge_entities` | Extracted entities (people, orgs, technologies, concepts, ...) with source traceability |
+| `knowledge_relationships` | Edges between entities with confidence and source references |
+| `activity_logs` | Per-user activity history (upload, process, note, collection, query, ...) |
+| `audit_logs` | Security-sensitive admin actions (role changes, disable/reactivate, ...) |
+
+Apply with: `python -m alembic upgrade head`
+
+### New backend API endpoints
+
+| Endpoint | Method | Description | Auth |
+|----------|--------|-------------|------|
+| `/api/v1/collections` | GET/POST | List/create research collections | Session |
+| `/api/v1/collections/{id}` | GET/PATCH/DELETE | Get, rename, delete a collection | Session + ownership |
+| `/api/v1/collections/{id}/documents` | POST/DELETE | Add/remove document from collection | Session + ownership |
+| `/api/v1/knowledge/graph` | GET | Full knowledge graph (nodes + edges) | Session |
+| `/api/v1/knowledge/entities` | GET | List knowledge entities with filters | Session |
+| `/api/v1/knowledge/relationships` | GET | List knowledge relationships | Session |
+| `/api/v1/knowledge/documents/{id}/reprocess` | POST | Re-extract entities/relationships for a document | Session + ownership |
+| `/api/v1/activity` | GET | User activity history (paginated) | Session |
+| `/api/v1/research/compare` | POST | Compare 2-10 documents with citations | Session + ownership |
+| `/api/v1/admin/analytics` | GET | System-level analytics | Admin |
+| `/api/v1/admin/audit` | GET | Audit log (admin only) | Admin |
+| `/api/v1/admin/health` | GET | System health | Admin |
+| `/api/v1/admin/users/{id}/status` | PATCH | Disable/reactivate account | Admin |
+
+### New frontend routes
+
+| Route | Description |
+|-------|-------------|
+| `/knowledge` | Interactive knowledge graph with zoom/pan, search, entity filters, node inspection |
+| `/compare` | Research comparison: select 2+ documents, compare objectives/methodology/findings/etc. |
+| `/collections` | Server-side research collections (replaces localStorage) |
+| `/insights` | Personal research analytics (activity history, document counts, trends) |
+| `/admin/analytics` | System analytics for administrators |
+| `/admin/activity` | Audit log for administrators |
+| `/admin/settings` | System health and configuration |
+
+### Admin setup
+
+The initial administrator is created via the `ADMIN_EMAILS` environment variable:
+
+1. Set `ADMIN_EMAILS` in `backend/.env` to a comma-separated list of email addresses.
+2. Those accounts are automatically promoted to `admin` on registration and on login.
+3. There is no public admin registration endpoint — only existing admins can create new admin accounts via `/api/v1/admin/register`.
+
+Example `backend/.env`:
+```
+ADMIN_EMAILS=researcher@university.edu
+```
+
+### Security
+
+- All administrative endpoints require the `admin` role (validated server-side).
+- Admin frontend routes are server-side protected; the UI never exposes admin features to non-admins.
+- Account disable/reactivate is audited in the `audit_logs` table.
+- Activity logs record only metadata — never document contents, passwords, or session tokens.
+- Pydantic v2 validation returns `422` for invalid request bodies.
+
+### Commands
+
+```powershell
+# Backend (from backend/)
+.\.venv\Scripts\Activate.ps1
+python -m alembic upgrade head          # Apply Phase 3 migrations
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+
+# Frontend (from frontend/)
+npm run dev                              # Port 3002
+
+# Tests (from backend/)
+python -m pytest app/tests -q           # All 85 tests
+
+# TypeScript check (from frontend/)
+npx tsc --noEmit
+
+# Production build (from frontend/)
+npm run build
+```
+
 ## Planned future phases
 
 - OCR support for image-only PDFs (beyond the current `requires_ocr` honest reporting).
-- Collections, history, and theme persisted server-side (currently localStorage).
 - Password reset flow and "remember me" session extension.

@@ -25,6 +25,7 @@ from app.schemas.admin import (
 )
 from app.schemas.common import MessageOut
 from app.services import admin_service
+from app.services import audit_service
 
 router = APIRouter(
     dependencies=[Depends(require_same_origin), Depends(require_admin)]
@@ -108,7 +109,16 @@ def update_role(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Role must be 'user' or 'admin'.",
         )
+    previous_role = target.role
     updated = admin_service.set_role(db, target, payload.role)
+    audit_service.record(
+        db,
+        admin_user=admin,
+        target_user=target,
+        action="role_changed",
+        description=f"Role changed from {previous_role} to {payload.role} for {target.email}.",
+        metadata={"previous_role": previous_role, "new_role": payload.role},
+    )
     return admin_service.row_for(db, updated)
 
 

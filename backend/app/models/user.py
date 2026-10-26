@@ -15,7 +15,10 @@ from app.db.base import Base
 if TYPE_CHECKING:  # pragma: no cover
     from app.models.ai_usage import AIUsage
     from app.models.conversation import ResearchConversation
+    from app.models.document import Document
     from app.models.document_chunk import DocumentChunk
+    from app.models.note import ResearchNote
+    from app.models.phase3 import ResearchCollection
 
 
 def _utcnow() -> datetime:
@@ -75,6 +78,9 @@ class User(Base):
         back_populates="owner", cascade="all, delete-orphan"
     )
     chunks: Mapped[list["DocumentChunk"]] = relationship(
+        back_populates="owner", cascade="all, delete-orphan"
+    )
+    collections: Mapped[list["ResearchCollection"]] = relationship(
         back_populates="owner", cascade="all, delete-orphan"
     )
 

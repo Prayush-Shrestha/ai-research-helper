@@ -200,7 +200,6 @@ def set_role(db: Session, target: User, role: str) -> User:
     db.refresh(target)
     return target
 
-
 def delete_user_account(db: Session, target: User, settings: Settings) -> None:
     """Remove the account: stored files first, then the row (cascades rest)."""
     storage = LocalFileStorage(settings.UPLOAD_DIRECTORY)

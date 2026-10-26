@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   BookOpen,
+  BarChart3,
   FolderOpen,
   History,
   LayoutDashboard,
@@ -19,6 +20,7 @@ import {
   LogOut,
   PanelLeftClose,
   PanelLeftOpen,
+  ShieldAlert,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { LogoMark } from "./Logo";
@@ -82,18 +84,25 @@ export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle:
     { href: "/collections", label: "Collections", icon: <FolderOpen size={17} aria-hidden /> },
     { href: "/assistant", label: "AI Conversations", icon: <MessagesSquare size={17} aria-hidden /> },
     { href: "/notes", label: "Saved Notes", icon: <NotebookPen size={17} aria-hidden /> },
+    { href: "/insights", label: "Research Analytics", icon: <BarChart3 size={17} aria-hidden /> },
     { href: "/history", label: "Research History", icon: <History size={17} aria-hidden /> },
   ];
 
   const tools: NavItem[] = [
     { href: "/assistant", label: "AI Paper Assistant", icon: <Sparkles size={17} aria-hidden /> },
-    { href: "/insights", label: "Research Summaries", icon: <ScanText size={17} aria-hidden /> },
+    { href: "/insights", label: "Research Analytics", icon: <ScanText size={17} aria-hidden /> },
+    { href: "/compare", label: "Compare Documents", icon: <ShieldAlert size={17} aria-hidden /> },
     { href: "/toolkit", label: "Citation Manager", icon: <Quote size={17} aria-hidden /> },
   ];
 
   const account: NavItem[] = [
     ...(user?.role === "admin"
-      ? [{ href: "/admin", label: "Admin Console", icon: <ShieldCheck size={17} aria-hidden /> }]
+      ? [
+          { href: "/admin", label: "Admin Console", icon: <ShieldCheck size={17} aria-hidden /> },
+          { href: "/admin/analytics", label: "System Analytics", icon: <BarChart3 size={17} aria-hidden /> },
+          { href: "/admin/activity", label: "Audit Log", icon: <ShieldAlert size={17} aria-hidden /> },
+          { href: "/admin/settings", label: "System Settings", icon: <Settings size={17} aria-hidden /> },
+        ]
       : []),
     { href: "/settings", label: "Settings", icon: <Settings size={17} aria-hidden /> },
     { href: "/settings", label: "Profile", icon: <User size={17} aria-hidden /> },
@@ -150,6 +159,7 @@ export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle:
               <p style={{ fontSize: 13, fontWeight: 650, color: "var(--color-apple-ink)" }}>Explore more</p>
               <div className="mt-2 grid grid-cols-2 gap-1.5 text-[13.5px]" style={{ color: "var(--color-iron)" }}>
                 <Link href="/knowledge" className="liquid-link justify-center !px-2">Knowledge</Link>
+                <Link href="/compare" className="liquid-link justify-center !px-2">Compare</Link>
                 <Link href="/publish" className="liquid-link justify-center !px-2">Publish</Link>
                 <Link href="/roadmap" className="liquid-link justify-center !px-2">Roadmap</Link>
                 <Link href="/guide" className="liquid-link justify-center !px-2">Guide</Link>

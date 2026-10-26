@@ -23,6 +23,7 @@ from app.schemas.document import (
     RenameDocumentIn,
 )
 from app.services import document_service
+from app.services import activity_service
 
 router = APIRouter(dependencies=[Depends(require_same_origin)])
 
@@ -83,6 +84,18 @@ async def upload_document(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=error or "Upload rejected.",
         )
+    activity_service.record(
+        db,
+        user=user,
+        action="document_uploaded",
+        entity_type="document",
+        entity_id=document.id,
+        metadata={
+            "title": document.title,
+            "file_type": document.file_type,
+            "file_size": document.file_size,
+        },
+    )
     return document
 
 

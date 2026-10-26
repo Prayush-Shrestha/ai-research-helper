@@ -545,4 +545,392 @@ export function getKnowledgeGraph(): Promise<KnowledgeOut> {
   return request<KnowledgeOut>("/research/knowledge");
 }
 
+// ------------------------------------------------------------------
+// Phase 3: Collections (server-side)
+// ------------------------------------------------------------------
+
+export interface ResearchCollection {
+  id: string;
+  owner_id: string;
+  name: string;
+  description: string | null;
+  document_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ResearchCollectionDetail extends ResearchCollection {
+  documents: CollectionDocumentWithDoc[];
+}
+
+export interface CollectionDocumentWithDoc {
+  id: string;
+  collection_id: string;
+  document_id: string;
+  document_title: string;
+  document_file_type: string;
+  document_page_count: number | null;
+  added_at: string;
+}
+
+export interface CollectionCreateIn {
+  name: string;
+  description?: string;
+}
+
+export interface CollectionUpdateIn {
+  name?: string;
+  description?: string;
+}
+
+export interface CollectionDocumentAddIn {
+  document_id: string;
+}
+
+export interface PaginatedResponse<T> {
+  total: number;
+  page: number;
+  page_size: number;
+  items: T[];
+}
+
+export function getCollections(
+  search?: string,
+  page = 1,
+  page_size = 50
+): Promise<PaginatedResponse<ResearchCollection>> {
+  const qs = new URLSearchParams();
+  if (search?.trim()) qs.set("search", search.trim());
+  qs.set("page", String(page));
+  qs.set("page_size", String(page_size));
+  return request<PaginatedResponse<ResearchCollection>>(
+    `/collections?${qs.toString()}`
+  );
+}
+
+export function createCollection(
+  payload: CollectionCreateIn
+): Promise<ResearchCollection> {
+  return request<ResearchCollection>("/collections", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function getCollection(
+  id: string
+): Promise<ResearchCollectionDetail> {
+  return request<ResearchCollectionDetail>(
+    `/collections/${encodeURIComponent(id)}`
+  );
+}
+
+export function updateCollection(
+  id: string,
+  payload: CollectionUpdateIn
+): Promise<ResearchCollection> {
+  return request<ResearchCollection>(
+    `/collections/${encodeURIComponent(id)}`,
+    { method: "PATCH", body: JSON.stringify(payload) }
+  );
+}
+
+export function deleteCollection(id: string): Promise<void> {
+  return request<void>(
+    `/collections/${encodeURIComponent(id)}`,
+    { method: "DELETE" }
+  );
+}
+
+export function addDocumentToCollection(
+  collectionId: string,
+  payload: CollectionDocumentAddIn
+): Promise<CollectionDocumentWithDoc> {
+  return request<CollectionDocumentWithDoc>(
+    `/collections/${encodeURIComponent(collectionId)}/documents`,
+    { method: "POST", body: JSON.stringify(payload) }
+  );
+}
+
+export function removeDocumentFromCollection(
+  collectionId: string,
+  documentId: string
+): Promise<void> {
+  return request<void>(
+    `/collections/${encodeURIComponent(collectionId)}/documents/${encodeURIComponent(documentId)}`,
+    { method: "DELETE" }
+  );
+}
+
+// ------------------------------------------------------------------
+// Phase 3: Knowledge Graph (entities & relationships)
+// ------------------------------------------------------------------
+
+export interface KnowledgeEntity {
+  id: string;
+  name: string;
+  entity_type: string;
+  description: string | null;
+  source_document_id: string | null;
+  source_chunk_id: string | null;
+  source_page_number: number | null;
+  source_text_snippet: string | null;
+  source_document_title: string | null;
+  confidence: number;
+  is_inferred: boolean;
+  created_at: string;
+  updated_at: string;
+  relationship_count: number;
+}
+
+export interface KnowledgeRelationship {
+  id: string;
+  source_entity_id: string;
+  target_entity_id: string;
+  source_entity_name: string;
+  target_entity_name: string;
+  relationship_type: string;
+  description: string | null;
+  source_document_id: string | null;
+  source_document_title: string | null;
+  confidence: number;
+  is_inferred: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface KnowledgeGraphData {
+  nodes: KnowledgeEntity[];
+  edges: KnowledgeRelationship[];
+}
+
+export function getKnowledgeGraphData(
+  entity_type?: string,
+  source_document_id?: string,
+  search?: string,
+  min_confidence = 0,
+  include_inferred = true,
+  max_nodes = 200,
+  max_edges = 400
+): Promise<KnowledgeGraphData> {
+  const qs = new URLSearchParams();
+  if (entity_type) qs.set("entity_type", entity_type);
+  if (source_document_id) qs.set("source_document_id", source_document_id);
+  if (search?.trim()) qs.set("search", search.trim());
+  qs.set("min_confidence", String(min_confidence));
+  qs.set("include_inferred", String(include_inferred));
+  qs.set("max_nodes", String(max_nodes));
+  qs.set("max_edges", String(max_edges));
+  return request<KnowledgeGraphData>(`/knowledge/graph?${qs.toString()}`);
+}
+
+export function getKnowledgeEntities(
+  entity_type?: string,
+  source_document_id?: string,
+  search?: string,
+  inferred_only?: boolean,
+  page = 1,
+  page_size = 50
+): Promise<PaginatedResponse<KnowledgeEntity>> {
+  const qs = new URLSearchParams();
+  if (entity_type) qs.set("entity_type", entity_type);
+  if (source_document_id) qs.set("source_document_id", source_document_id);
+  if (search?.trim()) qs.set("search", search.trim());
+  if (inferred_only !== undefined) qs.set("inferred_only", String(inferred_only));
+  qs.set("page", String(page));
+  qs.set("page_size", String(page_size));
+  return request<PaginatedResponse<KnowledgeEntity>>(
+    `/knowledge/entities?${qs.toString()}`
+  );
+}
+
+export function getKnowledgeRelationships(
+  source_entity_id?: string,
+  target_entity_id?: string,
+  relationship_type?: string,
+  page = 1,
+  page_size = 50
+): Promise<PaginatedResponse<KnowledgeRelationship>> {
+  const qs = new URLSearchParams();
+  if (source_entity_id) qs.set("source_entity_id", source_entity_id);
+  if (target_entity_id) qs.set("target_entity_id", target_entity_id);
+  if (relationship_type) qs.set("relationship_type", relationship_type);
+  qs.set("page", String(page));
+  qs.set("page_size", String(page_size));
+  return request<PaginatedResponse<KnowledgeRelationship>>(
+    `/knowledge/relationships?${qs.toString()}`
+  );
+}
+
+export function reprocessDocumentKnowledgeGraph(
+  documentId: string
+): Promise<{ detail: string; entities_deleted: number; entities_created: number; relationships_created: number }> {
+  return request<{
+    detail: string;
+    entities_deleted: number;
+    entities_created: number;
+    relationships_created: number;
+  }>(
+    `/knowledge/documents/${encodeURIComponent(documentId)}/reprocess`,
+    { method: "POST" }
+  );
+}
+
+// ------------------------------------------------------------------
+// Phase 3: Activity logs
+// ------------------------------------------------------------------
+
+export interface ActivityLogEntry {
+  id: string;
+  user_id: string;
+  action: string;
+  entity_type: string | null;
+  entity_id: string | null;
+  metadata: string | null;
+  ip_address: string | null;
+  created_at: string;
+}
+
+export function getActivityLogs(
+  action?: string,
+  page = 1,
+  page_size = 50
+): Promise<PaginatedResponse<ActivityLogEntry>> {
+  const qs = new URLSearchParams();
+  if (action) qs.set("action", action);
+  qs.set("page", String(page));
+  qs.set("page_size", String(page_size));
+  return request<PaginatedResponse<ActivityLogEntry>>(
+    `/activity?${qs.toString()}`
+  );
+}
+
+// ------------------------------------------------------------------
+// Phase 3: Research comparison
+// ------------------------------------------------------------------
+
+export interface ComparisonSection {
+  title: string;
+  content: string;
+  citations: string[];
+}
+
+export interface DocumentComparison {
+  document_ids: string[];
+  document_titles: string[];
+  sections: ComparisonSection[];
+  similarities: string[];
+  differences: string[];
+  research_gaps: string[];
+  model: string;
+  provider: string;
+  tokens_estimate: number | null;
+  created_at: string;
+}
+
+export interface CompareDocumentsIn {
+  document_ids: string[];
+}
+
+export function compareDocuments(
+  payload: CompareDocumentsIn
+): Promise<DocumentComparison> {
+  return request<DocumentComparison>("/research/compare", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+// ------------------------------------------------------------------
+// Phase 3: Admin extensions
+// ------------------------------------------------------------------
+
+export interface AdminAnalytics {
+  total_users: number;
+  active_users: number;
+  new_users_30d: number;
+  total_documents: number;
+  documents_uploaded_30d: number;
+  processing_success_count: number;
+  processing_failure_count: number;
+  ai_requests_30d: number;
+  avg_processing_latency_ms: number | null;
+  error_rate_percent: number | null;
+}
+
+export interface AuditLogEntry {
+  id: string;
+  admin_user_id: string;
+  admin_email: string;
+  target_user_id: string | null;
+  target_user_email: string | null;
+  action: string;
+  description: string | null;
+  metadata: string | null;
+  ip_address: string | null;
+  created_at: string;
+}
+
+export interface SystemHealth {
+  status: string;
+  database: string;
+  vector_store: string;
+  embedding_provider: string;
+  llm_provider: string;
+  uptime_seconds: number | null;
+}
+
+export interface UserStatusUpdate {
+  is_active: boolean;
+}
+
+export function getAdminAnalytics(): Promise<AdminAnalytics> {
+  return request<AdminAnalytics>("/admin/analytics");
+}
+
+export function getAdminAuditLogs(
+  admin_user_id?: string,
+  target_user_id?: string,
+  action?: string,
+  page = 1,
+  page_size = 50
+): Promise<PaginatedResponse<AuditLogEntry>> {
+  const qs = new URLSearchParams();
+  if (admin_user_id) qs.set("admin_user_id", admin_user_id);
+  if (target_user_id) qs.set("target_user_id", target_user_id);
+  if (action) qs.set("action", action);
+  qs.set("page", String(page));
+  qs.set("page_size", String(page_size));
+  return request<PaginatedResponse<AuditLogEntry>>(
+    `/admin/audit?${qs.toString()}`
+  );
+}
+
+export function getSystemHealth(): Promise<SystemHealth> {
+  return request<SystemHealth>("/admin/health");
+}
+
+export function updateUserStatus(
+  id: string,
+  payload: UserStatusUpdate
+): Promise<{
+  id: string;
+  email: string;
+  role: string;
+  is_active: boolean;
+  detail: string;
+}> {
+  return request<{
+    id: string;
+    email: string;
+    role: string;
+    is_active: boolean;
+    detail: string;
+  }>(
+    `/admin/users/${encodeURIComponent(id)}/status`,
+    { method: "PATCH", body: JSON.stringify(payload) }
+  );
+}
+
 export { BASE_URL };
+
