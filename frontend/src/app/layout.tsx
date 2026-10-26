@@ -30,11 +30,11 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "Lumina — a desk for your papers",
-    template: "%s · Lumina",
+    default: "AI Research Assistant | Lumina",
+    template: "%s | AI Research Assistant",
   },
   description:
-    "Lumina is a small workspace for students to keep papers, notes, and citations in one place.",
+    "AI Research & Knowledge Assistant — workspace for students and researchers to analyze papers, notes, citations, and knowledge graphs.",
 };
 
 export const viewport: Viewport = {

@@ -34,7 +34,6 @@ export default function RegisterPage() {
   async function onSubmit(values: RegisterInput) {
     try {
       await signUp(values);
-      router.replace("/dashboard");
     } catch (err) {
       setError("root", {
         message: err instanceof Error ? err.message : "Registration failed. Please try again.",
@@ -43,7 +42,13 @@ export default function RegisterPage() {
   }
 
   useEffect(() => {
-    if (!loading && user) router.replace("/dashboard");
+    if (!loading && user) {
+      if (user.role === "admin") {
+        router.replace("/admin");
+      } else {
+        router.replace("/dashboard");
+      }
+    }
   }, [loading, user, router]);
 
   return (

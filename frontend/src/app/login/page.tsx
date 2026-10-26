@@ -34,7 +34,6 @@ export default function LoginPage() {
   async function onSubmit(values: LoginInput) {
     try {
       await login(values);
-      router.replace("/dashboard");
     } catch (err) {
       setError("root", {
         message: err instanceof Error ? err.message : "Sign in failed. Please try again.",
@@ -43,7 +42,13 @@ export default function LoginPage() {
   }
 
   useEffect(() => {
-    if (!loading && user) router.replace("/dashboard");
+    if (!loading && user) {
+      if (user.role === "admin") {
+        router.replace("/admin");
+      } else {
+        router.replace("/dashboard");
+      }
+    }
   }, [loading, user, router]);
 
   return (
