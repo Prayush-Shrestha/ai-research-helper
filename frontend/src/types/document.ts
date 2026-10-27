@@ -22,7 +22,7 @@ export interface ResearchDocument {
   created_at: string; // ISO
   updated_at: string; // ISO
   /** Phase 2 RAG: indexing status for chunking + embeddings. */
-  indexing_status?: IndexingStatus;
+  indexing_status?: string;
   indexing_error?: string | null;
   embedding_model?: string | null;
 }

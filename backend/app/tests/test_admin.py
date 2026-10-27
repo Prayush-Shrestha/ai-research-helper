@@ -115,31 +115,33 @@ def _seed_admin_and_user(client: TestClient, db_session):
     return admin, user_client, ada
 
 
-def test_admin_can_read_another_users_document(client: TestClient, db_session):
+def test_admin_cannot_read_another_users_document(client: TestClient, db_session):
+    """Privacy: admins cannot read another user's document content."""
     admin, user_client, _ada = _seed_admin_and_user(client, db_session)
     doc_id = upload(user_client).json()["id"]
 
-    # Admin may fetch any user's document.
+    # Admin may NOT fetch another user's document (owner-only content).
     got = admin.get(f"/api/v1/documents/{doc_id}")
-    assert got.status_code == 200
-    assert got.json()["id"] == doc_id
+    assert got.status_code == 404, got.text
 
-    # Admin's document list includes the other user's document.
+    # Admin's own document list does not include the other user's document.
     listing = admin.get("/api/v1/documents").json()
-    assert listing["total"] >= 1
-    assert any(d["id"] == doc_id for d in listing["items"])
+    assert listing["total"] == 0 or not any(
+        d["id"] == doc_id for d in listing["items"]
+    )
 
 
-def test_admin_can_download_another_users_document(client: TestClient, db_session):
+def test_admin_cannot_download_another_users_document(client: TestClient, db_session):
+    """Privacy: admins cannot download another user's document file."""
     admin, user_client, _ada = _seed_admin_and_user(client, db_session)
     doc_id = upload(user_client).json()["id"]
 
     dl = admin.get(f"/api/v1/documents/{doc_id}/download")
-    assert dl.status_code == 200
-    assert dl.content == TINY_PDF
+    assert dl.status_code == 404, dl.text
 
 
-def test_admin_can_read_another_users_note(client: TestClient, db_session):
+def test_admin_cannot_read_another_users_note(client: TestClient, db_session):
+    """Privacy: admins cannot read another user's note content."""
     admin, user_client, _ada = _seed_admin_and_user(client, db_session)
     doc_id = upload(user_client).json()["id"]
     note_id = user_client.post(
@@ -147,18 +149,15 @@ def test_admin_can_read_another_users_note(client: TestClient, db_session):
         json={"title": "Secret", "content": "mine"},
     ).json()["id"]
 
-    # Admin may fetch any user's note.
+    # Admin may NOT fetch another user's note (owner-only content).
     got = admin.get(f"/api/v1/notes/{note_id}")
-    assert got.status_code == 200
-    assert got.json()["id"] == note_id
-
-    # Admin's note list includes the other user's note.
-    listing = admin.get("/api/v1/notes").json()
-    assert listing["total"] >= 1
-    assert any(n["id"] == note_id for n in listing["items"])
+    assert got.status_code == 404, got.text
 
 
-def test_admin_can_create_note_on_another_users_document(client: TestClient, db_session):
+def test_admin_cannot_create_note_on_another_users_document(
+    client: TestClient, db_session
+):
+    """Privacy: admins cannot create notes on another user's document."""
     admin, user_client, _ada = _seed_admin_and_user(client, db_session)
     doc_id = upload(user_client).json()["id"]
 
@@ -166,15 +165,14 @@ def test_admin_can_create_note_on_another_users_document(client: TestClient, db_
         f"/api/v1/notes/documents/{doc_id}/notes",
         json={"title": "Admin note", "content": "observed by admin"},
     )
-    assert created.status_code == 201
-    assert created.json()["document_id"] == doc_id
-    assert created.json()["content"] == "observed by admin"
+    assert created.status_code == 404, created.text
 
 
-# --- admin full-site visibility (documents + notes with owners) -------------
+# --- admin full-site visibility (metadata only, no content) ----------------
 
 
-def test_admin_sees_all_documents_with_owners(client: TestClient, db_session):
+def test_admin_sees_document_metadata_with_owners(client: TestClient, db_session):
+    """Admin sees document metadata (not extracted text) via /admin/documents."""
     admin, user_client, _ada = _seed_admin_and_user(client, db_session)
     doc_id = upload(user_client).json()["id"]
 
@@ -183,9 +181,12 @@ def test_admin_sees_all_documents_with_owners(client: TestClient, db_session):
     found = next(d for d in docs if d["id"] == doc_id)
     assert found["owner_email"] == "ada@example.edu"
     assert found["owner_name"] == "Ada Lovelace"
+    # Metadata only — no extracted text exposed to admins.
+    assert "extracted_text" not in found
 
 
-def test_admin_sees_all_notes_with_owners(client: TestClient, db_session):
+def test_admin_sees_note_metadata_without_content(client: TestClient, db_session):
+    """Admin sees note metadata (not body content) via /admin/notes."""
     admin, user_client, _ada = _seed_admin_and_user(client, db_session)
     doc_id = upload(user_client).json()["id"]
     note_id = user_client.post(
@@ -198,6 +199,8 @@ def test_admin_sees_all_notes_with_owners(client: TestClient, db_session):
     found = next(n for n in notes if n["id"] == note_id)
     assert found["owner_email"] == "ada@example.edu"
     assert found["title"] == "Secret"
+    # Note body is owner-only; admins do not see content.
+    assert "content" not in found
 
 
 def test_non_admin_cannot_see_admin_document_list(client: TestClient, db_session):

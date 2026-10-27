@@ -17,7 +17,7 @@ from app.api.dependencies import (
     get_settings_dep,
     require_same_origin,
 )
-from app.core.config import Settings
+from app.core.config import Settings, get_settings
 from app.models.document import Document as DocModel
 from app.models.user import User
 from app.schemas.common import MessageOut
@@ -297,8 +297,8 @@ def get_indexing_status(
 ) -> IndexingStatusOut:
     """Check the indexing status of a document."""
     rag = rag_service_mod.create_rag_service(settings)
-    status = rag.get_indexing_status(db, document_id, user)
-    if status is None:
+    indexing_state = rag.get_indexing_status(db, document_id, user)
+    if indexing_state is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Document not found.",
@@ -306,7 +306,7 @@ def get_indexing_status(
     doc = db.get(DocModel, document_id)
     return IndexingStatusOut(
         document_id=document_id,
-        indexing_status=status,
+        indexing_status=indexing_state,
         indexing_error=doc.indexing_error if doc else None,
         embedding_model=doc.embedding_model if doc else None,
     )

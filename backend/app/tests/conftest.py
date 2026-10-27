@@ -55,7 +55,12 @@ def client(db_session) -> Iterator[TestClient]:
 
     app = create_app()
     app.dependency_overrides[dependencies.get_db] = override_db
-    with TestClient(app, base_url="http://testserver") as test_client:
+    # Tests call mutation endpoints (POST/PATCH/DELETE) which require an
+    # Origin header under the CSRF backstop. The test origin matches
+    # FRONTEND_ORIGIN ("http://testserver").
+    with TestClient(
+        app, base_url="http://testserver", headers={"origin": "http://testserver"}
+    ) as test_client:
         yield test_client
     app.dependency_overrides.clear()
 
@@ -89,7 +94,11 @@ def login(client: TestClient, email="ada@example.edu"):
 def auth_client(base: TestClient, email="ada@example.edu") -> TestClient:
     """A fresh client holding that user's session cookie."""
     register(base, email=email)
-    fresh = TestClient(base.app, base_url="http://testserver")
+    fresh = TestClient(
+        base.app,
+        base_url="http://testserver",
+        headers={"origin": "http://testserver"},
+    )
     response = fresh.post(
         "/api/v1/auth/login",
         json={"email": email, "password": "correct-horse-99"},

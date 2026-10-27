@@ -45,11 +45,12 @@ class AdminDocumentWithOwner(AdminDocumentOut):
 
 
 class AdminNoteWithOwner(BaseModel):
+    """A note plus its owner — admin only. Note bodies are owner-only;
+    admins see metadata (title, ownership, timestamps) but not content."""
     model_config = ConfigDict(from_attributes=True)
 
     id: str
     title: str
-    content: str
     document_id: str | None = None
     document_title: str | None = None
     created_at: datetime

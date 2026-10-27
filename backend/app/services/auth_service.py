@@ -56,6 +56,10 @@ def authenticate_user(db: Session, email: str, password: str) -> User | None:
     user = get_user_by_email(db, email)
     if user is None or not verify_password(user.password_hash, password):
         return None
+    # Disabled accounts cannot authenticate (vague message: same as wrong
+    # credentials, so the account's disabled state is not revealed here).
+    if not user.is_active:
+        return None
     # Stamp the last-login time so the admin console can show who's been in.
     user.last_login_at = datetime.now(timezone.utc)
     db.add(user)

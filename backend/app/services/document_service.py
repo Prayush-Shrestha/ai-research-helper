@@ -25,11 +25,13 @@ def _storage(settings: Settings) -> LocalFileStorage:
 def get_document(db: Session, requester: User, document_id: str) -> Document | None:
     """Fetch one document.
 
-    Admins may read any document; everyone else only their own (no IDOR).
+    Owner-only: users can only read their own documents (no IDOR). Admins
+    see document metadata through the /admin/documents endpoint, never
+    another user's extracted text or file.
     """
-    stmt = select(Document).where(Document.id == document_id)
-    if not requester.is_admin:
-        stmt = stmt.where(Document.owner_id == requester.id)
+    stmt = select(Document).where(
+        Document.id == document_id, Document.owner_id == requester.id
+    )
     return db.scalars(stmt).first()
 
 
@@ -43,9 +45,7 @@ def list_documents(
     page: int = 1,
     page_size: int = 20,
 ) -> tuple[list[Document], int]:
-    stmt = select(Document)
-    if not requester.is_admin:
-        stmt = stmt.where(Document.owner_id == requester.id)
+    stmt = select(Document).where(Document.owner_id == requester.id)
     if file_type in ("PDF", "DOCX"):
         stmt = stmt.where(Document.file_type == file_type)
     if search and search.strip():
@@ -157,6 +157,7 @@ def create_document_from_upload(
         logger.exception("upload persistence failed for user %s", owner.id)
         return None, "Upload failed. Please try again."
     _ = content_type  # MIME type is a hint only; the signature decided.
+
     return document, None
 
 

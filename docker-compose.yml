@@ -1,7 +1,17 @@
+# Lumina — Docker Compose for local development and production testing.
+#
+#   docker compose up -d          # start all services
+#   docker compose logs -f        # follow logs
+#   docker compose down           # stop and remove
+#
+# Backend:  http://localhost:8000   (API docs at /docs when ENV=development)
+# Frontend: http://localhost:3002
+# Postgres: localhost:5432 (pgvector enabled)
+
 services:
   postgres:
-    image: postgres:16-alpine
-    container_name: researchos-postgres
+    image: pgvector/pgvector:pg16
+    container_name: lumina-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: researchos
@@ -10,12 +20,58 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - researchos-pgdata:/var/lib/postgresql/data
+      - lumina-pgdata:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U researchos -d researchos"]
       interval: 5s
       timeout: 3s
       retries: 10
 
+  backend:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile
+    container_name: lumina-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    env_file:
+      - backend/.env
+    environment:
+      DATABASE_URL: postgresql+psycopg://researchos:researchos@postgres:5432/researchos
+      FRONTEND_ORIGIN: http://localhost:3002
+      ENV: production
+      COOKIE_SECURE: "true"
+    volumes:
+      - lumina-uploads:/app/storage
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz')"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    start_period: 10s
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: frontend/Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE_URL: http://localhost:8000/api/v1
+    container_name: lumina-frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "3002:3002"
+    env_file:
+      - frontend/.env.local
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8000/api/v1
+
 volumes:
-  researchos-pgdata:
+  lumina-pgdata:
+  lumina-uploads:

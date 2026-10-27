@@ -54,12 +54,11 @@ def list_collections(
 def get_collection(
     db: Session, owner: User, collection_id: str
 ) -> ResearchCollection | None:
-    """Fetch one collection, only if owned by the user (or admin)."""
+    """Fetch one collection, only if owned by the user (no admin bypass)."""
     stmt = select(ResearchCollection).where(
-        ResearchCollection.id == collection_id
+        ResearchCollection.id == collection_id,
+        ResearchCollection.owner_id == owner.id,
     )
-    if not owner.is_admin:
-        stmt = stmt.where(ResearchCollection.owner_id == owner.id)
     return db.scalars(stmt).first()
 
 

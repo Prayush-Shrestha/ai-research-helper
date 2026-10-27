@@ -30,7 +30,11 @@ async def get_current_user(
     settings: Settings = Depends(get_settings_dep),
     db: Session = Depends(get_db),
 ) -> User:
-    """Resolve the user from the HttpOnly session cookie (401 otherwise)."""
+    """Resolve the user from the HttpOnly session cookie (401 otherwise).
+
+    Disabled accounts (is_active=false) are rejected with 401 so a disabled
+    user cannot make any authenticated request even if they hold a cookie.
+    """
     token = request.cookies.get(settings.SESSION_COOKIE_NAME)
     if not token:
         raise HTTPException(
@@ -48,6 +52,11 @@ async def get_current_user(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Not authenticated.",
+        )
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Account is disabled. Contact an administrator.",
         )
     return user
 
@@ -67,13 +76,21 @@ async def require_admin(
 async def require_same_origin(
     request: Request, settings: Settings = Depends(get_settings_dep)
 ) -> None:
-    """Cheap CSRF backstop for cookie auth: when the browser sends an
-    Origin header on a mutation, it must be our own frontend origin."""
+    """CSRF backstop for cookie auth.
+
+    On non-safe methods, when the browser sends an Origin header it must be
+    our own frontend origin. Requests with no Origin header on non-safe
+    methods are rejected (a browser same-origin request always sends Origin;
+    only cross-site / non-browser callers omit it).
+    """
     if request.method in ("GET", "HEAD", "OPTIONS"):
         return
     origin = request.headers.get("origin")
     if origin is None:
-        return
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Cross-origin request refused.",
+        )
     allowed = {settings.FRONTEND_ORIGIN.rstrip("/")}
     if origin.rstrip("/") not in allowed:
         raise HTTPException(

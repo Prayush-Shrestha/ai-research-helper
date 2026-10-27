@@ -68,10 +68,12 @@ def test_rag_service_ask_uses_conversation_scope():
     # Mock embedding - AsyncMock returns a coroutine
     svc._emb.embed_texts = AsyncMock(return_value=[[0.1, 0.0, 0.0]])
 
-    # Mock vector store to return chunks
-    svc._vs.similarity_search.return_value = [
-        ("chunk-1", 0.9, "text about ML", 1),
-    ]
+    # Mock vector store to return chunks (similarity_search is async).
+    svc._vs.similarity_search = AsyncMock(
+        return_value=[
+            ("chunk-1", 0.9, "text about ML", 1),
+        ]
+    )
 
     # Mock LLM
     svc._llm.generate_answer = AsyncMock(
@@ -131,7 +133,7 @@ def test_rag_insufficient_evidence_when_no_chunks():
     conv.document_ids = "[]"
     svc._conv.get_conversation.return_value = conv
     svc._emb.embed_texts = AsyncMock(return_value=[[0.1, 0.0, 0.0]])
-    svc._vs.similarity_search.return_value = []  # No chunks found
+    svc._vs.similarity_search = AsyncMock(return_value=[])  # No chunks found
     svc._llm.generate_answer = AsyncMock(
         return_value=LLMResult(
             answer="I couldn't find enough relevant information.",
@@ -168,7 +170,7 @@ def test_rag_cross_user_document_filtered():
     )
 
     svc._emb.embed_texts = AsyncMock(return_value=[[0.1, 0.0, 0.0]])
-    svc._vs.similarity_search.return_value = []
+    svc._vs.similarity_search = AsyncMock(return_value=[])
     svc._llm.generate_answer = AsyncMock(
         return_value=LLMResult(
             answer="No results.",
@@ -212,9 +214,11 @@ def test_rag_citation_integrity():
     conv.document_ids = "[]"
     svc._conv.get_conversation.return_value = conv
     svc._emb.embed_texts = AsyncMock(return_value=[[0.1, 0.0, 0.0]])
-    svc._vs.similarity_search.return_value = [
-        ("chunk-abc", 0.95, "The quick brown fox jumps.", 3),
-    ]
+    svc._vs.similarity_search = AsyncMock(
+        return_value=[
+            ("chunk-abc", 0.95, "The quick brown fox jumps.", 3),
+        ]
+    )
     svc._llm.generate_answer = AsyncMock(
         return_value=LLMResult(
             answer="The fox jumps.[1]",

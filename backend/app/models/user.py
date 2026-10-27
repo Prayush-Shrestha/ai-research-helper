@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 
 from typing import TYPE_CHECKING
 
-from sqlalchemy import CheckConstraint, DateTime, String
+from sqlalchemy import Boolean, CheckConstraint, DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -61,6 +61,12 @@ class User(Base):
     # accounts (created before this column existed) never logged in after it.
     last_login_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
+    )
+    # Whether the account can authenticate. Admins can disable/reactivate
+    # accounts via the admin console. Disabled accounts get a 401 on login
+    # and on every authenticated request. Defaults to true for new accounts.
+    is_active: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=True, server_default="true"
     )
 
     # Deleting a user removes their documents, notes, and (via the document

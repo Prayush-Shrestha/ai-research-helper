@@ -27,7 +27,12 @@ from app.models.document import Document
 from app.models.document_chunk import DocumentChunk
 from app.models.phase3 import KnowledgeEntity, KnowledgeRelationship
 from app.models.user import User
-from app.schemas.phase3 import KnowledgeEntityFilter, KnowledgeGraphOut
+from app.schemas.phase3 import (
+    KnowledgeEntityFilter,
+    KnowledgeEntityOut,
+    KnowledgeGraphOut,
+    KnowledgeRelationshipOut,
+)
 from app.services import activity_service
 
 logger = logging.getLogger(__name__)

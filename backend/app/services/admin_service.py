@@ -181,7 +181,6 @@ def list_all_notes_with_owners(db: Session) -> list[AdminNoteWithOwner]:
         AdminNoteWithOwner(
             id=n.id,
             title=n.title,
-            content=n.content,
             document_id=n.document_id,
             document_title=doc_title,
             created_at=n.created_at,

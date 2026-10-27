@@ -10,7 +10,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-from typing import cast
+from typing import Any, cast
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -33,6 +33,7 @@ from app.services.vector_store import VectorStore
 from app.schemas.research import (
     CitationOut,
     KeyPoint,
+    KnowledgeEdge,
     KnowledgeNode,
     KnowledgeOut,
     SummarizeOut,
@@ -111,16 +112,18 @@ class RAGService:
             logger.exception("Question embedding failed")
             raise RuntimeError(f"Failed to embed question: {exc}") from exc
 
-        # Retrieve chunks (vector store methods are sync-in-nature).
+        # Retrieve chunks (vector store similarity_search is async).
         top_k = min(self._settings.RAG_TOP_K, 10)
         threshold = self._settings.RAG_SIMILARITY_THRESHOLD
-        raw_results = self._vs.similarity_search(
-            db,
-            query_vector=query_vector,
-            document_ids=document_ids if document_ids else None,
-            owner_id=owner.id,
-            top_k=top_k,
-            threshold=threshold,
+        raw_results = self._run_async(
+            self._vs.similarity_search(
+                db,
+                query_vector=query_vector,
+                document_ids=document_ids if document_ids else None,
+                owner_id=owner.id,
+                top_k=top_k,
+                threshold=threshold,
+            )
         )
 
         # Build chunk dicts for the LLM.
@@ -187,13 +190,17 @@ class RAGService:
         rows = db.execute(stmt).all()
         return [row[0] for row in rows]
 
-    def _embed_question(self, text: str) -> list[float]:
+    def _run_async(self, coro) -> Any:
+        """Run an async coroutine from a sync method (event-loop friendly)."""
         try:
             loop = asyncio.get_event_loop()
         except RuntimeError:
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
-        vectors = loop.run_until_complete(self._emb.embed_texts([text]))
+        return loop.run_until_complete(coro)
+
+    def _embed_question(self, text: str) -> list[float]:
+        vectors = self._run_async(self._emb.embed_texts([text]))
         return vectors[0]
 
     def _build_chunks(
@@ -240,12 +247,7 @@ class RAGService:
         question: str,
         chunks: list[dict],
     ) -> LLMResult:
-        try:
-            loop = asyncio.get_event_loop()
-        except RuntimeError:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-        return loop.run_until_complete(
+        return self._run_async(
             self._llm.generate_answer(
                 question=question,
                 chunks=chunks,
@@ -278,10 +280,10 @@ class RAGService:
     def get_indexing_status(
         self, db: Session, document_id: str, owner: User
     ) -> str | None:
-        doc = db.query(Document).filter(Document.id == document_id)
+        stmt = select(Document).where(Document.id == document_id)
         if not owner.is_admin:
-            doc = doc.filter(Document.owner_id == owner.id)
-        doc = doc.first()
+            stmt = stmt.where(Document.owner_id == owner.id)
+        doc = db.scalars(stmt).first()
         if doc is None:
             return None
         return doc.indexing_status
@@ -371,10 +373,12 @@ class RAGService:
         )
 
         try:
-            result = self._llm.generate_answer(
-                question="Summarize these documents.",
-                chunks=chunks[:20],
-                system_prompt=summary_prompt,
+            result = self._run_async(
+                self._llm.generate_answer(
+                    question="Summarize these documents.",
+                    chunks=chunks[:20],
+                    system_prompt=summary_prompt,
+                )
             )
         except Exception as exc:  # noqa: BLE001
             logger.exception("Summarization failed")
@@ -405,7 +409,7 @@ class RAGService:
 
         citations = [
             CitationOut(
-                chunk_id=c.get("chunk_id", ""),
+                chunk_id=c.get("id", ""),
                 document_id=c.get("document_id", ""),
                 document_title=c.get("document_title", "Unknown document"),
                 page_number=c.get("page_number"),

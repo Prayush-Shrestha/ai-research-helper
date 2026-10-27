@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.join(__dirname),
   },
+  // Standalone output for Docker: produces a self-contained .next/standalone
+  // directory that can run with `node server.js` without a full node_modules.
+  output: "standalone",
 };
 
 export default nextConfig;

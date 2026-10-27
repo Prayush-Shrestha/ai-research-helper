@@ -280,10 +280,19 @@ class ResearchComparisonService:
         )
 
         try:
-            result: LLMResult = self._llm.generate_answer(
-                question=question,
-                chunks=chunks,
-                system_prompt=system_prompt,
+            import asyncio
+
+            try:
+                loop = asyncio.get_event_loop()
+            except RuntimeError:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+            result: LLMResult = loop.run_until_complete(
+                self._llm.generate_answer(
+                    question=question,
+                    chunks=chunks,
+                    system_prompt=system_prompt,
+                )
             )
         except Exception as exc:  # noqa: BLE001
             logger.exception("Document comparison failed")

@@ -376,6 +376,10 @@ export interface Conversation {
   message_count: number;
 }
 
+export interface ConversationListOut {
+  conversations: Conversation[];
+}
+
 export interface ConversationMessage {
   id: string;
   role: "user" | "assistant";
@@ -429,8 +433,8 @@ export interface IndexingStatus {
   embedding_model: string | null;
 }
 
-export function getConversations(): Promise<Conversation[]> {
-  return request<Conversation[]>("/research/conversations");
+export function getConversations(): Promise<ConversationListOut> {
+  return request<ConversationListOut>("/research/conversations");
 }
 
 export function getConversation(

@@ -24,9 +24,10 @@ def _to_out(note: ResearchNote, document_title: str | None = None) -> NoteOut:
 
 
 def get_note(db: Session, requester: User, note_id: str) -> ResearchNote | None:
-    stmt = select(ResearchNote).where(ResearchNote.id == note_id)
-    if not requester.is_admin:
-        stmt = stmt.where(ResearchNote.owner_id == requester.id)
+    """Fetch one note. Owner-only — no admin content bypass."""
+    stmt = select(ResearchNote).where(
+        ResearchNote.id == note_id, ResearchNote.owner_id == requester.id
+    )
     return db.scalars(stmt).first()
 
 
@@ -35,9 +36,9 @@ def _resolve_document(
 ) -> tuple[Document | None, str | None]:
     if document_id is None:
         return None, None
-    stmt = select(Document).where(Document.id == document_id)
-    if not requester.is_admin:
-        stmt = stmt.where(Document.owner_id == requester.id)
+    stmt = select(Document).where(
+        Document.id == document_id, Document.owner_id == requester.id
+    )
     document = db.scalars(stmt).first()
     if document is None:
         return None, "Document not found."
@@ -83,9 +84,8 @@ def list_notes(
     base = (
         select(ResearchNote, Document.title)
         .outerjoin(Document, Document.id == ResearchNote.document_id)
+        .where(ResearchNote.owner_id == requester.id)
     )
-    if not requester.is_admin:
-        base = base.where(ResearchNote.owner_id == requester.id)
     total = db.scalar(select(func.count()).select_from(base.subquery())) or 0
     rows = db.execute(
         base.order_by(ResearchNote.updated_at.desc())
@@ -96,9 +96,10 @@ def list_notes(
 
 
 def list_document_notes(db: Session, requester: User, document: Document) -> list[NoteOut]:
-    stmt = select(ResearchNote).where(ResearchNote.document_id == document.id)
-    if not requester.is_admin:
-        stmt = stmt.where(ResearchNote.owner_id == requester.id)
+    stmt = select(ResearchNote).where(
+        ResearchNote.document_id == document.id,
+        ResearchNote.owner_id == requester.id,
+    )
     notes = list(
         db.scalars(
             stmt.order_by(ResearchNote.updated_at.desc()).options(

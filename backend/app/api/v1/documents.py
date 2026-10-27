@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
@@ -28,6 +29,7 @@ from app.services import activity_service
 router = APIRouter(dependencies=[Depends(require_same_origin)])
 
 MAX_PAGE_SIZE = 100
+logger = logging.getLogger(__name__)
 
 
 def _not_found() -> HTTPException:
@@ -96,6 +98,41 @@ async def upload_document(
             "file_size": document.file_size,
         },
     )
+
+    # Auto-index the document for RAG (chunking + embeddings) right after
+    # a successful upload. Indexing failures must not fail the upload —
+    # the document is already persisted and indexing_status is tracked
+    # separately so the user can retry via /documents/{id}/reindex.
+    try:
+        from app.services import embedding as embedding_service_mod
+        from app.services.indexing import IndexingService
+        from app.services import vector_store as vs_mod
+
+        emb_service = embedding_service_mod.EmbeddingService(
+            embedding_service_mod.EmbeddingServiceConfig(
+                provider=settings.EMBEDDING_PROVIDER,
+                model=settings.EMBEDDING_MODEL,
+                api_key=settings.openai_api_key,
+                base_url=settings.OPENAI_BASE_URL,
+                timeout=settings.RAG_REQUEST_TIMEOUT,
+            )
+        )
+        vector_store = vs_mod.create_vector_store(settings)
+        indexing_service = IndexingService(
+            settings=settings,
+            emb_service=emb_service,
+            vector_store=vector_store,
+        )
+        await indexing_service.index_document(db, document, user)
+        db.refresh(document)
+    except Exception as exc:  # noqa: BLE001
+        logger.exception("Auto-indexing failed for document %s", document.id)
+        document.indexing_status = "failed"
+        document.indexing_error = f"Indexing failed: {exc}"
+        db.add(document)
+        db.commit()
+        db.refresh(document)
+
     return document
 
 

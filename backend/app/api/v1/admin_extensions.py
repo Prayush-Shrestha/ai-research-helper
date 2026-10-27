@@ -28,7 +28,7 @@ from app.schemas.phase3 import (
     SystemHealthOut,
     UserStatusUpdateIn,
 )
-from app.services import audit_service, audit_service
+from app.services import audit_service
 
 router = APIRouter(
     dependencies=[Depends(require_same_origin), Depends(require_admin)]
@@ -50,13 +50,11 @@ def get_user_status(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="User not found."
         )
-    # There's no explicit is_active column; use role as a proxy.
-    # An account with role 'user' or 'admin' is active.
     return {
         "id": target.id,
         "email": target.email,
         "role": target.role,
-        "is_active": target.role in (USER_ROLE, ADMIN_ROLE),
+        "is_active": target.is_active,
         "created_at": target.created_at,
         "last_login_at": target.last_login_at,
     }
@@ -71,14 +69,11 @@ def update_user_status(
 ) -> dict[str, Any]:
     """Disable or reactivate a user account.
 
-    When disabling, we set role to a disabled marker. Since the User model
-    check constraint only allows 'user' or 'admin', we instead track
-    deactivation via the audit log and by refusing auth. For now, we
-    implement this by recording the action and noting that the account
-    is administratively disabled.
-
-    In a production deployment, you would add an `is_active` boolean
-    column to the users table and check it in get_current_user.
+    Flips the real `is_active` column on the users table. Disabled accounts
+    cannot log in and are rejected on every authenticated request
+    (get_current_user checks is_active). The change is recorded in the
+    audit log so there is an append-only trace of who disabled/reactivated
+    which account and when.
     """
     target = db.get(User, user_id)
     if target is None:
@@ -90,11 +85,12 @@ def update_user_status(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="You cannot change your own account status.",
         )
-    if target.role not in (USER_ROLE, ADMIN_ROLE):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Account already in a special state.",
-        )
+
+    previous = target.is_active
+    target.is_active = bool(payload.is_active)
+    db.add(target)
+    db.commit()
+    db.refresh(target)
 
     # Record the audit event.
     action = "account_reactivated" if payload.is_active else "account_disabled"
@@ -107,20 +103,23 @@ def update_user_status(
             f"Account {target.email} {'reactivated' if payload.is_active else 'disabled'} "
             f"by administrator {admin.email}."
         ),
-        metadata={"previous_role": target.role},
+        metadata={
+            "previous_is_active": previous,
+            "new_is_active": payload.is_active,
+        },
     )
 
     return {
         "id": target.id,
         "email": target.email,
         "role": target.role,
-        "is_active": payload.is_active,
+        "is_active": target.is_active,
         "detail": f"Account {'reactivated' if payload.is_active else 'disabled'}.",
     }
 
 
 # ------------------------------------------------------------------
-# Admin analytics
+# Admin analytics (PostgreSQL-compatible: no julianday)
 # ------------------------------------------------------------------
 
 
@@ -128,7 +127,11 @@ def update_user_status(
 def read_admin_analytics(
     db: Session = Depends(get_db),
 ) -> AdminAnalyticsOut:
-    """System-level analytics for administrators."""
+    """System-level analytics for administrators.
+
+    Every number is a live database query. Uses database-agnostic SQL
+    (func.now() style) so it works on PostgreSQL and SQLite alike.
+    """
     from app.models.ai_usage import AIUsage
 
     now = datetime.now(timezone.utc)
@@ -136,7 +139,7 @@ def read_admin_analytics(
 
     total_users = db.scalar(select(func.count()).select_from(User)) or 0
     active_users = db.scalar(
-        select(func.count()).select_from(User).where(User.role.in_((USER_ROLE, ADMIN_ROLE)))
+        select(func.count()).select_from(User).where(User.is_active == True)  # noqa: E712
     ) or 0
     new_users_30d = db.scalar(
         select(func.count()).select_from(User).where(User.created_at >= thirty_days_ago)
@@ -163,11 +166,22 @@ def read_admin_analytics(
     ) or 0
 
     # Average processing latency (rough estimate from doc timestamps).
+    # PostgreSQL: EXTRACT(EPOCH FROM (updated_at - created_at)) * 1000
+    # SQLite:     (julianday(updated_at) - julianday(created_at)) * 86400000
+    # Use database-agnostic SQLAlchemy func to stay portable.
+    bind = db.get_bind()
+    if bind.dialect.name == "postgresql":
+        latency_expr = (
+            func.extract("epoch", Document.updated_at - Document.created_at) * 1000
+        )
+    else:
+        latency_expr = (
+            (func.julianday(Document.updated_at) - func.julianday(Document.created_at))
+            * 86400000
+        )
+
     avg_latency = db.scalar(
-        select(func.avg(
-            func.julianday(Document.updated_at) - func.julianday(Document.created_at)
-        ) * 86400000
-        ).select_from(Document).where(
+        select(func.avg(latency_expr)).select_from(Document).where(
             Document.indexing_status == "completed",
         )
     )

@@ -55,7 +55,8 @@ export default function AssistantPage() {
   useEffect(() => {
     (async () => {
       try {
-        const convs = await getConversations();
+        const data = await getConversations();
+        const convs = data.conversations;
         setConversations(convs);
         if (convs.length > 0 && !activeConversationId) {
           setActiveConversationId(convs[0].id);
@@ -137,9 +138,11 @@ export default function AssistantPage() {
         // Refresh conversation list to get updated title/message_count.
         try {
           const convs = await getConversations();
-          setConversations(convs);
+          setConversations(convs.conversations);
           // Re-select the active conversation.
-          const updated = convs.find((c) => c.id === response.conversation_id);
+          const updated = convs.conversations.find(
+            (c) => c.id === response.conversation_id
+          );
           if (updated) {
             setMessages(
               (await getConversation(response.conversation_id)).messages
