@@ -196,10 +196,7 @@ export default function AssistantPage() {
 
   return (
     <div className="page-shell">
-      <section className="relative pt-6 sm:pt-10">
-        <span className="orb" aria-hidden style={{ width: 420, height: 420, top: -140, left: -120, background: "radial-gradient(circle, rgba(255,255,255,0.16), transparent 65%)" }} />
-        <span className="orb" aria-hidden style={{ width: 460, height: 460, top: -160, right: -140, background: "radial-gradient(circle, rgba(255,255,255,0.14), transparent 65%)" }} />
-        <div className="relative rise rise-1">
+      <section className="relative pt-6 sm:pt-10"><div className="relative rise rise-1">
           <span className="eyebrow"><span className="dot" />Assistant</span>
           <h1 className="type-heading-sm mt-4" style={{ color: "var(--color-apple-ink)", fontWeight: 600, letterSpacing: "-0.03em" }}>
             Ask about your papers.
@@ -392,3 +389,4 @@ export default function AssistantPage() {
     </div>
   );
 }
+

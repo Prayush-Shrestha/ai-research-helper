@@ -38,10 +38,7 @@ export default function NotesPage() {
 
   return (
     <div>
-      <section className="rise rise-1 relative pt-6 sm:pt-10">
-        <div aria-hidden className="orb" style={{ width: 340, height: 340, top: -120, left: -120, background: "radial-gradient(circle, rgba(255,255,255,0.16), transparent 65%)" }} />
-        <div aria-hidden className="orb" style={{ width: 300, height: 300, top: -100, right: -100, background: "radial-gradient(circle, rgba(255,255,255,0.14), transparent 65%)" }} />
-        <div className="relative">
+      <section className="rise rise-1 relative pt-6 sm:pt-10"><div className="relative">
         <span className="eyebrow"><span className="dot" />Notes</span>
         <h1 className="mt-4" style={{ fontWeight: 600, letterSpacing: "-0.03em", fontSize: 28, lineHeight: 1.2, color: "var(--color-apple-ink)" }}>
           Margin scribbles, kept.
@@ -167,3 +164,4 @@ export default function NotesPage() {
     </div>
   );
 }
+

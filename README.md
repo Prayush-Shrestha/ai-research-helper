@@ -80,6 +80,20 @@ local disk in a later phase without touching routes.
 - Python 3.11+
 - Docker Desktop (for PostgreSQL), or a local PostgreSQL 16 server
 
+### Repository hygiene (`.gitignore`)
+
+Local, secret, and build artifacts are ignored so they never get committed:
+
+- `backend/.env` — real backend secrets (copy from `backend/.env.example`; only `.env.example` is committed).
+- `frontend/.env.local` — frontend env overrides (only `.env.example` is committed).
+- `backend/.venv/`, `frontend/node_modules/` — dependency installs (recreate with `pip install` / `npm install`).
+- `backend/dev.db`, `backend/storage/` — local SQLite DB and uploads.
+- `frontend/.next/`, `frontend/out/`, `*.tsbuildinfo` — Next.js build cache.
+- `__pycache__/`, `.pytest_cache/`, `*.py[cod]` — Python bytecode/test caches.
+- `.vscode/`, `.idea/`, `.DS_Store`, `Thumbs.db` — editor/OS files.
+
+Never edit committed `.env.example` files with real secrets; create an ignored `.env` instead.
+
 ## Environment setup
 
 ```powershell
@@ -312,6 +326,10 @@ ADMIN_EMAILS=researcher@university.edu
 - Account disable/reactivate is audited in the `audit_logs` table.
 - Activity logs record only metadata — never document contents, passwords, or session tokens.
 - Pydantic v2 validation returns `422` for invalid request bodies.
+- Dependencies are kept on patched releases: run `next upgrade --agent=security`
+  from `frontend/` (reports "no security update needed" when current), and keep
+  `next` and `zod` at their latest secure patch versions (see `frontend/package.json`).
+  `npm audit` should return 0 vulnerabilities before committing.
 
 ### Commands
 

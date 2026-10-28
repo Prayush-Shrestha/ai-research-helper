@@ -41,13 +41,23 @@ const MOBILE_LINKS = [
 
 function SparkMark({ size = 30 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" aria-hidden>
-      <path
-        d="M16 5.5 C17.2 11.8 19.2 13.8 25.5 15 C19.2 16.2 17.2 18.2 16 24.5 C14.8 18.2 12.8 16.2 6.5 15 C12.8 13.8 14.8 11.8 16 5.5 Z"
-        fill="var(--btn-ink)"
-      />
-      <circle cx="23" cy="8.5" r="2.6" fill="var(--btn-ink)" opacity="0.55" />
-    </svg>
+    <span
+      style={{
+        width: size,
+        height: size,
+        borderRadius: 6,
+        background: "var(--btn-ink)",
+        color: "var(--color-apple-ink)",
+        fontWeight: 700,
+        fontSize: Math.round(size * 0.45),
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexShrink: 0,
+      }}
+    >
+      L
+    </span>
   );
 }
 

@@ -114,10 +114,7 @@ export function KnowledgeGraph({
       className="gallery-card relative overflow-hidden !p-0"
       style={{ height }}
     >
-      <div aria-hidden className="absolute inset-0">
-        <div className="orb" style={{ width: 420, height: 300, left: "10%", top: "5%", background: "radial-gradient(circle, rgba(255,255,255,0.16), transparent 65%)" }} />
-        <div className="orb" style={{ width: 460, height: 320, right: "5%", bottom: "5%", background: "radial-gradient(circle, rgba(255,255,255,0.14), transparent 65%)" }} />
-      </div>
+      <div aria-hidden className="absolute inset-0"></div>
       <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full" aria-hidden>
         {links
           .filter(([a, b]) => a >= 0 && b >= 0 && a < nodes.length && b < nodes.length)
@@ -153,3 +150,4 @@ export function KnowledgeGraph({
     </div>
   );
 }
+

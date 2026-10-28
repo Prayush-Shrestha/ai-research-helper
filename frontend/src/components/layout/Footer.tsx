@@ -40,12 +40,10 @@ export function Footer() {
         className="mx-auto px-6 py-10 sm:px-10"
         style={{
           maxWidth: "var(--page-max-width)",
-          borderRadius: 28,
-          background: "linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.02)), color-mix(in srgb, var(--color-pure-white) 72%, transparent)",
-          backdropFilter: "blur(24px) saturate(170%)",
-          WebkitBackdropFilter: "blur(24px) saturate(170%)",
+          borderRadius: 12,
+          background: "var(--surface-pure-white)",
           border: "1px solid var(--liquid-border)",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.35), inset 0 1px 0 var(--liquid-shine)",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
         }}
       >
         <div className="grid gap-8 md:grid-cols-[1.4fr_1fr_1fr_1fr]">

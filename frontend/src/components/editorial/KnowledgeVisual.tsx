@@ -19,9 +19,7 @@ export function KnowledgeVisual({ compact = false }: { compact?: boolean }) {
         justifyContent: "center",
         padding: "32px 16px",
       }}
-    >
-      <span aria-hidden className="orb" style={{ width: 380, height: 380, left: "50%", top: "-140px", transform: "translateX(-50%)", background: "radial-gradient(circle, rgba(255,255,255,0.14), transparent 65%)" }} />
-      <div className="relative" style={{ zIndex: 1, width: "100%" }}>
+    ><div className="relative" style={{ zIndex: 1, width: "100%" }}>
         <ResearchNucleus size={compact ? 320 : 440} />
       </div>
       <div
@@ -38,3 +36,4 @@ export function KnowledgeVisual({ compact = false }: { compact?: boolean }) {
     </div>
   );
 }
+

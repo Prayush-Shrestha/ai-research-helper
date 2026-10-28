@@ -2,7 +2,6 @@ import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Reveal } from "@/components/motion/Reveal";
-import { Spotlight } from "@/components/motion/Spotlight";
 import { DocumentRow } from "@/components/documents/DocumentRow";
 import type { ResearchDocument } from "@/types/document";
 
@@ -61,8 +60,8 @@ function ProductPreview() {
     <div className="relative">
       <div
         aria-label="Illustrated preview of the Lumina workspace"
-        className="gallery-card taped tilt-r relative overflow-hidden !p-0"
-        style={{ borderRadius: 28 }}
+        className="gallery-card relative overflow-hidden !p-0"
+        style={{ borderRadius: 12 }}
       >
         <div className="flex items-center gap-1.5 px-5 pt-4">
           <span style={{ width: 10, height: 10, borderRadius: 99, background: "rgba(127,127,133,0.4)" }} />
@@ -141,7 +140,6 @@ export default function LandingPage() {
       <main className="relative mx-auto px-5 sm:px-8" style={{ maxWidth: 1180 }}>
         {/* ——— HERO ——— */}
         <section className="relative grid items-center gap-12 overflow-visible pt-10 sm:pt-16 lg:grid-cols-[1fr_1.05fr]" aria-labelledby="hero-title" id="product" style={{ zIndex: 1 }}>
-          <Spotlight />
           <div className="rise rise-1 relative" style={{ zIndex: 1 }}>
             <p className="hand" style={{ fontSize: 19, color: "var(--color-graphite)" }}>
               from a downloads folder with 400+ unread PDFs —
@@ -168,13 +166,6 @@ export default function LandingPage() {
             </p>
           </div>
           <div className="rise rise-2 relative">
-            {/* hand-drawn nudge */}
-            <div aria-hidden className="drift absolute -top-12 left-2 z-10 hidden items-center gap-2 sm:flex">
-              <svg className="doodle-draw" width="72" height="46" viewBox="0 0 72 46" fill="none" aria-hidden>
-                <path d="M4 6 C 24 4, 48 8, 62 34 M62 34 l-9 -3 M62 34 l1 -9" stroke="var(--color-slate)" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-              <span className="hand" style={{ fontSize: 16, color: "var(--color-slate)" }}>this bit is real, go click it</span>
-            </div>
             <ProductPreview />
           </div>
         </section>
@@ -186,7 +177,6 @@ export default function LandingPage() {
               {[...TICKER, ...TICKER].map((t, i) => (
                 <span key={i} className="flex items-center" style={{ fontSize: 14.5, color: "var(--color-graphite)", whiteSpace: "nowrap" }}>
                   <span className="hand px-6" style={{ fontSize: 16 }}>{t}</span>
-                  <span aria-hidden style={{ color: "var(--color-slate)" }}>✦</span>
                 </span>
               ))}
             </div>
@@ -198,7 +188,7 @@ export default function LandingPage() {
           {[
             ["15 MB", "biggest file it'll swallow. most papers are ~3."],
             ["3", "citation styles. APA, IEEE, BibTeX — that's all I know."],
-            ["0", "trackers, ads, or 'AI insights' dashboards."],
+            ["0", "trackers or ads."],
           ].map(([v, l]) => (
             <div key={l} className="glass-stat">
               <p style={{ fontSize: 30, fontWeight: 700, letterSpacing: "-0.03em", color: "var(--color-apple-ink)" }}>{v}</p>
@@ -299,10 +289,10 @@ export default function LandingPage() {
           </div>
         </Reveal>
 
-        {/* ——— AI NOTE ——— */}
-        <Reveal as="section" className="relative mx-auto mt-16" aria-label="About future AI features" style={{ maxWidth: 860, zIndex: 1 } as never}>
+        {/* ——— FINAL NOTE ——— */}
+        <Reveal as="section" className="relative mx-auto mt-16" aria-label="What comes next" style={{ maxWidth: 860, zIndex: 1 } as never}>
           <div className="gallery-card">
-            <span className="tag-pill">a note on AI, since everyone asks</span>
+            <span className="tag-pill">a note, since people ask</span>
             <h2 className="mt-3" style={{ fontSize: 24, fontWeight: 650, letterSpacing: "-0.02em", color: "var(--color-apple-ink)" }}>
               Question answering is next. It will quote or stay quiet.
             </h2>
@@ -317,7 +307,7 @@ export default function LandingPage() {
 
         {/* ——— FINAL CTA ——— */}
         <Reveal as="section" className="relative mx-auto mt-16 text-center" aria-label="Get started" style={{ maxWidth: 720, marginBottom: 24, zIndex: 1 } as never}>
-          <div className="gallery-card taped !p-12" style={{ borderRadius: 32 }}>
+          <div className="gallery-card !p-12" style={{ borderRadius: 12 }}>
             <p className="hand" style={{ fontSize: 18, color: "var(--color-graphite)" }}>no sales call, I promise. there&apos;s no sales team. it&apos;s me.</p>
             <h2 className="mt-3" style={{ fontSize: "clamp(34px,5vw,54px)", fontWeight: 650, letterSpacing: "-0.03em", lineHeight: 1.04, color: "var(--color-apple-ink)" }}>
               Got one PDF lying around?

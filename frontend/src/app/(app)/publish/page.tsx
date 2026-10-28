@@ -55,10 +55,7 @@ export default function PublishPage() {
 
   return (
     <div className="page-shell page-enter">
-      <section className="relative overflow-hidden pt-6 text-center sm:pt-10">
-        <span aria-hidden className="orb rise rise-1" style={{ width: 420, height: 420, left: "-8%", top: "-140px", background: "radial-gradient(circle, rgba(255,255,255,0.16), transparent 65%)" }} />
-        <span aria-hidden className="orb rise rise-2" style={{ width: 480, height: 480, right: "-10%", top: "-100px", background: "radial-gradient(circle, rgba(255,255,255,0.13), transparent 65%)" }} />
-        <div className="relative" style={{ zIndex: 1 }}>
+      <section className="relative overflow-hidden pt-6 text-center sm:pt-10"><div className="relative" style={{ zIndex: 1 }}>
           <p className="eyebrow rise rise-1"><span className="dot" aria-hidden /> Publish · Student venues</p>
           <h1 className="type-heading rise rise-2 mx-auto mt-4" style={{ color: "var(--color-apple-ink)", fontWeight: 600, letterSpacing: "-0.03em" }}>
             Get published.
@@ -189,3 +186,4 @@ export default function PublishPage() {
     </div>
   );
 }
+

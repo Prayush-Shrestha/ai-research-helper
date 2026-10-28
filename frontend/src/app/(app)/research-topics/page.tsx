@@ -67,9 +67,7 @@ export default function ResearchTopicsPage() {
 
   return (
     <div>
-      <section className="rise rise-1 relative pt-6 sm:pt-10">
-        <div aria-hidden className="orb" style={{ width: 340, height: 340, top: -120, left: -120, background: "radial-gradient(circle, rgba(255,255,255,0.12), transparent 65%)" }} />
-        <span className="eyebrow"><span className="dot" /> Research topics</span>
+      <section className="rise rise-1 relative pt-6 sm:pt-10"><span className="eyebrow"><span className="dot" /> Research topics</span>
         <h1 className="mt-4" style={{ fontSize: "clamp(28px,5vw,42px)", fontWeight: 600, letterSpacing: "-0.02em", lineHeight: 1.1, color: "var(--color-apple-ink)" }}>
           What do you want to research?
         </h1>
@@ -136,3 +134,4 @@ export default function ResearchTopicsPage() {
     </div>
   );
 }
+

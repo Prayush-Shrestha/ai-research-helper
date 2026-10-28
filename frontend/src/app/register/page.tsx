@@ -52,11 +52,7 @@ export default function RegisterPage() {
   }, [loading, user, router]);
 
   return (
-    <div className="page-enter relative min-h-screen overflow-hidden">
-      <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="orb float-slow" style={{ width: 560, height: 380, left: "50%", top: "-8%", transform: "translateX(-50%)", background: "radial-gradient(circle, rgba(255,255,255,0.15), transparent 65%)" }} />
-        <div className="orb" style={{ width: 480, height: 320, left: "-8%", bottom: "4%", background: "radial-gradient(circle, rgba(255,255,255,0.1), transparent 65%)" }} />
-      </div>
+    <div className="page-enter relative min-h-screen">
       <header className="relative" style={{ height: 72 }}>
         <div className="mx-auto flex h-full items-center justify-between px-5 sm:px-8" style={{ maxWidth: "var(--page-max-width)" }}>
           <Link href="/" className="flex items-center gap-2.5">

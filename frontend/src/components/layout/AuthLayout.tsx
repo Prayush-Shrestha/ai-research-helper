@@ -12,13 +12,12 @@ export function AuthLayout({ children }: { children: ReactNode }) {
   return (
     <div className="page-shell grid min-h-screen lg:grid-cols-2" style={{ background: "transparent" }}>
       <div className="relative hidden flex-col justify-between overflow-hidden p-10 lg:flex">
-        <span aria-hidden className="orb" style={{ width: 420, height: 420, left: "-120px", top: "-120px", background: "radial-gradient(circle, rgba(255,255,255,0.14), transparent 65%)" }} />
         <div className="gallery-card relative flex flex-1 flex-col justify-between" style={{ zIndex: 1 }}>
           <Link href="/" className="flex items-center gap-2.5" aria-label="Home">
             <span style={{ filter: "drop-shadow(0 0 10px rgba(255,255,255,0.45))", display: "inline-flex" }}>
               <LogoMark />
             </span>
-            <span className="tech-label" style={{ color: "var(--color-apple-ink)" }}>Lumina — Workspace</span>
+            <span className="tech-label" style={{ color: "var(--color-apple-ink)" }}>Lumina</span>
           </Link>
           <div className="py-10">
             <p className="eyebrow"><span className="dot" aria-hidden /> Calm research home</p>

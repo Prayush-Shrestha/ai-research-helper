@@ -61,10 +61,7 @@ export default function SettingsPage() {
 
   return (
     <div style={{ maxWidth: 720 }} className="page-shell mx-auto">
-      <section className="relative pt-6 text-center sm:pt-10">
-        <span className="orb" aria-hidden style={{ width: 400, height: 400, top: -140, left: "4%", background: "radial-gradient(circle, rgba(255,255,255,0.15), transparent 65%)" }} />
-        <span className="orb" aria-hidden style={{ width: 420, height: 420, top: -150, right: "4%", background: "radial-gradient(circle, rgba(255,255,255,0.13), transparent 65%)" }} />
-        <div className="relative rise rise-1">
+      <section className="relative pt-6 text-center sm:pt-10"><div className="relative rise rise-1">
           <span className="eyebrow"><span className="dot" />Settings</span>
           <h1 className="type-heading-sm mx-auto mt-4" style={{ color: "var(--color-apple-ink)", fontWeight: 600, letterSpacing: "-0.03em" }}>The boring but necessary page.</h1>
           <p className="hero-sub mx-auto mt-3 max-w-md">Just the basics so your account feels like yours.</p>
@@ -148,3 +145,4 @@ export default function SettingsPage() {
     </div>
   );
 }
+

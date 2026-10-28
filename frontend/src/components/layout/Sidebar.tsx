@@ -82,14 +82,14 @@ export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle:
     { href: "/documents", label: "My Research", icon: <BookOpen size={17} aria-hidden /> },
     { href: "/research-topics", label: "Topic Suggestions", icon: <Sparkles size={17} aria-hidden /> },
     { href: "/collections", label: "Collections", icon: <FolderOpen size={17} aria-hidden /> },
-    { href: "/assistant", label: "AI Conversations", icon: <MessagesSquare size={17} aria-hidden /> },
+    { href: "/assistant", label: "Assistant", icon: <MessagesSquare size={17} aria-hidden /> },
     { href: "/notes", label: "Saved Notes", icon: <NotebookPen size={17} aria-hidden /> },
     { href: "/insights", label: "Research Analytics", icon: <BarChart3 size={17} aria-hidden /> },
     { href: "/history", label: "Research History", icon: <History size={17} aria-hidden /> },
   ];
 
   const tools: NavItem[] = [
-    { href: "/assistant", label: "AI Paper Assistant", icon: <Sparkles size={17} aria-hidden /> },
+    { href: "/assistant", label: "Paper Assistant", icon: <Sparkles size={17} aria-hidden /> },
     { href: "/insights", label: "Research Analytics", icon: <ScanText size={17} aria-hidden /> },
     { href: "/compare", label: "Compare Documents", icon: <ShieldAlert size={17} aria-hidden /> },
     { href: "/toolkit", label: "Citation Manager", icon: <Quote size={17} aria-hidden /> },
@@ -117,7 +117,7 @@ export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle:
         width: collapsed ? 80 : 264,
         minHeight: "calc(100vh - var(--nav-h) - var(--nav-float) * 2 - 16px)",
         margin: "8px 0 8px 16px",
-        borderRadius: 24,
+        borderRadius: 12,
         border: "1px solid var(--liquid-border)",
         position: "sticky",
         top: "calc(var(--nav-h) + var(--nav-float) * 2 + 8px)",
@@ -125,7 +125,7 @@ export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle:
         maxHeight: "calc(100vh - var(--nav-h) - var(--nav-float) * 2 - 16px)",
         overflowY: "auto",
         transition: "width 220ms cubic-bezier(0.22,1,0.36,1)",
-        boxShadow: "0 20px 50px rgba(0,0,0,0.35), inset 0 1px 0 var(--liquid-shine)",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
       }}
     >
       <div className="flex items-center px-4 py-4" style={{ gap: collapsed ? 0 : 10, justifyContent: collapsed ? "center" : "flex-start" }}>
